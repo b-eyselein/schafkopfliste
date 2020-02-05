@@ -1,0 +1,50 @@
+<div class="container">
+
+  <h1 class="title is-3 has-text-centered">SchafkopfListe: Neue Siztung erstellen</h1>
+
+  <h3 class="subtitle is-4">Erlaubte Spiele:</h3>
+
+  <div class="columns is-multiline">
+    <div class="column is-one-quarter-desktop" *ngFor="let gameType of gameTypes">
+      <div class="field">
+        <div class="control">
+          <button type="button" class="button is-fullwidth" (click)="gameType.isSelected = !gameType.isSelected"
+                  [ngClass]="gameType.isSelected ? 'is-link' : ''">
+            {{gameType.isSelected ? '&#10004;' : '&#10008;'}} {{gameType.value.name}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="subtitle is-4">Spieler:</h3>
+
+  <div class="columns" *ngFor="let playerPosition of playerPositions; let i = index">
+    <div class="column is-one-fifth-desktop">
+      <b>{{playerPosition}}:</b>
+    </div>
+    <div class="column">
+      <div class="buttons">
+        <button *ngFor="let player of players" (click)="selectPlayer(i, player)"
+                class="button" [ngClass]="chosenPlayers[i] === player ? 'is-link' : ''"   title="{{player.name}}">
+          {{player.abbreviation}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="buttons">
+    <a routerLink="newPlayerForm" class="button is-primary is-fullwidth">Neuen Spieler anlegen</a>
+  </div>
+
+  <hr>
+
+  <div class="field">
+    <div class="control">
+      <button class="button is-link is-fullwidth" (click)="createSession()">Session starten</button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,89 @@
+<div class="container">
+
+  <h1 class="title is-3 has-text-centered">Spiel {{currentGameIndex}} eintragen</h1>
+
+  <ng-container *ngIf="session; else loadingSessionBlock">
+    <div class="columns">
+      <div class="column is-one-fifth"></div>
+      <div *ngFor="let p of actingPlayers; let index = index" class="column has-text-centered"
+           [ngClass]="isDealer(index) ? 'has-text-weight-bold' : ''">
+        {{p.name}}
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Gelegt?</div>
+      <div class="column" *ngFor="let p of actingPlayers">
+        <button (click)="p.hasPut = !p.hasPut" class="button is-fullwidth"
+                [ngClass]="p.hasPut ? 'is-link' : ''">
+          {{p.hasPut ? '&#10004;' : '&#10008;'}}
+        </button>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Will spielen?</div>
+      <div class="column" *ngFor="let p of actingPlayers">
+        <button (click)="p.wantsToPlay = !p.wantsToPlay" class="button is-fullwidth"
+                [ngClass]="p.wantsToPlay ? 'is-link' : ''">
+          {{p.wantsToPlay ? '&#10004;' : '&#10008;'}}
+        </button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Spielt?</div>
+      <div class="column" *ngFor="let p of actingPlayers">
+        <button (click)="player = p" class="button is-fullwidth"
+                [ngClass]="player === p ? 'is-link' : ''" [disabled]="!p.wantsToPlay">
+          {{player === p ? '&#10004;' : '&#10008;'}}
+        </button>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Spiel?</div>
+      <div class="column" *ngFor="let gt of session.allowedGameTypes">
+        <button (click)="playedGame = gt" class="button is-fullwidth" [ngClass]="playedGame === gt ? 'is-link' : ''">
+          {{gt.name}}
+        </button>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Kontra?</div>
+      <div class="column" *ngFor="let p of actingPlayers">
+        <button (click)="p.gaveContra = !p.gaveContra" class="button is-fullwidth"
+                [ngClass]="p.gaveContra ? 'is-link' :''" [disabled]="player === p">
+          {{p.gaveContra ? '&#10004;' : '&#10008;'}}
+        </button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Gewonnen?</div>
+      <div class="column" *ngFor="let p of actingPlayers">
+        <button (click)="p.hasWon = !p.hasWon" class="button is-fullwidth" [ngClass]="p.hasWon ? 'is-link' : ''">
+          {{p.hasWon ? '&#10004;' : '&#10008;'}}
+        </button>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Laufende?</div>
+      <div class="column">
+        
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-template #loadingSessionBlock>
+    <div class="notification is-primary">Lade Sitzung</div>
+  </ng-template>
+
+</div>
