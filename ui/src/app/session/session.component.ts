@@ -32,11 +32,13 @@ export class SessionComponent implements OnInit {
       this.dexieService.sessions.get(sessionUuid)
         .then((session) => {
           this.session = session;
+          /*
           this.actingPlayers = this.session.players.map((p) => {
             return {
               ...p, hasPut: false, wantsToPlay: false, gaveContra: false, hasWon: false
             };
           });
+           */
         });
     });
   }

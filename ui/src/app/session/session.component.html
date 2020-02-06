@@ -45,7 +45,7 @@
 
     <div class="columns">
       <div class="column is-one-fifth has-text-weight-bold has-text-centered">Spiel?</div>
-      <div class="column" *ngFor="let gt of session.allowedGameTypes">
+      <div class="column" *ngFor="let gt of session.allowedGameTypeIds">
         <button (click)="playedGame = gt" class="button is-fullwidth" [ngClass]="playedGame === gt ? 'is-link' : ''">
           {{gt.name}}
         </button>
@@ -76,7 +76,7 @@
     <div class="columns">
       <div class="column is-one-fifth has-text-weight-bold has-text-centered">Laufende?</div>
       <div class="column">
-        
+
       </div>
     </div>
 

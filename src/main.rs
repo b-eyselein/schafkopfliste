@@ -24,7 +24,7 @@ pub struct DbConn(diesel::SqliteConnection);
 fn make_cors() -> Cors {
     let cors_options = CorsOptions {
         allowed_origins: AllowedOrigins::all(),
-        allowed_headers: AllowedHeaders::some(&["Authorization", "Accept", "Access-Control-Allow-Origin"]),
+        allowed_headers: AllowedHeaders::all(),
         allow_credentials: true,
         ..Default::default()
     };
@@ -32,10 +32,17 @@ fn make_cors() -> Cors {
     cors_options.to_cors().expect("Error while building cors!")
 }
 
-
 fn main() {
+    let routes = routes![
+        routes::index,
+        routes::game_types,
+        routes::players,
+        routes::create_player,
+        routes::create_session
+    ];
+
     rocket::ignite()
-        .mount("/", routes![routes::index, routes::players, routes::create_player])
+        .mount("/api", routes)
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();

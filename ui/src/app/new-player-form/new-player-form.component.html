@@ -4,36 +4,66 @@
 
   <form (ngSubmit)="createPlayer()" [formGroup]="playerForm">
 
-    <div class="field">
-      <label for="firstName" class="label">Vorname:</label>
-      <div class="control">
-        <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
-               autofocus>
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label for="firstName" class="label">Vorname:</label>
+          <div class="control">
+            <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
+                   autofocus>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="field">
+          <label for="lastName" class="label">Nachname:</label>
+          <div class="control">
+            <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="field">
-      <label for="lastName" class="label">Nachname:</label>
-      <div class="control">
-        <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label for="username" class="label">Nutzername:</label>
+          <div class="control">
+            <input type="text" id="username" formControlName="username" class="input">
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="field">
+          <label for="abbreviation" class="label">Abkürzung:</label>
+          <div class="control">
+            <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="field">
-      <label for="abbreviation" class="label">Abkürzung:</label>
-      <div class="control">
-        <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
+    <div class="columns">
+      <div class="column">
+        <a class="button is-primary is-fullwidth" routerLink="/players">Zurück zur Spielerübersicht</a>
       </div>
-    </div>
-
-    <hr>
-
-    <div class="field">
-      <div class="control">
+      <div class="column">
         <button class="button is-link is-fullwidth">Spieler anlegen</button>
       </div>
     </div>
 
   </form>
+
+  <ng-container *ngIf="createdPlayer">
+    <hr>
+
+    <div class="notification is-success">
+      <button class="delete" (click)="createdPlayer = undefined"></button>
+      Spieler {{createdPlayer.name}} ({{createdPlayer.abbreviation}}) mit Nutzernamen
+      <code>{{createdPlayer.username}}</code> wurde erstellt.
+    </div>
+  </ng-container>
 
 </div>

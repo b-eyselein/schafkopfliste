@@ -1,36 +1,40 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Player} from '../_interfaces/model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from "../_services/api.service";
 
 @Component({templateUrl: './new-player-form.component.html'})
-export class NewPlayerFormComponent implements OnInit {
+export class NewPlayerFormComponent {
 
   playerForm: FormGroup;
+  createdPlayer: Player | undefined;
 
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     this.playerForm = this.fb.group({
+      username: ['', Validators.required],
       abbreviation: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required]
     });
   }
 
-  ngOnInit() {
+  private get f() {
+    return this.playerForm.controls;
   }
 
   get firstNameValue(): string | undefined {
-    return this.playerForm.controls.firstName.value;
+    return this.f.firstName.value;
   }
 
   get lastNameValue(): string | undefined {
-    return this.playerForm.controls.lastName.value;
+    return this.f.lastName.value;
   }
 
   updateAbbreviation(): void {
     const firstValue = this.firstNameValue ? this.firstNameValue.charAt(0).toUpperCase() : '';
     const lastValue = this.lastNameValue ? this.lastNameValue.charAt(0).toUpperCase() : '';
-    this.playerForm.controls.abbreviation.setValue(firstValue + '' + lastValue);
+
+    this.f.abbreviation.setValue(firstValue + '' + lastValue);
   }
 
   createPlayer(): void {
@@ -40,12 +44,13 @@ export class NewPlayerFormComponent implements OnInit {
     }
 
     const player: Player = {
-      abbreviation: this.playerForm.controls.abbreviation.value,
-      name: this.playerForm.controls.firstName.value + ' ' + this.playerForm.controls.lastName.value
+      username: this.f.username.value,
+      abbreviation: this.f.abbreviation.value,
+      name: this.firstNameValue + ' ' + this.lastNameValue
     };
 
     this.apiService.createPlayer(player)
-      .subscribe((result) => console.info(result));
+      .subscribe((result) => this.createdPlayer = result);
   }
 
 }

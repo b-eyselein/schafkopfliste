@@ -68,8 +68,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "schafkopf:build",
-            "proxyConfig": "proxy.conf.json"
+            "browserTarget": "schafkopf:build"
           },
           "configurations": {
             "production": {
