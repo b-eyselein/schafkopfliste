@@ -68,7 +68,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "schafkopf:build"
+            "browserTarget": "schafkopf:build",
+            "port": 4240
           },
           "configurations": {
             "production": {

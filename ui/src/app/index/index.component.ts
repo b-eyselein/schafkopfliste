@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {GameType, CreatableSession, Player, Selectable, toSelectable} from '../_interfaces/model';
+import {CreatableSession, GameType, Player, Selectable} from '../_interfaces/model';
 import {ApiService} from "../_services/api.service";
 
 @Component({templateUrl: './index.component.html'})
@@ -19,10 +19,12 @@ export class IndexComponent implements OnInit {
   }
 
   ngOnInit() {
+    /*
     this.apiService.getGameTypes()
       .subscribe((gameTypes) =>
         this.gameTypes = gameTypes.map((gt) => toSelectable(gt, gt.isDefaultGameType))
       );
+     */
 
     this.apiService.getPlayers()
       .subscribe((players) => this.players = players);

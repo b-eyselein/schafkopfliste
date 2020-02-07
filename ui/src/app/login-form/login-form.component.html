@@ -1,0 +1,32 @@
+<div class="container">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+    <div class="field">
+      <label for="username" class="label">Nutzername</label>
+      <div class="control">
+        <input type="text" id="username" formControlName="username" class="input" placeholder="Nutzername" autofocus>
+      </div>
+      <p *ngIf="submitted && f.username.errors && f.username.errors.required" class="help is-danger">
+        Nutzername darf nicht leer sein!
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="password" class="label">Passwort</label>
+      <div class="control">
+        <input type="password" formControlName="password" placeholder="Passwort" id="password" class="input">
+      </div>
+      <p *ngIf="submitted && f.password.errors && f.password.errors.required" class="help is-danger">
+        Passwort darf nicht leer sein!
+      </p>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="button is-link">Login</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+

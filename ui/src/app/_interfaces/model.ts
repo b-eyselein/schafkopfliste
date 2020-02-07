@@ -3,6 +3,11 @@ export interface Group {
   name: string;
 }
 
+export interface User {
+  name: string;
+  token: string;
+}
+
 export interface Credentials {
   username: string;
   password: string;

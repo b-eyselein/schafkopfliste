@@ -8,6 +8,7 @@ import {NewPlayerFormComponent} from './new-player-form/new-player-form.componen
 import {SessionComponent} from './session/session.component';
 import {HttpClientModule} from "@angular/common/http";
 import {PlayerListComponent} from './player-list/player-list.component';
+import { LoginFormComponent } from './login-form/login-form.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {PlayerListComponent} from './player-list/player-list.component';
     IndexComponent,
     NewPlayerFormComponent,
     SessionComponent,
-    PlayerListComponent
+    PlayerListComponent,
+    LoginFormComponent
   ],
   imports: [
     BrowserModule,
