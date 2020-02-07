@@ -6,16 +6,13 @@ extern crate diesel;
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
-extern crate rocket_cors;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
 
+use rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
 
+pub mod dao;
 pub mod models;
-pub mod routes;
+pub mod my_routes;
 pub mod schema;
 
 #[database("sqlite_schafkopfliste")]
@@ -34,11 +31,12 @@ fn make_cors() -> Cors {
 
 fn main() {
     let routes = routes![
-        routes::index,
-        routes::game_types,
-        routes::players,
-        routes::create_player,
-        routes::create_session
+        my_routes::index,
+        my_routes::authenticate,
+        //        routes::game_types,
+        my_routes::players,
+        my_routes::create_player,
+        my_routes::create_session
     ];
 
     rocket::ignite()

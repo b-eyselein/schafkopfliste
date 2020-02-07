@@ -20,11 +20,13 @@ export class ApiService {
   constructor(private httpClient: HttpClient) {
   }
 
+  /*
   getGameTypes(): Observable<GameType[]> {
     const url = `${this.baseUrl}/api/gameTypes`;
 
     return this.httpClient.get<GameType[]>(url);
   }
+   */
 
   getPlayers(): Observable<Player[]> {
     const url = `${this.baseUrl}/api/players`;

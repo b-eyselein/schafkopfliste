@@ -1,21 +1,7 @@
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
 
-use crate::schema::{allowed_game_type_in_sessions, players, sessions};
-
-#[derive(Debug, Serialize, Deserialize, Queryable)]
-#[serde(rename_all = "camelCase")]
-pub struct GameType {
-    pub id: i32,
-    pub name: String,
-    pub is_default_game_type: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
-pub struct Player {
-    pub username: String,
-    pub abbreviation: String,
-    pub name: String,
-}
+use crate::schema::sessions;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 pub struct Session {
@@ -49,7 +35,7 @@ impl Session {
     pub fn from_creatable_session(
         uuid: String,
         cs: CreatableSession,
-    ) -> (Session, Vec<AllowedGameTypeInSession>) {
+    ) -> (Session, Vec</*AllowedGameTypeInSession*/ i32>) {
         let session = Session::new(
             uuid,
             cs.date,
@@ -61,9 +47,11 @@ impl Session {
 
         let allowed_game_types = cs
             .allowed_game_type_ids
+            /*
             .iter()
             .map(|gt| AllowedGameTypeInSession::new(uuid.clone(), gt.to_owned()))
-            .collect();
+            .collect()
+            */;
 
         (session, allowed_game_types)
     }
@@ -80,6 +68,7 @@ pub struct CreatableSession {
     pub allowed_game_type_ids: Vec<i32>,
 }
 
+/*
 #[derive(Debug, Queryable, Insertable)]
 pub struct AllowedGameTypeInSession {
     pub session_uuid: String,
@@ -94,3 +83,4 @@ impl AllowedGameTypeInSession {
         }
     }
 }
+*/

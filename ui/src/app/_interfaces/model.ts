@@ -1,3 +1,8 @@
+export interface Credentials {
+  username: string;
+  password: string;
+}
+
 export interface Player {
   username: string;
   abbreviation: string;

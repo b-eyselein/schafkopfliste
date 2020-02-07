@@ -17,6 +17,8 @@ uuid = { version = "0.8.1", features = ["v4", "serde"] }
 
 diesel = { version = "1.4.3", features = ["chrono", "sqlite", "uuid"] }
 
-serde = "1.0.104"
-serde_derive= "1.0.104"
+serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.46"
+jsonwebtoken = "5.0.1" # TODO: use 5.0.1 because of ring (rocket needs 0.13.5)
+
+bcrypt = "0.6.1"
