@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {GameType, CreatableSession, Player} from "../_interfaces/model";
+import {CreatableSession, Group, Player} from "../_interfaces/model";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 
@@ -20,13 +20,11 @@ export class ApiService {
   constructor(private httpClient: HttpClient) {
   }
 
-  /*
-  getGameTypes(): Observable<GameType[]> {
-    const url = `${this.baseUrl}/api/gameTypes`;
+  getGroups(): Observable<Group[]> {
+    const url = `${this.baseUrl}/api/groups`;
 
-    return this.httpClient.get<GameType[]>(url);
+    return this.httpClient.get<Group[]>(url);
   }
-   */
 
   getPlayers(): Observable<Player[]> {
     const url = `${this.baseUrl}/api/players`;
