@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {DexieService} from '../_services/dexie.service';
 import {ActivatedRoute} from '@angular/router';
-import {GameType, Player, Session} from '../_interfaces/model';
+import {GameType, Session} from '../_interfaces/model';
+import {Player} from "../_interfaces/player";
 
 interface ActingPlayer extends Player {
   hasPut: boolean;

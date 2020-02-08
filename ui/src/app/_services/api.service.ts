@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {CreatableSession, Group, Player} from "../_interfaces/model";
+import {CreatableSession, Group} from "../_interfaces/model";
+import {Player, PlayerToCreate} from "../_interfaces/player";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 
@@ -32,7 +33,7 @@ export class ApiService {
     return this.httpClient.get<Player[]>(url);
   }
 
-  createPlayer(player: Player): Observable<Player> {
+  createPlayer(player: PlayerToCreate): Observable<Player> {
     const url = `${this.baseUrl}/api/players`;
 
     return this.httpClient.put<Player>(url, player, ApiService.putHttpOptions);

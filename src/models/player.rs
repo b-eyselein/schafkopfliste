@@ -1,12 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::schema::{groups, player_in_groups, player_with_passwords};
-
-#[derive(Debug, Deserialize)]
-pub struct Credentials {
-    pub username: String,
-    pub password: String,
-}
+use crate::schema::{groups, player_in_groups, players};
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 pub struct Group {
@@ -14,33 +8,28 @@ pub struct Group {
     pub name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name = "players"]
+pub struct CreatablePlayer {
+    pub abbreviation: String,
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct Player {
-    pub username: String,
+    pub id: i32,
     pub abbreviation: String,
     pub name: String,
 }
 
 impl Player {
-    pub fn from_player_with_password(pwp: PlayerWithPassword) -> Player {
-        Player {
-            username: pwp.username,
-            abbreviation: pwp.abbreviation,
-            name: pwp.name,
-        }
+    pub fn from_creatable_player(id: i32, cp: CreatablePlayer) -> Player {
+        Player { id, abbreviation: cp.abbreviation, name: cp.name }
     }
-}
-
-#[derive(Debug, Deserialize, Queryable, Insertable)]
-pub struct PlayerWithPassword {
-    pub username: String,
-    pub abbreviation: String,
-    pub name: String,
-    pub password_hash: String,
 }
 
 #[derive(Debug, Queryable, Insertable)]
 pub struct PlayerInGroup {
     pub group_id: i32,
-    pub player_username: String,
+    pub player_id: i32,
 }

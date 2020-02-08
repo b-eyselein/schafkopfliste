@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Player} from '../_interfaces/model';
+import {Player, PlayerToCreate} from '../_interfaces/player';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from "../_services/api.service";
 
@@ -11,7 +11,6 @@ export class NewPlayerFormComponent {
 
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     this.playerForm = this.fb.group({
-      username: ['', Validators.required],
       abbreviation: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required]
@@ -43,8 +42,7 @@ export class NewPlayerFormComponent {
       return;
     }
 
-    const player: Player = {
-      username: this.f.username.value,
+    const player: PlayerToCreate = {
       abbreviation: this.f.abbreviation.value,
       name: this.firstNameValue + ' ' + this.lastNameValue
     };

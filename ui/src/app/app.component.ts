@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {AuthenticationService} from "./_services/authentication.service";
-import {User} from "./_interfaces/model";
+import {User} from "./_interfaces/user";
 
 @Component({
   selector: 'sk-root',

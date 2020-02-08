@@ -6,9 +6,10 @@ import {IndexComponent} from './index/index.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewPlayerFormComponent} from './new-player-form/new-player-form.component';
 import {SessionComponent} from './session/session.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {PlayerListComponent} from './player-list/player-list.component';
-import { LoginFormComponent } from './login-form/login-form.component';
+import {LoginFormComponent} from './login-form/login-form.component';
+import {JwtInterceptor} from "./_helpers/jwt.interceptor";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,9 @@ import { LoginFormComponent } from './login-form/login-form.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

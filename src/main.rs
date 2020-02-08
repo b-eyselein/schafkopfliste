@@ -10,10 +10,11 @@ extern crate rocket_contrib;
 use rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
 
-pub mod dao;
-pub mod models;
-pub mod my_routes;
-pub mod schema;
+mod dao;
+mod jwt_helpers;
+mod models;
+mod my_routes;
+mod schema;
 
 #[database("sqlite_schafkopfliste")]
 pub struct DbConn(diesel::SqliteConnection);
@@ -30,17 +31,19 @@ fn make_cors() -> Cors {
 }
 
 fn main() {
-    let routes = routes![
-        my_routes::index,
-        my_routes::authenticate,
-        //        routes::game_types,
-        my_routes::players,
-        my_routes::create_player,
-        my_routes::create_session
+    let user_routes = routes![my_routes::user_routes::authenticate];
+
+    let game_routes = routes![
+        my_routes::game_routes::index,
+        my_routes::game_routes::groups,
+        my_routes::game_routes::players,
+        my_routes::game_routes::create_player,
+        my_routes::game_routes::create_session
     ];
 
     rocket::ignite()
-        .mount("/api", routes)
+        .mount("/api/users", user_routes)
+        .mount("/api", game_routes)
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();

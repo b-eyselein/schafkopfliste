@@ -3,56 +3,18 @@ export interface Group {
   name: string;
 }
 
-export interface User {
-  name: string;
-  token: string;
-}
-
-export interface Credentials {
-  username: string;
-  password: string;
-}
-
-export interface Player {
-  username: string;
-  abbreviation: string;
-  name: string;
-}
-
-/*
-export interface PlayerPosition {
-  id: string;
-  name: string;
-}
-
-export const dealer: PlayerPosition = {id: 'dealer', name: 'Geber'};
-export const preHand: PlayerPosition = {id: 'preHand', name: 'Vorhand'};
-export const middleHand: PlayerPosition = {id: 'middleHand', name: 'Mittelhand'};
-export const rearHand: PlayerPosition = {id: 'rearHand', name: 'Rückhand'};
-
-export const playerPositions: PlayerPosition[] = [
-  dealer, preHand, middleHand, rearHand
-];
- */
 
 export interface CreatableSession {
   date: string;
-  firstPlayerUsername: string;
-  secondPlayerUsername: string;
-  thirdPlayerUsername: string;
-  fourthPlayerUsername: string;
-  allowedGameTypeIds: number[];
+  firstPlayerId: number;
+  secondPlayerId: number;
+  thirdPlayerId: number;
+  fourthPlayerId: number;
+  ruleSetId: number;
 }
 
 export interface Session extends CreatableSession {
   uuid: string;
-}
-
-function getPlayerUsernamesFromSession(session: Session): string[] {
-  return [
-    session.firstPlayerUsername, session.secondPlayerUsername,
-    session.thirdPlayerUsername, session.fourthPlayerUsername
-  ];
 }
 
 export interface Game {

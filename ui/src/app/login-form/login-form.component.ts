@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../_services/authentication.service';
 import {first} from 'rxjs/operators';
-import {Credentials} from "../_interfaces/model";
+import {Credentials} from "../_interfaces/user";
 
 @Component({templateUrl: './login-form.component.html'})
 export class LoginFormComponent implements OnInit {
@@ -20,6 +20,7 @@ export class LoginFormComponent implements OnInit {
     private authenticationService: AuthenticationService) {
 
     if (this.authenticationService.currentUserValue) {
+      // noinspection JSIgnoredPromiseFromCall
       this.router.navigate(['/']);
     }
   }

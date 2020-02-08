@@ -1,21 +1,13 @@
-//use bcrypt::{DEFAULT_COST, hash, verify};
-use bcrypt::verify;
 use diesel::{self, prelude::*};
 
-use crate::models::player::{Credentials, Group, Player, PlayerWithPassword};
+use crate::models::player::{Group, Player, CreatablePlayer};
+use crate::models::user::User;
 use crate::DbConn;
 
-pub fn authenticate_user(conn: DbConn, credentials: Credentials) -> bool {
-    use crate::schema::player_with_passwords::dsl::*;
+pub fn user_by_username(conn: DbConn, name: &String) -> Option<User> {
+    use crate::schema::users::dsl::*;
 
-    let player_with_password = player_with_passwords
-        .filter(username.eq(&credentials.username))
-        .first::<PlayerWithPassword>(&conn.0);
-
-    match player_with_password {
-        Err(_) => false,
-        Ok(pwp) => verify(credentials.password, &pwp.password_hash).unwrap_or(false),
-    }
+    users.filter(username.eq(&name)).first::<User>(&conn.0).ok()
 }
 
 pub fn get_groups(conn: DbConn) -> Vec<Group> {
@@ -28,15 +20,25 @@ pub fn get_groups(conn: DbConn) -> Vec<Group> {
 }
 
 pub fn get_players(conn: DbConn) -> Vec<Player> {
-    use crate::schema::player_with_passwords::dsl::*;
+    use crate::schema::players::dsl::*;
 
-    player_with_passwords
-        .load::<PlayerWithPassword>(&conn.0)
-        .unwrap_or_else(|e| {
-            println!("Error while querying players from database: {}", e);
-            Vec::new()
+    players.load::<Player>(&conn.0).unwrap_or_else(|e| {
+        println!("Error while querying players from database: {}", e);
+        Vec::new()
+    })
+}
+
+pub fn insert_player(conn: DbConn, player: &CreatablePlayer) -> Result<usize, String> {
+    use crate::schema::players::dsl::*;
+
+    diesel::insert_into(players)
+        .values(player)
+        .returning(id)
+        .execute(&conn.0)
+        .map_err(|_| {
+            format!(
+                "Error inserting player with abbreviation {} into db",
+                &player.abbreviation
+            )
         })
-        .into_iter()
-        .map(Player::from_player_with_password)
-        .collect()
 }

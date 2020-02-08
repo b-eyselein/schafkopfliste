@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import Dexie from 'dexie';
-import {Player, Session} from '../_interfaces/model';
+import {Player} from "../_interfaces/player";
+import {Session} from "../_interfaces/model";
 
 @Injectable({
   providedIn: 'root'

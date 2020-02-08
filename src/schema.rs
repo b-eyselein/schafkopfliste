@@ -6,18 +6,17 @@ table! {
 }
 
 table! {
-    player_in_groups (group_id, player_username) {
+    player_in_groups (group_id, player_id) {
         group_id -> Integer,
-        player_username -> Text,
+        player_id -> Integer,
     }
 }
 
 table! {
-    player_with_passwords (username) {
-        username -> Text,
+    players (id) {
+        id -> Integer,
         abbreviation -> Text,
         name -> Text,
-        password_hash -> Text,
     }
 }
 
@@ -38,22 +37,32 @@ table! {
     sessions (uuid) {
         uuid -> Text,
         date -> Date,
-        first_player_username -> Text,
-        second_player_username -> Text,
-        third_player_username -> Text,
-        fourth_player_username -> Text,
+        first_player_id -> Integer,
+        second_player_id -> Integer,
+        third_player_id -> Integer,
+        fourth_player_id -> Integer,
         rule_set_id -> Integer,
     }
 }
 
+table! {
+    users (username) {
+        username -> Text,
+        password_hash -> Text,
+        player_id -> Nullable<Integer>,
+    }
+}
+
 joinable!(player_in_groups -> groups (group_id));
-joinable!(player_in_groups -> player_with_passwords (player_username));
+joinable!(player_in_groups -> players (player_id));
 joinable!(sessions -> rule_sets (rule_set_id));
+joinable!(users -> players (player_id));
 
 allow_tables_to_appear_in_same_query!(
     groups,
     player_in_groups,
-    player_with_passwords,
+    players,
     rule_sets,
     sessions,
+    users,
 );

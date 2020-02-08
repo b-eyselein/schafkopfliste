@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {Credentials, User} from '../_interfaces/model';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 import {tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {Credentials, User} from "../_interfaces/user";
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
@@ -29,7 +29,7 @@ export class AuthenticationService {
   }
 
   login(credentials: Credentials) {
-    const url = `${this.baseUrl}/api/authentication`;
+    const url = `${this.baseUrl}/api/users/authentication`;
 
     return this.http.put<User>(url, credentials)
       .pipe(tap((user) => this.activateLogin(user)));

@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {CreatableSession, GameType, Player, Selectable} from '../_interfaces/model';
+import {CreatableSession, GameType, Selectable} from '../_interfaces/model';
 import {ApiService} from "../_services/api.service";
+import {Player} from "../_interfaces/player";
 
 @Component({templateUrl: './index.component.html'})
 export class IndexComponent implements OnInit {
@@ -49,11 +50,11 @@ export class IndexComponent implements OnInit {
 
     const session: CreatableSession = {
       date: `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`,
-      firstPlayerUsername: this.firstDealer.username,
-      secondPlayerUsername: this.firstPreHand.username,
-      thirdPlayerUsername: this.firstMiddleHand.username,
-      fourthPlayerUsername: this.firstRearHand.username,
-      allowedGameTypeIds: allowedGameTypes.map((gt) => gt.id)
+      firstPlayerId: this.firstDealer.id,
+      secondPlayerId: this.firstPreHand.id,
+      thirdPlayerId: this.firstMiddleHand.id,
+      fourthPlayerId: this.firstRearHand.id,
+      ruleSetId: -1
     };
 
     this.apiService.createSession(session)
