@@ -16,8 +16,8 @@ mod models;
 mod my_routes;
 mod schema;
 
-#[database("sqlite_schafkopfliste")]
-pub struct DbConn(diesel::SqliteConnection);
+#[database("schafkopfliste")]
+pub struct DbConn(diesel::PgConnection);
 
 fn make_cors() -> Cors {
     let cors_options = CorsOptions {

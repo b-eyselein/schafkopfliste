@@ -1,5 +1,11 @@
 -- Your SQL goes here
 
+create table if not exists players (
+    id           serial primary key not null,
+    abbreviation varchar(5)         not null,
+    name         varchar(100)       not null
+);
+
 create table if not exists users (
     username      varchar(100) primary key not null,
     password_hash varchar(100)             not null,
@@ -9,14 +15,8 @@ create table if not exists users (
 );
 
 create table groups (
-    id   integer primary key not null,
-    name varchar(100)        not null
-);
-
-create table if not exists players (
-    id           integer primary key autoincrement not null,
-    abbreviation varchar(5)                        not null,
-    name         varchar(100)                      not null
+    id   serial primary key not null,
+    name varchar(100)       not null
 );
 
 create table if not exists player_in_groups (
@@ -49,10 +49,10 @@ create table if not exists sessions (
     fourth_player_id integer                 not null,
     rule_set_id      integer                 not null,
 
-    foreign key (first_player_id) references players (abbreviation) on update cascade on delete cascade,
-    foreign key (second_player_id) references players (abbreviation) on update cascade on delete cascade,
-    foreign key (third_player_id) references players (abbreviation) on update cascade on delete cascade,
-    foreign key (fourth_player_id) references players (abbreviation) on update cascade on delete cascade,
+    foreign key (first_player_id) references players (id) on update cascade on delete cascade,
+    foreign key (second_player_id) references players (id) on update cascade on delete cascade,
+    foreign key (third_player_id) references players (id) on update cascade on delete cascade,
+    foreign key (fourth_player_id) references players (id) on update cascade on delete cascade,
     foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade
 );
 

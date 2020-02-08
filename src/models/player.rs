@@ -24,7 +24,11 @@ pub struct Player {
 
 impl Player {
     pub fn from_creatable_player(id: i32, cp: CreatablePlayer) -> Player {
-        Player { id, abbreviation: cp.abbreviation, name: cp.name }
+        Player {
+            id,
+            abbreviation: cp.abbreviation,
+            name: cp.name,
+        }
     }
 }
 

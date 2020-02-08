@@ -2,10 +2,10 @@ use rocket_contrib::json::Json;
 use uuid::Uuid;
 
 use crate::dao::{get_groups, get_players, insert_player};
-use crate::DbConn;
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::player::{Group, Player, CreatablePlayer};
+use crate::models::player::{CreatablePlayer, Group, Player};
 use crate::models::session::{CreatableSession, Session};
+use crate::DbConn;
 
 #[get("/")]
 pub fn index(conn: DbConn) -> Json<Vec<Player>> {

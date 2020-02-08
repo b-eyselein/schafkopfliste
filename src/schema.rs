@@ -1,29 +1,29 @@
 table! {
     groups (id) {
-        id -> Integer,
-        name -> Text,
+        id -> Int4,
+        name -> Varchar,
     }
 }
 
 table! {
     player_in_groups (group_id, player_id) {
-        group_id -> Integer,
-        player_id -> Integer,
+        group_id -> Int4,
+        player_id -> Int4,
     }
 }
 
 table! {
     players (id) {
-        id -> Integer,
-        abbreviation -> Text,
-        name -> Text,
+        id -> Int4,
+        abbreviation -> Varchar,
+        name -> Varchar,
     }
 }
 
 table! {
     rule_sets (id) {
-        id -> Integer,
-        name -> Text,
+        id -> Int4,
+        name -> Varchar,
         geier_allowed -> Bool,
         hochzeit_allowed -> Bool,
         bettel_allowed -> Bool,
@@ -35,21 +35,21 @@ table! {
 
 table! {
     sessions (uuid) {
-        uuid -> Text,
+        uuid -> Varchar,
         date -> Date,
-        first_player_id -> Integer,
-        second_player_id -> Integer,
-        third_player_id -> Integer,
-        fourth_player_id -> Integer,
-        rule_set_id -> Integer,
+        first_player_id -> Int4,
+        second_player_id -> Int4,
+        third_player_id -> Int4,
+        fourth_player_id -> Int4,
+        rule_set_id -> Int4,
     }
 }
 
 table! {
     users (username) {
-        username -> Text,
-        password_hash -> Text,
-        player_id -> Nullable<Integer>,
+        username -> Varchar,
+        password_hash -> Varchar,
+        player_id -> Nullable<Int4>,
     }
 }
 

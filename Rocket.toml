@@ -1,2 +1,2 @@
 [global.databases]
-sqlite_schafkopfliste = { url = "schafkopfliste.db" }
+schafkopfliste = { url = "postgres://skl:1234@localhost/skl" }

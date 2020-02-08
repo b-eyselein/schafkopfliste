@@ -1,8 +1,8 @@
 use diesel::{self, prelude::*};
 
-use crate::models::player::{Group, Player, CreatablePlayer};
-use crate::models::user::User;
 use crate::DbConn;
+use crate::models::player::{CreatablePlayer, Group, Player};
+use crate::models::user::User;
 
 pub fn user_by_username(conn: DbConn, name: &String) -> Option<User> {
     use crate::schema::users::dsl::*;
@@ -28,13 +28,13 @@ pub fn get_players(conn: DbConn) -> Vec<Player> {
     })
 }
 
-pub fn insert_player(conn: DbConn, player: &CreatablePlayer) -> Result<usize, String> {
+pub fn insert_player(conn: DbConn, player: &CreatablePlayer) -> Result<i32, String> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)
         .values(player)
         .returning(id)
-        .execute(&conn.0)
+        .get_result(&conn.0)
         .map_err(|_| {
             format!(
                 "Error inserting player with abbreviation {} into db",
