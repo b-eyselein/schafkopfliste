@@ -1,9 +1,28 @@
 <div class="container">
 
   <ng-container *ngIf="group">
-    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;</h1>
+    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Spieler</h1>
+
+    <ng-container *ngIf="players; else loadingPlayersBlock">
+      <div class="columns is-multiline" *ngIf="players.length > 0; else noPlayersFoundBlock">
+        <div class="column is-one-quarter" *ngFor="let player of players">
+          <button class="button is-static is-fullwidth">{{player.name}}</button>
+        </div>
+      </div>
+    </ng-container>
+
+    <hr>
+
+    <button class="button is-link is-fullwidth">Spieler zur Gruppe hinzufügen</button>
 
   </ng-container>
 
 </div>
 
+<ng-template #loadingPlayersBlock>
+  <div class="notification is-primary has-text-centered">Lade Spieler...</div>
+</ng-template>
+
+<ng-template #noPlayersFoundBlock>
+  <div class="notification is-danger has-text-centered">Keine Spieler in dieser Gruppe gefunden!</div>
+</ng-template>

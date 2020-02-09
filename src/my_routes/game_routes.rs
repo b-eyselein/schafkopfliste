@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
+use crate::models::player_in_group::get_players_in_group;
 use crate::models::session::{CreatableSession, Session};
 use crate::DbConn;
 
@@ -16,13 +17,9 @@ pub fn players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(conn))
 }
 
-#[get("/groups/<_group_id>/players")]
-pub fn players_in_group(
-    _my_jwt: MyJwtToken,
-    _conn: DbConn,
-    _group_id: i32,
-) -> Result<Json<Vec<Player>>, String> {
-    Err("Not yet implemented!".into())
+#[get("/groups/<group_id>/players")]
+pub fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
+    Json(get_players_in_group(conn, group_id))
 }
 
 #[put("/players", format = "application/json", data = "<player_json>")]

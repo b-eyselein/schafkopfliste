@@ -41,17 +41,19 @@ export class ApiService {
     return this.httpClient.get<Group | undefined>(url);
   }
 
-  getPlayerCountInGroup(groupId: number): Observable<number> {
-    const url = `${this.baseUrl}/api/groups/${groupId}/playerCount`;
-
-    return this.httpClient.get<number>(url);
-  }
-
   getPlayers(): Observable<Player[]> {
     const url = `${this.baseUrl}/api/players`;
 
     return this.httpClient.get<Player[]>(url);
   }
+
+  getPlayersInGroup(groupId: number): Observable<Player[]> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/players`;
+
+    return this.httpClient.get<Player[]>(url);
+  }
+
+  // Creation
 
   createGroup(group: CreatableGroup): Observable<Group | undefined> {
     const url = `${this.baseUrl}/api/groups`;
