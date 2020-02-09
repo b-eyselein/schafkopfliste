@@ -11,7 +11,9 @@
           <header class="card-header">
             <p class="card-header-title">{{group.name}}</p>
           </header>
-          <div class="card-content"></div>
+          <div class="card-content">
+            <p>{{(group.playerCount !== undefined) ? group.playerCount : '?'}} Spieler</p>
+          </div>
           <footer class="card-footer">
             <a class="card-footer-item" [routerLink]="[group.id]">Zur Gruppe</a>
           </footer>

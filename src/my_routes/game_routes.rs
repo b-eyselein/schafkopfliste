@@ -1,33 +1,14 @@
-use rocket_contrib::json::{Json, JsonError};
+use rocket_contrib::json::Json;
 use uuid::Uuid;
 
-use crate::DbConn;
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::group::{CreatableGroup, get_groups, Group, insert_group};
-use crate::models::player::{CreatablePlayer, get_players, insert_player, Player};
+use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
 use crate::models::session::{CreatableSession, Session};
+use crate::DbConn;
 
 #[get("/")]
 pub fn index(conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(conn))
-}
-
-#[get("/groups")]
-pub fn groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
-    Json(get_groups(conn))
-}
-
-#[put("/groups", format = "application/json", data = "<group_name_json>")]
-pub fn create_group(
-    _my_jwt: MyJwtToken,
-    conn: DbConn,
-    group_name_json: Result<Json<CreatableGroup>, JsonError>,
-) -> Result<Json<Group>, String> {
-    let cg = group_name_json.unwrap().0;
-
-    let new_group = insert_group(conn, cg)?;
-
-    Ok(Json(new_group))
 }
 
 #[get("/players")]

@@ -28,6 +28,12 @@ export class ApiService {
     return this.httpClient.get<Group[]>(url);
   }
 
+  getPlayerCountInGroup(groupId: number): Observable<number> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/playerCount`;
+
+    return this.httpClient.get<number>(url);
+  }
+
   getPlayers(): Observable<Player[]> {
     const url = `${this.baseUrl}/api/players`;
 

@@ -34,8 +34,9 @@ fn main() {
 
     let game_routes = routes![
         my_routes::game_routes::index,
-        my_routes::game_routes::groups,
-        my_routes::game_routes::create_group,
+        my_routes::group_routes::groups,
+        my_routes::group_routes::create_group,
+        my_routes::group_routes::player_count_in_group,
         my_routes::game_routes::players_in_group,
         my_routes::game_routes::players,
         my_routes::game_routes::create_player,

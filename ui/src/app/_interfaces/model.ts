@@ -2,9 +2,12 @@ export interface CreatableGroup {
   name: string;
 }
 
-export interface Group {
+export interface Group extends CreatableGroup {
   id: number;
-  name: string;
+}
+
+export interface GroupWithPlayerCount extends Group {
+  playerCount?: number;
 }
 
 export interface CreatableSession {

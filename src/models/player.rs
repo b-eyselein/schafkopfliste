@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::schema::{player_in_groups, players};
+use crate::schema::players;
 use crate::DbConn;
 
 #[derive(Debug, Deserialize, Insertable)]
@@ -27,12 +27,6 @@ impl Player {
             name,
         }
     }
-}
-
-#[derive(Debug, Queryable, Insertable)]
-pub struct PlayerInGroup {
-    pub group_id: i32,
-    pub player_id: i32,
 }
 
 pub fn get_players(conn: DbConn) -> Vec<Player> {
