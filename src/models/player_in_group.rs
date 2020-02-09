@@ -20,6 +20,15 @@ pub struct PlayerInGroup {
     pub player_id: i32,
 }
 
+impl PlayerInGroup {
+    pub fn new(group_id: i32, player_id: i32) -> PlayerInGroup {
+        PlayerInGroup {
+            group_id,
+            player_id,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Queryable)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayerCount {
@@ -46,6 +55,17 @@ pub fn get_players_in_group(conn: DbConn, the_group_id: i32) -> Vec<Player> {
         .select((id, abbreviation, name))
         .load::<Player>(&conn.0)
         .unwrap_or(Vec::new())
+}
+
+pub fn add_player_to_group(conn: DbConn, group_id: i32, player_id: i32) -> bool {
+    let inserted_count = diesel::insert_into(player_in_groups::table)
+        .values(PlayerInGroup::new(group_id, player_id))
+        .execute(&conn.0);
+
+    match inserted_count {
+        Ok(1) => true,
+        _ => false,
+    }
 }
 
 #[allow(dead_code)]

@@ -1,0 +1,6 @@
+<h1 class="subtitle is-3 has-text-centered">Spieler zur Gruppe hinzufügen</h1>
+
+<div class="buttons">
+  <button *ngFor="let player of players" class="button is-link is-fullwidth"
+          (click)="addPlayerToGroup(player)">{{player.name}}</button>
+</div>

@@ -30,7 +30,10 @@ export class CreateGroupComponent {
     };
 
     this.apiService.createGroup(group)
-      .subscribe((result) => this.groupCreated.emit(result));
+      .subscribe((result) => {
+        this.groupForm.reset();
+        this.groupCreated.emit(result);
+      });
   }
 
 }

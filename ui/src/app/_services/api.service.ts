@@ -5,7 +5,7 @@ import {CreatableSession} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {catchError} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +75,13 @@ export class ApiService {
     const url = `${this.baseUrl}/api/sessions`;
 
     return this.httpClient.put<string>(url, session, ApiService.putHttpOptions);
+  }
+
+  addPlayerToGroup(groupId: number, playerId: number): Observable<boolean> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/players`;
+
+    return this.httpClient.put<boolean>(url, playerId, ApiService.putHttpOptions)
+      .pipe(tap((added) => console.info(added)));
   }
 
 }

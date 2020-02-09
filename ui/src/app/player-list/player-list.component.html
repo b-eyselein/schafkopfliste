@@ -1,29 +1,38 @@
-<div class="container">
+<div class="container is-fluid">
 
   <h1 class="title is-3 has-text-centered">Spieler</h1>
 
   <ng-container *ngIf="players; else loadingPlayersBlock">
 
-    <table class="table is-fullwidth" *ngIf="players.length > 0; else noPlayersFoundBlock">
-      <thead>
-      <tr>
-        <th>Kürzel</th>
-        <th>Name</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let p of players">
-        <td>{{p.abbreviation}}</td>
-        <td>{{p.name}}</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="columns">
+      <div class="column is-one-fifth-desktop">
+        <div class="box">
+          <skl-create-player (playerCreated)="onPlayerCreated($event)"></skl-create-player>
+        </div>
+      </div>
+
+      <div class="column">
+        <table class="table is-fullwidth" *ngIf="players.length > 0; else noPlayersFoundBlock">
+          <thead>
+          <tr>
+            <th>Kürzel</th>
+            <th>Name</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let p of players">
+            <td>{{p.abbreviation}}</td>
+            <td>{{p.name}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
   </ng-container>
 
   <hr>
 
-  <skl-create-player (playerCreated)="onPlayerCreated($event)"></skl-create-player>
 
 </div>
 

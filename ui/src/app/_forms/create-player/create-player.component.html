@@ -1,43 +1,31 @@
-<div class="container">
+<h1 class="subtitle is-3 has-text-centered">Neuen Spieler anlegen</h1>
 
-  <h1 class="title is-3 has-text-centered">Neuen Spieler anlegen</h1>
+<form (ngSubmit)="createPlayer()" [formGroup]="playerForm">
 
-  <form (ngSubmit)="createPlayer()" [formGroup]="playerForm">
-
-    <div class="columns">
-      <div class="column is-two-fifths">
-        <div class="field">
-          <label for="firstName" class="label">Vorname:</label>
-          <div class="control">
-            <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
-                   autofocus>
-          </div>
-        </div>
-      </div>
-
-      <div class="column is-two-fifths">
-        <div class="field">
-          <label for="lastName" class="label">Nachname:</label>
-          <div class="control">
-            <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
-          </div>
-        </div>
-      </div>
-
-      <div class="column">
-        <div class="field">
-          <label for="abbreviation" class="label">Abkürzung:</label>
-          <div class="control">
-            <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
-          </div>
-        </div>
-      </div>
+  <div class="field">
+    <label for="firstName" class="label">Vorname:</label>
+    <div class="control">
+      <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
+             autofocus>
     </div>
+  </div>
 
-    <div class="buttons">
-      <button class="button is-link is-fullwidth">Spieler anlegen</button>
+  <div class="field">
+    <label for="lastName" class="label">Nachname:</label>
+    <div class="control">
+      <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
     </div>
+  </div>
 
-  </form>
+  <div class="field">
+    <label for="abbreviation" class="label">Abkürzung:</label>
+    <div class="control">
+      <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
+    </div>
+  </div>
 
-</div>
+  <div class="buttons">
+    <button class="button is-link is-fullwidth">Spieler anlegen</button>
+  </div>
+
+</form>

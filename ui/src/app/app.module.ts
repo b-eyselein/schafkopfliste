@@ -7,6 +7,7 @@ import {CreatePlayerComponent} from './_forms/create-player/create-player.compon
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
+import { AddPlayerToGroupComponent } from './_forms/add-player-to-group/add-player-to-group.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import {CreateGroupComponent} from './_forms/create-group/create-group.component
     ...routingComponents,
     CreatePlayerComponent,
     CreateGroupComponent,
+    AddPlayerToGroupComponent,
   ],
   imports: [
     BrowserModule,
