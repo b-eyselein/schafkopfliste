@@ -10,7 +10,6 @@ extern crate rocket_contrib;
 use rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
 
-mod dao;
 mod jwt_helpers;
 mod models;
 mod my_routes;
@@ -36,6 +35,8 @@ fn main() {
     let game_routes = routes![
         my_routes::game_routes::index,
         my_routes::game_routes::groups,
+        my_routes::game_routes::create_group,
+        my_routes::game_routes::players_in_group,
         my_routes::game_routes::players,
         my_routes::game_routes::create_player,
         my_routes::game_routes::create_session

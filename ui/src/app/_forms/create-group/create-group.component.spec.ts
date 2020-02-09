@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewPlayerFormComponent } from './new-player-form.component';
+import { CreateGroupComponent } from './create-group.component';
 
-describe('NewPlayerFormComponent', () => {
-  let component: NewPlayerFormComponent;
-  let fixture: ComponentFixture<NewPlayerFormComponent>;
+describe('CreateGroupComponent', () => {
+  let component: CreateGroupComponent;
+  let fixture: ComponentFixture<CreateGroupComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewPlayerFormComponent ]
+      declarations: [ CreateGroupComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NewPlayerFormComponent);
+    fixture = TestBed.createComponent(CreateGroupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

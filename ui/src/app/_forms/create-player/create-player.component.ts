@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {Player, PlayerToCreate} from '../_interfaces/player';
+import {Player, PlayerToCreate} from '../../_interfaces/player';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ApiService} from "../_services/api.service";
+import {ApiService} from "../../_services/api.service";
 
-@Component({templateUrl: './new-player-form.component.html'})
-export class NewPlayerFormComponent {
+@Component({templateUrl: './create-player.component.html'})
+export class CreatePlayerComponent {
 
   playerForm: FormGroup;
   createdPlayer: Player | undefined;

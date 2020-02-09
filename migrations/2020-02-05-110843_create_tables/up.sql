@@ -15,8 +15,8 @@ create table if not exists users (
 );
 
 create table groups (
-    id   serial primary key not null,
-    name varchar(100)       not null
+    id   serial primary key  not null,
+    name varchar(100) unique not null
 );
 
 create table if not exists player_in_groups (

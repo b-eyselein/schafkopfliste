@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::schema::rule_sets;
 
+#[allow(dead_code)]
 pub enum Suit {
     Acorns,
     Leaves,
@@ -9,6 +10,7 @@ pub enum Suit {
     Bells,
 }
 
+#[allow(dead_code)]
 pub enum GameType {
     Ruf { suit: Suit },
     Wenz,

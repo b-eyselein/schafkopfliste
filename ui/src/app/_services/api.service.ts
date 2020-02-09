@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {CreatableSession, Group} from "../_interfaces/model";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {CreatableGroup, CreatableSession, Group} from "../_interfaces/model";
 import {Player, PlayerToCreate} from "../_interfaces/player";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {environment} from "../../environments/environment";
+import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,16 @@ export class ApiService {
     const url = `${this.baseUrl}/api/players`;
 
     return this.httpClient.get<Player[]>(url);
+  }
+
+  createGroup(group: CreatableGroup): Observable<Group | undefined> {
+    const url = `${this.baseUrl}/api/groups`;
+
+    return this.httpClient.put<Group>(url, group, ApiService.putHttpOptions)
+      .pipe(catchError((err: HttpErrorResponse) => {
+        console.error("Error while creating group: " + err.error);
+        return of(undefined);
+      }));
   }
 
   createPlayer(player: PlayerToCreate): Observable<Player> {

@@ -1,12 +1,9 @@
+use diesel;
+use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::schema::{groups, player_in_groups, players};
-
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
-pub struct Group {
-    pub id: i32,
-    pub name: String,
-}
+use crate::schema::{player_in_groups, players};
+use crate::DbConn;
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name = "players"]
@@ -23,11 +20,11 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn from_creatable_player(id: i32, cp: CreatablePlayer) -> Player {
+    pub fn new(id: i32, abbreviation: String, name: String) -> Player {
         Player {
             id,
-            abbreviation: cp.abbreviation,
-            name: cp.name,
+            abbreviation,
+            name,
         }
     }
 }
@@ -36,4 +33,29 @@ impl Player {
 pub struct PlayerInGroup {
     pub group_id: i32,
     pub player_id: i32,
+}
+
+pub fn get_players(conn: DbConn) -> Vec<Player> {
+    use crate::schema::players::dsl::*;
+
+    players.load::<Player>(&conn.0).unwrap_or_else(|e| {
+        println!("Error while querying players from database: {}", e);
+        Vec::new()
+    })
+}
+
+pub fn insert_player(conn: DbConn, player: CreatablePlayer) -> Result<Player, String> {
+    use crate::schema::players::dsl::*;
+
+    diesel::insert_into(players)
+        .values(&player)
+        .returning(id)
+        .get_result(&conn.0)
+        .map_err(|_| {
+            format!(
+                "Error inserting player with abbreviation {} into db",
+                &player.abbreviation
+            )
+        })
+        .map(|new_player_id| Player::new(new_player_id, player.abbreviation, player.name))
 }

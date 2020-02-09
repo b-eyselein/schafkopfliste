@@ -4,21 +4,27 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {IndexComponent} from './index/index.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NewPlayerFormComponent} from './new-player-form/new-player-form.component';
+import {CreatePlayerComponent} from './_forms/create-player/create-player.component';
 import {SessionComponent} from './session/session.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {PlayerListComponent} from './player-list/player-list.component';
-import {LoginFormComponent} from './login-form/login-form.component';
+import {LoginFormComponent} from './_forms/login-form/login-form.component';
 import {JwtInterceptor} from "./_helpers/jwt.interceptor";
+import { GroupsComponent } from './groups/groups.component';
+import { CreateGroupComponent } from './_forms/create-group/create-group.component';
+import { GroupComponent } from './group/group.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IndexComponent,
-    NewPlayerFormComponent,
+    CreatePlayerComponent,
     SessionComponent,
     PlayerListComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    GroupsComponent,
+    CreateGroupComponent,
+    GroupComponent
   ],
   imports: [
     BrowserModule,

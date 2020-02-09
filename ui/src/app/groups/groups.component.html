@@ -1,0 +1,37 @@
+<div class="container">
+
+  <h1 class="title is-3 has-text-centered">Gruppen</h1>
+
+  <div class="columns is-multiline" *ngIf="groups; else loadingGroupsBlock">
+
+    <ng-container *ngIf="groups.length > 0; else noGroupsFoundBlock">
+
+      <div class="column is-one-third-desktop" *ngFor="let group of groups">
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">{{group.name}}</p>
+          </header>
+          <div class="card-content"></div>
+          <footer class="card-footer">
+            <a class="card-footer-item" [routerLink]="[group.id]">Zur Gruppe</a>
+          </footer>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+  <hr>
+
+  <a class="button is-link is-fullwidth" routerLink="./createForm">Gruppe anlegen</a>
+
+</div>
+
+<ng-template #loadingGroupsBlock>
+  <div class="notification is-primary has-text-centered">Lade Gruppen...</div>
+</ng-template>
+
+<ng-template #noGroupsFoundBlock>
+  <div class="notification is-danger has-text-centered">Keine Gruppen gefunden!</div>
+</ng-template>

@@ -1,9 +1,8 @@
 use bcrypt::verify;
 use rocket_contrib::json::Json;
 
-use crate::dao::user_by_username;
 use crate::jwt_helpers::generate_token;
-use crate::models::user::{Credentials, UserWithToken};
+use crate::models::user::{user_by_username, Credentials, UserWithToken};
 use crate::DbConn;
 
 #[put("/authentication", format = "application/json", data = "<credentials>")]

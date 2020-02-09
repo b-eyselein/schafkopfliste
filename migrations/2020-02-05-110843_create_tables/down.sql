@@ -8,8 +8,8 @@ drop table if exists rule_sets;
 
 drop table if exists player_in_groups;
 
-drop table if exists players;
-
 drop table if exists groups;
 
 drop table if exists users;
+
+drop table if exists players;
