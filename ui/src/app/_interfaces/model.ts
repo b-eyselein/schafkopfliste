@@ -28,5 +28,5 @@ export interface Selectable<T> {
 }
 
 export function toSelectable<T>(value: T, isSelected: boolean = false): Selectable<T> {
-  return {value, isSelected}
+  return {value, isSelected};
 }

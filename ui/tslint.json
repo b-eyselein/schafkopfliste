@@ -12,13 +12,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "sk",
+      "skl",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "sk",
+      "skl",
       "kebab-case"
     ],
     "import-blacklist": [

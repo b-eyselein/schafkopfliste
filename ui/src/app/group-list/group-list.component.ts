@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {GroupWithPlayerCount} from '../_interfaces/group';
+import {Group, GroupWithPlayerCount} from '../_interfaces/group';
 
-@Component({templateUrl: './groups.component.html'})
-export class GroupsComponent implements OnInit {
+@Component({templateUrl: './group-list.component.html'})
+export class GroupListComponent implements OnInit {
 
   groups: GroupWithPlayerCount[];
 
@@ -15,4 +15,7 @@ export class GroupsComponent implements OnInit {
       .subscribe((groups) => this.groups = groups);
   }
 
+  onGroupCreated(group: Group) {
+    this.groups.push({...group, playerCount: 0});
+  }
 }

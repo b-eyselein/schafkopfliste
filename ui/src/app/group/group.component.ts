@@ -15,14 +15,14 @@ export class GroupComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
-      const groupId = parseInt(paramMap.get('groupId'));
+      const groupId = parseInt(paramMap.get('groupId'), 2);
 
       this.apiService.getGroup(groupId)
         .subscribe((group) => this.group = group);
 
       this.apiService.getPlayersInGroup(groupId)
         .subscribe((players) => this.players = players);
-    })
+    });
   }
 
 }

@@ -3,7 +3,7 @@ import {AuthenticationService} from './_services/authentication.service';
 import {User} from './_interfaces/user';
 
 @Component({
-  selector: 'sk-root',
+  selector: 'skl-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })

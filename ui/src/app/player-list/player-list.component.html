@@ -23,9 +23,7 @@
 
   <hr>
 
-  <div class="buttons">
-    <a routerLink="/newPlayerForm" class="button is-link is-fullwidth">Neuen Spieler anlegen</a>
-  </div>
+  <skl-create-player (playerCreated)="onPlayerCreated($event)"></skl-create-player>
 
 </div>
 

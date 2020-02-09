@@ -11,24 +11,10 @@
       </div>
     </div>
 
-    <div class="columns">
-      <div class="column">
-        <a class="button is-primary is-fullwidth" routerLink="..">Zurück zur Gruppenübersicht</a>
-      </div>
-      <div class="column">
-        <button class="button is-link is-fullwidth">Gruppe anlegen</button>
-      </div>
+    <div class="buttons">
+      <button class="button is-link is-fullwidth">Gruppe anlegen</button>
     </div>
 
   </form>
-
-  <ng-container *ngIf="createdGroup">
-    <hr>
-
-    <div class="notification is-success">
-      <button class="delete" (click)="createdGroup = undefined"></button>
-      Gruppe {{createdGroup.name}} wurde erstellt.
-    </div>
-  </ng-container>
 
 </div>

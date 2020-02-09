@@ -1,13 +1,17 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {Player, PlayerToCreate} from '../../_interfaces/player';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ApiService} from "../../_services/api.service";
+import {ApiService} from '../../_services/api.service';
 
-@Component({templateUrl: './create-player.component.html'})
+@Component({
+  selector: 'skl-create-player',
+  templateUrl: './create-player.component.html',
+})
 export class CreatePlayerComponent {
 
   playerForm: FormGroup;
-  createdPlayer: Player | undefined;
+
+  @Output() playerCreated = new EventEmitter<Player>();
 
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     this.playerForm = this.fb.group({
@@ -48,7 +52,10 @@ export class CreatePlayerComponent {
     };
 
     this.apiService.createPlayer(player)
-      .subscribe((result) => this.createdPlayer = result);
+      .subscribe((result) => {
+        this.playerForm.reset();
+        this.playerCreated.emit(result);
+      });
   }
 
 }

@@ -1,24 +1,24 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import {CreatableGroup, Group, GroupWithPlayerCount} from "../_interfaces/group";
-import {CreatableSession} from "../_interfaces/model";
-import {Player, PlayerToCreate} from "../_interfaces/player";
-import {Observable, of} from "rxjs";
-import {environment} from "../../environments/environment";
-import {catchError} from "rxjs/operators";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {CreatableGroup, Group, GroupWithPlayerCount} from '../_interfaces/group';
+import {CreatableSession} from '../_interfaces/model';
+import {Player, PlayerToCreate} from '../_interfaces/player';
+import {Observable, of} from 'rxjs';
+import {environment} from '../../environments/environment';
+import {catchError} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  private readonly baseUrl: string = environment.serverUrl;
-
   static putHttpOptions: { headers: HttpHeaders } = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     })
   };
+
+  private readonly baseUrl: string = environment.serverUrl;
 
   constructor(private httpClient: HttpClient) {
   }
@@ -60,7 +60,7 @@ export class ApiService {
 
     return this.httpClient.put<Group>(url, group, ApiService.putHttpOptions)
       .pipe(catchError((err: HttpErrorResponse) => {
-        console.error("Error while creating group: " + err.error);
+        console.error('Error while creating group: ' + err.error);
         return of(undefined);
       }));
   }

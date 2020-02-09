@@ -15,4 +15,7 @@ export class PlayerListComponent implements OnInit {
       .subscribe((players) => this.players = players);
   }
 
+  onPlayerCreated(player: Player) {
+    this.players.push(player);
+  }
 }

@@ -13,7 +13,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "sk",
+      "prefix": "skl",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

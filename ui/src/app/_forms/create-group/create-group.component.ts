@@ -1,13 +1,17 @@
-import {Component} from '@angular/core';
-import {ApiService} from "../../_services/api.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {CreatableGroup, Group} from "../../_interfaces/group";
+import {Component, EventEmitter, Output} from '@angular/core';
+import {ApiService} from '../../_services/api.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {CreatableGroup, Group} from '../../_interfaces/group';
 
-@Component({templateUrl: './create-group.component.html'})
+@Component({
+  selector: 'skl-create-group',
+  templateUrl: './create-group.component.html'
+})
 export class CreateGroupComponent {
 
   groupForm: FormGroup;
-  createdGroup: Group | undefined;
+
+  @Output() groupCreated = new EventEmitter<Group>();
 
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     this.groupForm = this.fb.group({
@@ -26,7 +30,7 @@ export class CreateGroupComponent {
     };
 
     this.apiService.createGroup(group)
-      .subscribe((group) => this.createdGroup = group);
+      .subscribe((result) => this.groupCreated.emit(result));
   }
 
 }
