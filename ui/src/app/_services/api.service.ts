@@ -6,6 +6,7 @@ import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError, tap} from 'rxjs/operators';
+import {RuleSet} from '../_interfaces/ruleset';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +40,12 @@ export class ApiService {
     const url = `${this.baseUrl}/api/groups/${groupId}`;
 
     return this.httpClient.get<Group | undefined>(url);
+  }
+
+  getRuleSets(): Observable<RuleSet[]> {
+    const url = `${this.baseUrl}/api/ruleSets`;
+
+    return this.httpClient.get<RuleSet[]>(url);
   }
 
   getPlayers(): Observable<Player[]> {
