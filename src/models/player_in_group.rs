@@ -1,8 +1,17 @@
 use diesel;
 use diesel::prelude::*;
+use serde::Serialize;
 
 use crate::schema::player_in_groups;
 use crate::DbConn;
+
+table! {
+    groups_with_player_count (id) {
+        id -> Int4,
+        name -> Varchar,
+        player_count -> BigInt,
+    }
+}
 
 #[derive(Debug, Queryable, Insertable)]
 pub struct PlayerInGroup {
@@ -10,14 +19,20 @@ pub struct PlayerInGroup {
     pub player_id: i32,
 }
 
-pub fn get_player_count_in_group(conn: DbConn, the_group_id: i32) -> i64 {
-    use crate::schema::player_in_groups::dsl::*;
+#[derive(Debug, Serialize, Queryable)]
+#[serde(rename_all = "camelCase")]
+pub struct GroupWithPlayerCount {
+    id: i32,
+    name: String,
+    player_count: i64,
+}
 
-    player_in_groups
-        .filter(group_id.eq(the_group_id))
-        .count()
-        .first(&conn.0)
-        .unwrap_or(0)
+pub fn get_groups_with_player_count(conn: DbConn) -> Vec<GroupWithPlayerCount> {
+    use crate::models::player_in_group::groups_with_player_count::dsl::*;
+
+    groups_with_player_count
+        .load::<GroupWithPlayerCount>(&conn.0)
+        .unwrap_or(Vec::new())
 }
 
 #[allow(dead_code)]

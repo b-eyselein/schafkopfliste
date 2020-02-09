@@ -56,6 +56,12 @@ create table if not exists sessions (
     foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade
 );
 
+create or replace view groups_with_player_count as
+select g.id, g.name, count(player_id) as player_count
+from groups g
+         left join player_in_groups pig on g.id = pig.group_id
+group by g.id;
+
 -- Inserts
 
 insert into users (username, password_hash, player_id)

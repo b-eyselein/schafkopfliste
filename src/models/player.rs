@@ -12,7 +12,7 @@ pub struct CreatablePlayer {
     pub name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
 pub struct Player {
     pub id: i32,
     pub abbreviation: String,

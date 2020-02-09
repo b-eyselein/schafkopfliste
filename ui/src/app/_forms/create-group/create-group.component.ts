@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {ApiService} from "../../_services/api.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {CreatableGroup, Group} from "../../_interfaces/model";
+import {CreatableGroup, Group} from "../../_interfaces/group";
 
 @Component({templateUrl: './create-group.component.html'})
 export class CreateGroupComponent {
