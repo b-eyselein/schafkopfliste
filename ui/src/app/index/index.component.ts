@@ -52,6 +52,7 @@ export class IndexComponent implements OnInit {
     const today: Date = new Date();
 
     const session: CreatableSession = {
+      groupId: this.group.id,
       date: `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`,
       firstPlayerId: this.firstDealer.id,
       secondPlayerId: this.firstPreHand.id,

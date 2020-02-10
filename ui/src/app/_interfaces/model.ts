@@ -1,4 +1,5 @@
 export interface CreatableSession {
+  groupId: number;
   date: string;
   firstPlayerId: number;
   secondPlayerId: number;
@@ -8,7 +9,7 @@ export interface CreatableSession {
 }
 
 export interface Session extends CreatableSession {
-  uuid: string;
+  serialNumber: number;
 }
 
 export interface Game {

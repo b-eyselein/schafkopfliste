@@ -1,8 +1,8 @@
 use chrono::NaiveDate;
 use diesel;
+use diesel::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
-use diesel::PgConnection;
 use serde::{Deserialize, Serialize};
 
 use crate::schema::sessions;
@@ -20,6 +20,7 @@ pub struct CreatableSession {
 }
 
 #[derive(Debug, Serialize, Queryable, Insertable)]
+#[serde(rename_all = "camelCase")]
 pub struct Session {
     serial_number: i32,
     group_id: i32,

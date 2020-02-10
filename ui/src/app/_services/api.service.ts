@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayers, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
+import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {CreatableSession} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
