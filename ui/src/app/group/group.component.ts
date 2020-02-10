@@ -23,12 +23,11 @@ export class GroupComponent implements OnInit, OnChanges {
     this.route.paramMap.subscribe((paramMap) => {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 
-      this.apiService.getGroup(groupId)
-        .subscribe((group) => this.group = group);
+      this.apiService.getGroupWithPlayers(groupId)
+        .subscribe((groupWithPlayers) => {
+          this.group = groupWithPlayers.group;
+          this.players = groupWithPlayers.players;
 
-      this.apiService.getPlayersInGroup(groupId)
-        .subscribe((players) => {
-          this.players = players;
           this.updateMembersIds();
         });
     });
@@ -41,4 +40,5 @@ export class GroupComponent implements OnInit, OnChanges {
   onPlayerAdded(player: Player): void {
     this.players.push(player);
   }
+
 }

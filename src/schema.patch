@@ -14,7 +14,7 @@ index 870afcc..def9bdc 100644
  
  table! {
 +    use diesel::sql_types::*;
-+    use crate::models::game::*;
++    use crate::models::game::Count_laufende;
 +
      rule_sets (id) {
          id -> Int4,

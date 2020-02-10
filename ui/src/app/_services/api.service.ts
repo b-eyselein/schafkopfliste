@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {CreatableGroup, Group, GroupWithPlayerCount} from '../_interfaces/group';
+import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayers} from '../_interfaces/group';
 import {CreatableSession} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
@@ -34,6 +34,12 @@ export class ApiService {
     const url = `${this.baseUrl}/api/groupsWithPlayerCount`;
 
     return this.httpClient.get<GroupWithPlayerCount[]>(url);
+  }
+
+  getGroupWithPlayers(groupId: number): Observable<GroupWithPlayers | undefined> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/groupWithPlayers`;
+
+    return this.httpClient.get<GroupWithPlayers | undefined>(url);
   }
 
   getGroup(groupId: number): Observable<Group | undefined> {

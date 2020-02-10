@@ -48,8 +48,12 @@ pub struct RuleSet {
     pub farb_geier_allowed: bool,
 }
 
-pub fn get_rule_sets(conn: DbConn) -> Vec<RuleSet> {
-    use crate::schema::rule_sets::dsl::*;
+pub fn get_rule_sets(conn: &DbConn) -> Vec<RuleSet> {
+    rule_sets::table
+        .load::<RuleSet>(&conn.0)
+        .unwrap_or(Vec::new())
+}
 
-    rule_sets.load::<RuleSet>(&conn.0).unwrap_or(Vec::new())
+pub fn select_rule_set_by_id(conn: &DbConn, id: i32) -> Option<RuleSet> {
+    rule_sets::table.find(id).first(&conn.0).ok()
 }

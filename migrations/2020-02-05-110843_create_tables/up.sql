@@ -2,6 +2,19 @@
 
 create type count_laufende as enum ('always', 'only_losers', 'never');
 
+create table if not exists rule_sets (
+    id                 serial primary key not null,
+    name               varchar(100)       not null,
+
+    count_laufende     count_laufende     not null default 'always',
+    geier_allowed      boolean            not null default false,
+    hochzeit_allowed   boolean            not null default false,
+    bettel_allowed     boolean            not null default false,
+    ramsch_allowed     boolean            not null default false,
+    farb_wenz_allowed  boolean            not null default false,
+    farb_geier_allowed boolean            not null default false
+);
+
 create table if not exists players (
     id           serial primary key not null,
     abbreviation varchar(5)         not null,
@@ -17,8 +30,11 @@ create table if not exists users (
 );
 
 create table groups (
-    id   serial primary key  not null,
-    name varchar(100) unique not null
+    id                  serial primary key  not null,
+    name                varchar(100) unique not null,
+    default_rule_set_id integer,
+
+    foreign key (default_rule_set_id) references rule_sets on update cascade on delete set null
 );
 
 create table if not exists player_in_groups (
@@ -30,18 +46,6 @@ create table if not exists player_in_groups (
     foreign key (player_id) references players (id) on update cascade on delete cascade
 );
 
-create table if not exists rule_sets (
-    id                 serial primary key not null,
-    name               varchar(100)       not null,
-
-    count_laufende     count_laufende     not null default 'always',
-    geier_allowed      boolean            not null default false,
-    hochzeit_allowed   boolean            not null default false,
-    bettel_allowed     boolean            not null default false,
-    ramsch_allowed     boolean            not null default false,
-    farb_wenz_allowed  boolean            not null default false,
-    farb_geier_allowed boolean            not null default false
-);
 
 create table if not exists sessions (
     uuid             varchar(20) primary key not null,
@@ -60,25 +64,34 @@ create table if not exists sessions (
 );
 
 create or replace view groups_with_player_count as
-select g.id, g.name, count(player_id) as player_count
+select g.id, g.name, g.default_rule_set_id, count(player_id) as player_count
 from groups g
          left join player_in_groups pig on g.id = pig.group_id
 group by g.id;
 
 -- Inserts
 
-insert into users (username, password_hash, player_id)
-values ('default', '$2b$12$7fdsVDDPlhVmAy.ilsmyTeE7E.e2YtwI7IkQ5MGaDVsE5wDm58vGq', null);
-
-insert into groups (id, name)
-values (1, 'LS 6 Info Uni Wue');
-
-insert into players (id, abbreviation, name)
-values (1, 'BE', 'Björn Eyselein');
-
-insert into player_in_groups
-values (1, 1);
-
 insert into rule_sets (id, name, count_laufende)
 values (1, 'Standard', 'always'),
        (2, 'LS 6 Info Uni Wü', 'only_losers');
+
+insert into users (username, password_hash, player_id)
+values ('default', '$2b$12$7fdsVDDPlhVmAy.ilsmyTeE7E.e2YtwI7IkQ5MGaDVsE5wDm58vGq', null);
+
+insert into groups (id, name, default_rule_set_id)
+values (1, 'LS 6 Info Uni Wue', 2);
+
+insert into players (id, abbreviation, name)
+values (1, 'BE', 'Björn Eyselein'),
+       (2, 'AG', 'Alexander Gehrke'),
+       (3, 'JK', 'Jonathan Krebs'),
+       (4, 'MK', 'Markus Krug'),
+       (5, 'CW', 'Christoph Wick');
+
+insert into player_in_groups (group_id, player_id)
+values (1, 1),
+       (1, 2),
+       (1, 3),
+       (1, 4),
+       (1, 5);
+

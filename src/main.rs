@@ -38,6 +38,7 @@ fn main() {
         my_routes::game_routes::index,
         my_routes::group_routes::groups,
         my_routes::group_routes::groups_with_player_count,
+        my_routes::group_routes::route_group_with_players_by_id,
         my_routes::group_routes::create_group,
         my_routes::group_routes::route_add_player_to_group,
         my_routes::group_routes::group_by_id,

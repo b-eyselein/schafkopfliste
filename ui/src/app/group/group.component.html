@@ -1,7 +1,6 @@
 <div class="container is-fluid">
 
   <ng-container *ngIf="group">
-
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Spieler</h1>
 
     <div class="columns">
@@ -13,6 +12,13 @@
       </div>
 
       <div class="column">
+
+        <ng-container *ngIf="group.default_rule_set_id">
+          <h2 class="subtitle is-3 has-text-centered">Standardregelsatz: {{group.default_rule_set_id}}</h2>
+        </ng-container>
+
+        <hr>
+
         <ng-container *ngIf="players; else loadingPlayersBlock">
           <div class="columns is-multiline" *ngIf="players.length > 0; else noPlayersFoundBlock">
             <div class="column is-one-quarter" *ngFor="let player of players">
@@ -20,9 +26,13 @@
             </div>
           </div>
         </ng-container>
+
+        <hr>
+
+        <button class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung starten</button>
+
       </div>
     </div>
-
   </ng-container>
 
 </div>

@@ -25,14 +25,14 @@ export class CreateGroupComponent {
       return;
     }
 
-    const group: CreatableGroup = {
-      name: this.groupForm.controls.name.value
-    };
+    const group: CreatableGroup = {name: this.groupForm.controls.name.value, default_rule_set_id: undefined};
 
     this.apiService.createGroup(group)
       .subscribe((result) => {
-        this.groupForm.reset();
-        this.groupCreated.emit(result);
+        if (group) {
+          this.groupForm.reset();
+          this.groupCreated.emit(result);
+        }
       });
   }
 

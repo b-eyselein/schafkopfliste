@@ -3,11 +3,14 @@ import {Router} from '@angular/router';
 import {CreatableSession, GameType, Selectable} from '../_interfaces/model';
 import {ApiService} from '../_services/api.service';
 import {Player} from '../_interfaces/player';
+import {Group} from '../_interfaces/group';
 
 @Component({templateUrl: './index.component.html'})
 export class IndexComponent implements OnInit {
 
   gameTypes: Selectable<GameType>[];
+
+  group: Group | undefined;
 
   players: Player[];
 

@@ -29,16 +29,11 @@ impl Player {
     }
 }
 
-pub fn get_players(conn: DbConn) -> Vec<Player> {
-    use crate::schema::players::dsl::*;
-
-    players.load::<Player>(&conn.0).unwrap_or_else(|e| {
-        println!("Error while querying players from database: {}", e);
-        Vec::new()
-    })
+pub fn get_players(conn: &DbConn) -> Vec<Player> {
+    players::table.load::<Player>(&conn.0).unwrap_or(Vec::new())
 }
 
-pub fn insert_player(conn: DbConn, player: CreatablePlayer) -> Result<Player, String> {
+pub fn insert_player(conn: &DbConn, player: CreatablePlayer) -> Result<Player, String> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)

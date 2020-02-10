@@ -2,6 +2,7 @@ table! {
     groups (id) {
         id -> Int4,
         name -> Varchar,
+        default_rule_set_id -> Nullable<Int4>,
     }
 }
 
@@ -22,7 +23,7 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::game::*;
+    use crate::models::game::Count_laufende;
 
     rule_sets (id) {
         id -> Int4,
@@ -57,6 +58,7 @@ table! {
     }
 }
 
+joinable!(groups -> rule_sets (default_rule_set_id));
 joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));
 joinable!(sessions -> rule_sets (rule_set_id));

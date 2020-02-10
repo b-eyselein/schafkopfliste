@@ -9,6 +9,7 @@ import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
 import { AddPlayerToGroupComponent } from './_forms/add-player-to-group/add-player-to-group.component';
 import { RuleSetListComponent } from './rule-set-list/rule-set-list.component';
+import { NewSessionComponent } from './new-session/new-session.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { RuleSetListComponent } from './rule-set-list/rule-set-list.component';
     CreateGroupComponent,
     AddPlayerToGroupComponent,
     RuleSetListComponent,
+    NewSessionComponent,
   ],
   imports: [
     BrowserModule,

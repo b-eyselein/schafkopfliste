@@ -2,6 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use serde::Serialize;
 
+use crate::models::game::{select_rule_set_by_id, RuleSet};
 use crate::models::player::Player;
 use crate::schema::player_in_groups;
 use crate::DbConn;
@@ -10,14 +11,15 @@ table! {
     groups_with_player_count (id) {
         id -> Int4,
         name -> Varchar,
+        default_rule_set_id -> Nullable<Int4>,
         player_count -> BigInt,
     }
 }
 
 #[derive(Debug, Queryable, Insertable)]
 pub struct PlayerInGroup {
-    pub group_id: i32,
-    pub player_id: i32,
+    group_id: i32,
+    player_id: i32,
 }
 
 impl PlayerInGroup {
@@ -34,18 +36,41 @@ impl PlayerInGroup {
 pub struct GroupWithPlayerCount {
     id: i32,
     name: String,
+    default_rule_set_id: Option<i32>,
     player_count: i64,
 }
 
-pub fn get_groups_with_player_count(conn: DbConn) -> Vec<GroupWithPlayerCount> {
-    use crate::models::player_in_group::groups_with_player_count::dsl::*;
+#[derive(Debug, Serialize)]
+pub struct GroupWithPlayersAndRuleSet {
+    id: i32,
+    name: String,
+    default_rule_set: Option<RuleSet>,
+    players: Vec<Player>,
+}
 
-    groups_with_player_count
+impl GroupWithPlayersAndRuleSet {
+    pub fn new(
+        id: i32,
+        name: String,
+        default_rule_set: Option<RuleSet>,
+        players: Vec<Player>,
+    ) -> GroupWithPlayersAndRuleSet {
+        GroupWithPlayersAndRuleSet {
+            id,
+            name,
+            default_rule_set,
+            players,
+        }
+    }
+}
+
+pub fn select_groups_with_player_count(conn: &DbConn) -> Vec<GroupWithPlayerCount> {
+    groups_with_player_count::table
         .load::<GroupWithPlayerCount>(&conn.0)
         .unwrap_or(Vec::new())
 }
 
-pub fn get_players_in_group(conn: DbConn, the_group_id: i32) -> Vec<Player> {
+pub fn select_players_in_group(conn: &DbConn, the_group_id: i32) -> Vec<Player> {
     use crate::schema::player_in_groups::dsl::*;
     use crate::schema::players::dsl::*;
 
@@ -55,6 +80,22 @@ pub fn get_players_in_group(conn: DbConn, the_group_id: i32) -> Vec<Player> {
         .select((id, abbreviation, name))
         .load::<Player>(&conn.0)
         .unwrap_or(Vec::new())
+}
+
+pub fn select_group_with_players_and_rule_set_by_id(
+    conn: &DbConn,
+    the_group_id: i32,
+) -> Option<GroupWithPlayersAndRuleSet> {
+    use crate::models::group::get_group;
+
+    get_group(&conn, the_group_id).map(|g| {
+        let default_rule_set = g
+            .default_rule_set_id
+            .and_then(|id| select_rule_set_by_id(conn, id));
+        let players = select_players_in_group(conn, the_group_id);
+
+        GroupWithPlayersAndRuleSet::new(g.id, g.name, default_rule_set, players)
+    })
 }
 
 pub fn add_player_to_group(conn: DbConn, group_id: i32, player_id: i32) -> bool {
