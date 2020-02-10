@@ -41,6 +41,7 @@ fn main() {
         my_routes::group_routes::create_group,
         my_routes::group_routes::route_add_player_to_group,
         my_routes::group_routes::group_by_id,
+        my_routes::game_routes::route_get_rule_sets,
         my_routes::game_routes::players_in_group,
         my_routes::game_routes::players,
         my_routes::game_routes::create_player,

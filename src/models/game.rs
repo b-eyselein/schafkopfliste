@@ -1,5 +1,9 @@
-use crate::schema::rule_sets;
+use diesel;
+use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
+
+use crate::schema::rule_sets;
+use crate::DbConn;
 
 #[allow(dead_code)]
 pub enum Suit {
@@ -42,4 +46,10 @@ pub struct RuleSet {
     pub ramsch_allowed: bool,
     pub farb_wenz_allowed: bool,
     pub farb_geier_allowed: bool,
+}
+
+pub fn get_rule_sets(conn: DbConn) -> Vec<RuleSet> {
+    use crate::schema::rule_sets::dsl::*;
+
+    rule_sets.load::<RuleSet>(&conn.0).unwrap_or(Vec::new())
 }

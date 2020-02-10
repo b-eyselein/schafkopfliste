@@ -2,6 +2,7 @@ use rocket_contrib::json::Json;
 use uuid::Uuid;
 
 use crate::jwt_helpers::MyJwtToken;
+use crate::models::game::{get_rule_sets, RuleSet};
 use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
 use crate::models::player_in_group::get_players_in_group;
 use crate::models::session::{CreatableSession, Session};
@@ -10,6 +11,11 @@ use crate::DbConn;
 #[get("/")]
 pub fn index(conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(conn))
+}
+
+#[get("/ruleSets")]
+pub fn route_get_rule_sets(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<RuleSet>> {
+    Json(get_rule_sets(conn))
 }
 
 #[get("/players")]
