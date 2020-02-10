@@ -39,8 +39,9 @@ table! {
 }
 
 table! {
-    sessions (uuid) {
-        uuid -> Varchar,
+    sessions (serial_number, group_id) {
+        serial_number -> Int4,
+        group_id -> Int4,
         date -> Date,
         first_player_id -> Int4,
         second_player_id -> Int4,
@@ -61,6 +62,7 @@ table! {
 joinable!(groups -> rule_sets (default_rule_set_id));
 joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));
+joinable!(sessions -> groups (group_id));
 joinable!(sessions -> rule_sets (rule_set_id));
 joinable!(users -> players (player_id));
 

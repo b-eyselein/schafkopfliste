@@ -1,4 +1,5 @@
 import {Player} from './player';
+import {RuleSet} from './ruleset';
 
 export interface CreatableGroup {
   name: string;
@@ -14,7 +15,9 @@ export interface GroupWithPlayerCount extends Group {
   playerCount?: number;
 }
 
-export interface GroupWithPlayers {
-  group: Group;
+export interface GroupWithPlayersAndRuleSet {
+  id: number;
+  name: string;
+  default_rule_set: RuleSet | undefined;
   players: Player[];
 }

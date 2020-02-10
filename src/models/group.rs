@@ -1,9 +1,7 @@
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::schema::groups;
-use crate::DbConn;
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name = "groups"]
@@ -29,21 +27,21 @@ impl Group {
     }
 }
 
-pub fn get_groups(conn: &DbConn) -> Vec<Group> {
-    groups::table.load(&conn.0).unwrap_or(Vec::new())
+pub fn get_groups(conn: &PgConnection) -> Vec<Group> {
+    groups::table.load(conn).unwrap_or(Vec::new())
 }
 
-pub fn get_group(conn: &DbConn, the_group_id: i32) -> Option<Group> {
-    groups::table.find(the_group_id).first(&conn.0).ok()
+pub fn get_group(conn: &PgConnection, group_id: i32) -> Option<Group> {
+    groups::table.find(group_id).first(conn).ok()
 }
 
-pub fn insert_group(conn: &DbConn, cg: CreatableGroup) -> Result<Group, String> {
+pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, String> {
     use crate::schema::groups::dsl::*;
 
     diesel::insert_into(groups)
         .values(&cg)
         .returning(id)
-        .get_result(&conn.0)
+        .get_result(conn)
         .map_err(|_| format!("Error while inserting group with name {} into db", cg.name))
         .map(|new_group_id| Group::new(new_group_id, cg.name))
 }

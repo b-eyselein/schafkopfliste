@@ -13,19 +13,17 @@
 
       <div class="column">
 
-        <ng-container *ngIf="group.default_rule_set_id">
-          <h2 class="subtitle is-3 has-text-centered">Standardregelsatz: {{group.default_rule_set_id}}</h2>
+        <ng-container *ngIf="group.default_rule_set">
+          <h2 class="subtitle is-3 has-text-centered">Standardregelsatz: {{group.default_rule_set.name}}</h2>
         </ng-container>
 
         <hr>
 
-        <ng-container *ngIf="players; else loadingPlayersBlock">
-          <div class="columns is-multiline" *ngIf="players.length > 0; else noPlayersFoundBlock">
-            <div class="column is-one-quarter" *ngFor="let player of players">
-              <div class="box is-fullwidth has-text-centered">{{player.name}}</div>
-            </div>
+        <div class="columns is-multiline" *ngIf="group.players.length > 0; else noPlayersFoundBlock">
+          <div class="column is-one-quarter" *ngFor="let player of group.players">
+            <div class="box is-fullwidth has-text-centered">{{player.name}}</div>
           </div>
-        </ng-container>
+        </div>
 
         <hr>
 
@@ -36,10 +34,6 @@
   </ng-container>
 
 </div>
-
-<ng-template #loadingPlayersBlock>
-  <div class="notification is-primary has-text-centered">Lade Spieler...</div>
-</ng-template>
 
 <ng-template #noPlayersFoundBlock>
   <div class="notification is-danger has-text-centered">Keine Spieler in dieser Gruppe gefunden!</div>

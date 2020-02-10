@@ -1,8 +1,22 @@
 <div class="container">
 
- <ng-container *ngIf="group">
+  <ng-container *ngIf="group; else loadingGroupBlock">
+
+    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
+
+    <form (ngSubmit)="createSession()" [formGroup]="sessionForm">
 
 
- </ng-container>
+    </form>
+
+    <hr>
+
+    {{group | json}}
+
+  </ng-container>
 
 </div>
+
+<ng-template #loadingGroupBlock>
+  <div class="notification is-primary is-fullwidth">Lade Daten...</div>
+</ng-template>

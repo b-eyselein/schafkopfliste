@@ -1,9 +1,7 @@
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::schema::players;
-use crate::DbConn;
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name = "players"]
@@ -29,17 +27,17 @@ impl Player {
     }
 }
 
-pub fn get_players(conn: &DbConn) -> Vec<Player> {
-    players::table.load::<Player>(&conn.0).unwrap_or(Vec::new())
+pub fn get_players(conn: &PgConnection) -> Vec<Player> {
+    players::table.load::<Player>(conn).unwrap_or(Vec::new())
 }
 
-pub fn insert_player(conn: &DbConn, player: CreatablePlayer) -> Result<Player, String> {
+pub fn insert_player(conn: &PgConnection, player: CreatablePlayer) -> Result<Player, String> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)
         .values(&player)
         .returning(id)
-        .get_result(&conn.0)
+        .get_result(conn)
         .map_err(|_| {
             format!(
                 "Error inserting player with abbreviation {} into db",

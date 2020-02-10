@@ -1,25 +1,33 @@
 import {Component, OnInit} from '@angular/core';
-import {Group} from '../_interfaces/group';
-import {Player} from '../_interfaces/player';
+import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
 
-  group: Group;
-  players: Player[];
+  group: GroupWithPlayersAndRuleSet;
 
-  constructor(private route: ActivatedRoute, private apiService: ApiService) {
+  sessionForm: FormGroup;
+
+  constructor(private fb: FormBuilder, private route: ActivatedRoute, private apiService: ApiService) {
+    this.sessionForm = fb.group({
+      ruleSetId: [null, Validators.required]
+    });
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 
-      this.apiService.getGroup(groupId).subscribe((g) => this.group = g);
-      this.apiService.getPlayersInGroup(groupId).subscribe((ps) => this.players = ps);
+      this.apiService.getGroupWithPlayersAndRuleSet(groupId)
+        .subscribe((g) => this.group = g);
     });
+  }
+
+  createSession(): void {
+    console.warn('TODO: create session...');
   }
 
 }

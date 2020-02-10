@@ -1,9 +1,7 @@
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::schema::rule_sets;
-use crate::DbConn;
 
 #[allow(dead_code)]
 pub enum Suit {
@@ -48,12 +46,10 @@ pub struct RuleSet {
     pub farb_geier_allowed: bool,
 }
 
-pub fn get_rule_sets(conn: &DbConn) -> Vec<RuleSet> {
-    rule_sets::table
-        .load::<RuleSet>(&conn.0)
-        .unwrap_or(Vec::new())
+pub fn get_rule_sets(conn: &PgConnection) -> Vec<RuleSet> {
+    rule_sets::table.load::<RuleSet>(conn).unwrap_or(Vec::new())
 }
 
-pub fn select_rule_set_by_id(conn: &DbConn, id: i32) -> Option<RuleSet> {
-    rule_sets::table.find(id).first(&conn.0).ok()
+pub fn select_rule_set_by_id(conn: &PgConnection, id: i32) -> Option<RuleSet> {
+    rule_sets::table.find(id).first(conn).ok()
 }

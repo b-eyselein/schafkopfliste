@@ -10,7 +10,7 @@ pub fn authenticate(
     conn: DbConn,
     credentials: Json<Credentials>,
 ) -> Result<Json<UserWithToken>, String> {
-    match user_by_username(conn, &credentials.username) {
+    match user_by_username(&conn.0, &credentials.username) {
         None => Err("This combination of username and password is not valid!".into()),
         Some(user) => {
             let pw = credentials.password.clone();

@@ -1,11 +1,9 @@
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*, PgConnection};
 use serde::Serialize;
 
 use crate::models::game::{select_rule_set_by_id, RuleSet};
 use crate::models::player::Player;
 use crate::schema::player_in_groups;
-use crate::DbConn;
 
 table! {
     groups_with_player_count (id) {
@@ -64,13 +62,13 @@ impl GroupWithPlayersAndRuleSet {
     }
 }
 
-pub fn select_groups_with_player_count(conn: &DbConn) -> Vec<GroupWithPlayerCount> {
+pub fn select_groups_with_player_count(conn: &PgConnection) -> Vec<GroupWithPlayerCount> {
     groups_with_player_count::table
-        .load::<GroupWithPlayerCount>(&conn.0)
+        .load::<GroupWithPlayerCount>(conn)
         .unwrap_or(Vec::new())
 }
 
-pub fn select_players_in_group(conn: &DbConn, the_group_id: i32) -> Vec<Player> {
+pub fn select_players_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<Player> {
     use crate::schema::player_in_groups::dsl::*;
     use crate::schema::players::dsl::*;
 
@@ -78,17 +76,17 @@ pub fn select_players_in_group(conn: &DbConn, the_group_id: i32) -> Vec<Player> 
         .filter(group_id.eq(the_group_id))
         .inner_join(players.on(player_id.eq(id)))
         .select((id, abbreviation, name))
-        .load::<Player>(&conn.0)
+        .load::<Player>(conn)
         .unwrap_or(Vec::new())
 }
 
 pub fn select_group_with_players_and_rule_set_by_id(
-    conn: &DbConn,
+    conn: &PgConnection,
     the_group_id: i32,
 ) -> Option<GroupWithPlayersAndRuleSet> {
     use crate::models::group::get_group;
 
-    get_group(&conn, the_group_id).map(|g| {
+    get_group(conn, the_group_id).map(|g| {
         let default_rule_set = g
             .default_rule_set_id
             .and_then(|id| select_rule_set_by_id(conn, id));
@@ -98,10 +96,10 @@ pub fn select_group_with_players_and_rule_set_by_id(
     })
 }
 
-pub fn add_player_to_group(conn: DbConn, group_id: i32, player_id: i32) -> bool {
+pub fn add_player_to_group(conn: &PgConnection, group_id: i32, player_id: i32) -> bool {
     let inserted_count = diesel::insert_into(player_in_groups::table)
         .values(PlayerInGroup::new(group_id, player_id))
-        .execute(&conn.0);
+        .execute(conn);
 
     match inserted_count {
         Ok(1) => true,
@@ -110,12 +108,12 @@ pub fn add_player_to_group(conn: DbConn, group_id: i32, player_id: i32) -> bool 
 }
 
 #[allow(dead_code)]
-pub fn get_player_ids_in_group(conn: DbConn, the_group_id: i32) -> Vec<i32> {
+pub fn get_player_ids_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<i32> {
     use crate::schema::player_in_groups::dsl::*;
 
     player_in_groups
         .filter(group_id.eq(the_group_id))
         .select(player_id)
-        .load::<i32>(&conn.0)
+        .load::<i32>(conn)
         .unwrap_or(Vec::new())
 }

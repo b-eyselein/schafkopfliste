@@ -1,9 +1,7 @@
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::schema::users;
-use crate::DbConn;
 
 #[derive(Debug, Serialize, Insertable, Queryable)]
 pub struct User {
@@ -41,8 +39,8 @@ impl Claims {
     }
 }
 
-pub fn user_by_username(conn: DbConn, name: &String) -> Option<User> {
+pub fn user_by_username(conn: &PgConnection, name: &String) -> Option<User> {
     use crate::schema::users::dsl::*;
 
-    users.filter(username.eq(&name)).first::<User>(&conn.0).ok()
+    users.filter(username.eq(&name)).first::<User>(conn).ok()
 }

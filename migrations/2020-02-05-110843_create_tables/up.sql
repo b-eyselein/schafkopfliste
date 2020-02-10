@@ -48,14 +48,17 @@ create table if not exists player_in_groups (
 
 
 create table if not exists sessions (
-    uuid             varchar(20) primary key not null,
-    date             date                    not null,
-    first_player_id  integer                 not null,
-    second_player_id integer                 not null,
-    third_player_id  integer                 not null,
-    fourth_player_id integer                 not null,
-    rule_set_id      integer                 not null,
+    serial_number    int     not null,
+    group_id         int     not null,
+    date             date    not null,
+    first_player_id  integer not null,
+    second_player_id integer not null,
+    third_player_id  integer not null,
+    fourth_player_id integer not null,
+    rule_set_id      integer not null,
 
+    primary key (serial_number, group_id),
+    foreign key (group_id) references groups (id) on delete cascade on update cascade,
     foreign key (first_player_id) references players (id) on update cascade on delete cascade,
     foreign key (second_player_id) references players (id) on update cascade on delete cascade,
     foreign key (third_player_id) references players (id) on update cascade on delete cascade,
