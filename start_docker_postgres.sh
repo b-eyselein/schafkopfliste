@@ -1,4 +1,4 @@
-docker run --name some-postgres -d \
+docker run --name skl-postgres -d \
   --restart unless-stopped \
   -p 5432:5432 \
   -e POSTGRES_PASSWORD=1234 \
