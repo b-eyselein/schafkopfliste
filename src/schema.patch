@@ -1,0 +1,28 @@
+diff --git a/src/schema.rs b/src/schema.rs
+index 870afcc..def9bdc 100644
+--- a/src/schema.rs
++++ b/src/schema.rs
+@@ -14,20 +14,23 @@ table! {
+ 
+ table! {
+     players (id) {
+         id -> Int4,
+         abbreviation -> Varchar,
+         name -> Varchar,
+     }
+ }
+ 
+ table! {
++    use diesel::sql_types::*;
++    use crate::models::game::*;
++
+     rule_sets (id) {
+         id -> Int4,
+         name -> Varchar,
+         count_laufende -> Count_laufende,
+         geier_allowed -> Bool,
+         hochzeit_allowed -> Bool,
+         bettel_allowed -> Bool,
+         ramsch_allowed -> Bool,
+         farb_wenz_allowed -> Bool,
+         farb_geier_allowed -> Bool,

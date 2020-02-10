@@ -21,6 +21,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::game::*;
+
     rule_sets (id) {
         id -> Int4,
         name -> Varchar,
