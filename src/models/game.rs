@@ -1,6 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 use crate::schema::rule_sets;
+use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
 pub enum Suit {
@@ -23,11 +22,20 @@ pub enum GameType {
     FarbGeier { suit: Suit },
 }
 
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[DieselType = "Count_laufende"]
+pub enum CountLaufende {
+    Always,
+    OnlyLosers,
+    Never,
+}
+
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[serde(rename_all = "camelCase")]
 pub struct RuleSet {
     pub id: i32,
     pub name: String,
+    pub count_laufende: CountLaufende,
     pub geier_allowed: bool,
     pub hochzeit_allowed: bool,
     pub bettel_allowed: bool,

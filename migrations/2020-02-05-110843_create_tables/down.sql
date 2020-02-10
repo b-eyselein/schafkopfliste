@@ -15,3 +15,5 @@ drop table if exists groups;
 drop table if exists users;
 
 drop table if exists players;
+
+drop type if exists count_laufende;

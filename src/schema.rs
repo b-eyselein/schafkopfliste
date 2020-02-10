@@ -24,6 +24,7 @@ table! {
     rule_sets (id) {
         id -> Int4,
         name -> Varchar,
+        count_laufende -> Count_laufende,
         geier_allowed -> Bool,
         hochzeit_allowed -> Bool,
         bettel_allowed -> Bool,

@@ -1,5 +1,7 @@
 -- Your SQL goes here
 
+create type count_laufende as enum ('always', 'only_losers', 'never');
+
 create table if not exists players (
     id           serial primary key not null,
     abbreviation varchar(5)         not null,
@@ -29,15 +31,16 @@ create table if not exists player_in_groups (
 );
 
 create table if not exists rule_sets (
-    id                 integer primary key not null,
-    name               varchar(100)        not null,
+    id                 serial primary key not null,
+    name               varchar(100)       not null,
 
-    geier_allowed      boolean             not null default false,
-    hochzeit_allowed   boolean             not null default false,
-    bettel_allowed     boolean             not null default false,
-    ramsch_allowed     boolean             not null default false,
-    farb_wenz_allowed  boolean             not null default false,
-    farb_geier_allowed boolean             not null default false
+    count_laufende     count_laufende     not null default 'always',
+    geier_allowed      boolean            not null default false,
+    hochzeit_allowed   boolean            not null default false,
+    bettel_allowed     boolean            not null default false,
+    ramsch_allowed     boolean            not null default false,
+    farb_wenz_allowed  boolean            not null default false,
+    farb_geier_allowed boolean            not null default false
 );
 
 create table if not exists sessions (
@@ -75,3 +78,7 @@ values (1, 'BE', 'Björn Eyselein');
 
 insert into player_in_groups
 values (1, 1);
+
+insert into rule_sets (id, name, count_laufende)
+values (1, 'Standard', 'always'),
+       (2, 'LS 6 Info Uni Wü', 'only_losers');

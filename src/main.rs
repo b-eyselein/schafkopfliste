@@ -3,6 +3,8 @@
 #[macro_use]
 extern crate diesel;
 #[macro_use]
+extern crate diesel_derive_enum;
+#[macro_use]
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
