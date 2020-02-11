@@ -2,14 +2,8 @@ use rocket::Route;
 use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::player::{get_players, Player};
 use crate::models::session::{insert_session, CreatableSession, Session};
 use crate::DbConn;
-
-#[get("/")]
-fn index(conn: DbConn) -> Json<Vec<Player>> {
-    Json(get_players(&conn.0))
-}
 
 #[put(
     "/groups/<group_id>/sessions",
@@ -26,5 +20,5 @@ fn create_session(
 }
 
 pub fn exported_routes() -> Vec<Route> {
-    routes![index, create_session]
+    routes![create_session]
 }
