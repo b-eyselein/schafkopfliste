@@ -5,12 +5,12 @@ use crate::jwt_helpers::MyJwtToken;
 use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
 use crate::DbConn;
 
-#[get("/players")]
+#[get("/")]
 fn players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
-#[put("/players", format = "application/json", data = "<player_json>")]
+#[put("/", format = "application/json", data = "<player_json>")]
 fn create_player(
     _my_jwt: MyJwtToken,
     conn: DbConn,

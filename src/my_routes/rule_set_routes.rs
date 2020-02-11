@@ -5,7 +5,7 @@ use crate::jwt_helpers::MyJwtToken;
 use crate::models::game::{get_rule_sets, RuleSet};
 use crate::DbConn;
 
-#[get("/ruleSets")]
+#[get("/")]
 fn route_get_rule_sets(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<RuleSet>> {
     Json(get_rule_sets(&conn.0))
 }

@@ -3,9 +3,11 @@ use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::group::{get_group, get_groups, insert_group, CreatableGroup, Group};
+use crate::models::player::Player;
 use crate::models::player_in_group::{
     add_player_to_group, select_group_with_players_and_rule_set_by_id,
-    select_groups_with_player_count, GroupWithPlayerCount, GroupWithPlayersAndRuleSet,
+    select_groups_with_player_count, select_players_in_group, GroupWithPlayerCount,
+    GroupWithPlayersAndRuleSet,
 };
 use crate::DbConn;
 
@@ -60,6 +62,11 @@ fn route_add_player_to_group(
     Json(add_player_to_group(&conn.0, group_id, player_id.0))
 }
 
+#[get("/<group_id>/players")]
+fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
+    Json(select_players_in_group(&conn.0, group_id))
+}
+
 pub fn exported_routes() -> Vec<Route> {
     routes![
         groups,
@@ -67,6 +74,7 @@ pub fn exported_routes() -> Vec<Route> {
         groups_with_player_count,
         route_group_with_players_by_id,
         group_by_id,
+        players_in_group,
         route_add_player_to_group
     ]
 }

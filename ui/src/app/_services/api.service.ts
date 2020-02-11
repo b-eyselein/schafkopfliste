@@ -31,7 +31,7 @@ export class ApiService {
   }
 
   getGroupsWithPlayerCount(): Observable<GroupWithPlayerCount[]> {
-    const url = `${this.baseUrl}/api/groupsWithPlayerCount`;
+    const url = `${this.baseUrl}/api/groups/groupsWithPlayerCount`;
 
     return this.httpClient.get<GroupWithPlayerCount[]>(url);
   }

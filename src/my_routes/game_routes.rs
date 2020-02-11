@@ -13,11 +13,6 @@ fn index(conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
-#[get("/groups/<group_id>/players")]
-fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
-    Json(select_players_in_group(&conn.0, group_id))
-}
-
 #[put("/sessions", format = "application/json", data = "<creatable_session>")]
 fn create_session(
     _my_jwt: MyJwtToken,
@@ -36,5 +31,5 @@ fn create_session(
 }
 
 pub fn exported_routes() -> Vec<Route> {
-    routes![index, players_in_group, create_session]
+    routes![index, create_session]
 }
