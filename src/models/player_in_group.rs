@@ -2,6 +2,7 @@ use diesel::{self, prelude::*, PgConnection};
 use serde::Serialize;
 
 use crate::models::game::{select_rule_set_by_id, RuleSet};
+use crate::models::group::Group;
 use crate::models::player::Player;
 use crate::schema::player_in_groups;
 
@@ -74,7 +75,7 @@ pub fn select_players_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<Pl
 
     player_in_groups
         .filter(group_id.eq(the_group_id))
-        .inner_join(players.on(player_id.eq(id)))
+        .inner_join(players)
         .select((id, abbreviation, name))
         .load::<Player>(conn)
         .unwrap_or(Vec::new())
@@ -105,6 +106,21 @@ pub fn add_player_to_group(conn: &PgConnection, group_id: i32, player_id: i32) -
         Ok(1) => true,
         _ => false,
     }
+}
+
+#[allow(dead_code)]
+pub fn select_groups_for_player(
+    conn: &PgConnection,
+    the_player_id: i32,
+) -> Vec<(PlayerInGroup, Group)> {
+    use crate::schema::groups::dsl::*;
+    use crate::schema::player_in_groups::dsl::*;
+
+    player_in_groups
+        .filter(player_id.eq(the_player_id))
+        .inner_join(groups)
+        .load::<(PlayerInGroup, Group)>(conn)
+        .unwrap_or(Vec::new())
 }
 
 #[allow(dead_code)]

@@ -4,7 +4,6 @@ use uuid::Uuid;
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::player::{get_players, Player};
-use crate::models::player_in_group::select_players_in_group;
 use crate::models::session::CreatableSession;
 use crate::DbConn;
 
@@ -21,7 +20,7 @@ fn create_session(
 ) -> Result<Json<i32>, String> {
     println!("{:?}", creatable_session);
 
-    let uuid = Uuid::new_v4().to_string();
+    //    let uuid = Uuid::new_v4().to_string();
 
     //    let session = Session::from_creatable_session(uuid, creatable_session.0);
 
