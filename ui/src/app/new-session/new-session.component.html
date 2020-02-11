@@ -4,14 +4,50 @@
 
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
-    <form (ngSubmit)="createSession()" [formGroup]="sessionForm">
+    <skl-button-list-select
+      [label]="'Regelsatz:'"
+      [options]="ruleSets"
+      (selected)="this.ruleSetId = $event.id">
+    </skl-button-list-select>
 
+    <br>
 
-    </form>
+    <skl-button-list-select
+      [label]="'1. Geber:'"
+      [options]="playersForDealer"
+      (selected)="updateDealer($event.id)">
+    </skl-button-list-select>
+
+    <br>
+
+    <skl-button-list-select
+      *ngIf="firstDealerId"
+      [label]="'1. Vorhand'"
+      [options]="playersForPreHand"
+      (selected)="updatePreHand($event.id)">
+    </skl-button-list-select>
+
+    <br>
+
+    <skl-button-list-select
+      *ngIf="firstPreHandId"
+      [label]="'1. Mittelhand:'"
+      [options]="playersForMiddleHand"
+      (selected)="updateMiddleHand($event.id)">
+    </skl-button-list-select>
+
+    <br>
+
+    <skl-button-list-select
+      *ngIf="firstMiddleHandId"
+      [label]="'1. Rückhand:'"
+      [options]="playersForRearHand"
+      (selected)="updateRearHand($event.id)">
+    </skl-button-list-select>
 
     <hr>
 
-    {{group | json}}
+    <button class="button is-link is-fullwidth" (click)="createSession()">Sitzung starten</button>
 
   </ng-container>
 

@@ -1,0 +1,15 @@
+<div class="field">
+  <label class="label">{{label}}</label>
+  <div class="control">
+    <div class="columns">
+      <div class="column is-one-fifth" *ngFor="let option of options">
+        <button class="button is-fullwidth"
+                (click)="onSelected(option)"
+                [ngClass]="option.isSelected ? 'is-link' : ''"
+                [title]="option.title ? option.title : option.name">
+          {{option.name}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

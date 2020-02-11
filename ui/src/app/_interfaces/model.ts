@@ -1,15 +1,16 @@
 export interface CreatableSession {
-  groupId: number;
+  ruleSetId: number;
   date: string;
   firstPlayerId: number;
   secondPlayerId: number;
   thirdPlayerId: number;
   fourthPlayerId: number;
-  ruleSetId: number;
+
 }
 
 export interface Session extends CreatableSession {
   serialNumber: number;
+  groupId: number;
 }
 
 export interface Game {
