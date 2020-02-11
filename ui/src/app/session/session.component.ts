@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {GameType, Session} from '../_interfaces/model';
+import {GameType, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
 import {ApiService} from '../_services/api.service';
 
@@ -11,10 +11,16 @@ interface ActingPlayer extends Player {
   hasWon: boolean;
 }
 
+function toActingPlayer(p: Player): ActingPlayer {
+  return {
+    ...p, hasPut: false, wantsToPlay: false, gaveContra: false, hasWon: false
+  };
+}
+
 @Component({templateUrl: './session.component.html'})
 export class SessionComponent implements OnInit {
 
-  session: Session;
+  session: SessionWithPlayersAndRuleSet;
 
   currentGameIndex = 1;
 
@@ -31,16 +37,11 @@ export class SessionComponent implements OnInit {
       const groupId: number = parseInt(paramMap.get('groupId'), 10);
       const serialNumber: number = parseInt(paramMap.get('serialNumber'), 10);
 
-      this.apiService.getSession(groupId, serialNumber)
+      this.apiService.getSessionWithPlayersAndRuleSet(groupId, serialNumber)
         .subscribe((session) => {
           this.session = session;
-          /*
-          this.actingPlayers = this.session.players.map((p) => {
-            return {
-              ...p, hasPut: false, wantsToPlay: false, gaveContra: false, hasWon: false
-            };
-          });
-           */
+          
+          this.actingPlayers = [session.firstPlayer, session.secondPlayer, session.thirdPlayer, session.fourthPlayer].map(toActingPlayer);
         });
     });
   }

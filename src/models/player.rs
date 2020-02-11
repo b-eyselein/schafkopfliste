@@ -27,6 +27,10 @@ impl Player {
     }
 }
 
+pub fn select_player_by_id(conn: &PgConnection, id: i32) -> Option<Player> {
+    players::table.filter(players::id.eq(id)).first(conn).ok()
+}
+
 pub fn get_players(conn: &PgConnection) -> Vec<Player> {
     players::table.load::<Player>(conn).unwrap_or(Vec::new())
 }

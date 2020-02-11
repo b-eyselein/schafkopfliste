@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CreatableSession, Session} from '../_interfaces/model';
+import {CreatableSession, Session, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
@@ -64,6 +64,12 @@ export class ApiService {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${serialNumber}`;
 
     return this.httpClient.get<Session>(url);
+  }
+
+  getSessionWithPlayersAndRuleSet(groupId: number, serialNumber: number): Observable<SessionWithPlayersAndRuleSet | undefined> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${serialNumber}/sessionWithPlayersAndRuleSet`;
+
+    return this.httpClient.get<SessionWithPlayersAndRuleSet>(url);
   }
 
   // Creation

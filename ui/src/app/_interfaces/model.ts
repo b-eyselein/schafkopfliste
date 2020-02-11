@@ -1,3 +1,6 @@
+import {Player} from './player';
+import {RuleSet} from './ruleset';
+
 export interface CreatableSession {
   ruleSetId: number;
   date: string;
@@ -11,6 +14,16 @@ export interface CreatableSession {
 export interface Session extends CreatableSession {
   serialNumber: number;
   groupId: number;
+}
+
+export interface SessionWithPlayersAndRuleSet {
+  serialNumber: number;
+  groupId: number;
+  firstPlayer: Player;
+  secondPlayer: Player;
+  thirdPlayer: Player;
+  fourthPlayer: Player;
+  ruleSet: RuleSet;
 }
 
 export interface Game {
