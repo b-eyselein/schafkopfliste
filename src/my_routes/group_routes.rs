@@ -1,4 +1,5 @@
-use rocket_contrib::json::{Json, JsonError};
+use rocket::Route;
+use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::group::{get_group, get_groups, insert_group, CreatableGroup, Group};
@@ -8,35 +9,30 @@ use crate::models::player_in_group::{
 };
 use crate::DbConn;
 
-#[get("/groups")]
-pub fn groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
+#[get("/")]
+fn groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
     Json(get_groups(&conn.0))
 }
 
-#[put("/groups", format = "application/json", data = "<group_name_json>")]
-pub fn create_group(
+#[put("/", format = "application/json", data = "<group_name_json>")]
+fn create_group(
     _my_jwt: MyJwtToken,
     conn: DbConn,
-    group_name_json: Result<Json<CreatableGroup>, JsonError>,
+    group_name_json: Json<CreatableGroup>,
 ) -> Result<Json<Group>, String> {
-    let cg = group_name_json.unwrap().0;
-
-    let new_group = insert_group(&conn.0, cg)?;
+    let new_group = insert_group(&conn.0, group_name_json.0)?;
 
     Ok(Json(new_group))
 }
 
 #[get("/groupsWithPlayerCount")]
-pub fn groups_with_player_count(
-    _my_jwt: MyJwtToken,
-    conn: DbConn,
-) -> Json<Vec<GroupWithPlayerCount>> {
+fn groups_with_player_count(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<GroupWithPlayerCount>> {
     Json(select_groups_with_player_count(&conn.0))
 }
 
-#[get("/groups/<group_id>/groupWithPlayersAndRuleSet")]
-pub fn route_group_with_players_by_id(
-    //    _my_jwt: MyJwtToken,
+#[get("/<group_id>/groupWithPlayersAndRuleSet")]
+fn route_group_with_players_by_id(
+    _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
 ) -> Json<Option<GroupWithPlayersAndRuleSet>> {
@@ -45,21 +41,32 @@ pub fn route_group_with_players_by_id(
     ))
 }
 
-#[get("/groups/<group_id>")]
-pub fn group_by_id(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
+#[get("/<group_id>")]
+fn group_by_id(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
     Json(get_group(&conn.0, group_id))
 }
 
 #[put(
-    "/groups/<group_id>/players",
+    "/<group_id>/players",
     format = "application/json",
     data = "<player_id>"
 )]
-pub fn route_add_player_to_group(
+fn route_add_player_to_group(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
     player_id: Json<i32>,
 ) -> Json<bool> {
     Json(add_player_to_group(&conn.0, group_id, player_id.0))
+}
+
+pub fn exported_routes() -> Vec<Route> {
+    routes![
+        groups,
+        create_group,
+        groups_with_player_count,
+        route_group_with_players_by_id,
+        group_by_id,
+        route_add_player_to_group
+    ]
 }

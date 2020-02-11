@@ -1,46 +1,25 @@
+use rocket::Route;
 use rocket_contrib::json::Json;
 use uuid::Uuid;
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::{get_rule_sets, RuleSet};
-use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
+use crate::models::player::{get_players, Player};
 use crate::models::player_in_group::select_players_in_group;
 use crate::models::session::CreatableSession;
 use crate::DbConn;
 
 #[get("/")]
-pub fn index(conn: DbConn) -> Json<Vec<Player>> {
+fn index(conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
-#[get("/ruleSets")]
-pub fn route_get_rule_sets(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<RuleSet>> {
-    Json(get_rule_sets(&conn.0))
-}
-
-#[get("/players")]
-pub fn players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
-    Json(get_players(&conn))
-}
-
 #[get("/groups/<group_id>/players")]
-pub fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
+fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
     Json(select_players_in_group(&conn.0, group_id))
 }
 
-#[put("/players", format = "application/json", data = "<player_json>")]
-pub fn create_player(
-    _my_jwt: MyJwtToken,
-    conn: DbConn,
-    player_json: Json<CreatablePlayer>,
-) -> Result<Json<Player>, String> {
-    let new_player = insert_player(&conn.0, player_json.0)?;
-
-    Ok(Json(new_player))
-}
-
 #[put("/sessions", format = "application/json", data = "<creatable_session>")]
-pub fn create_session(
+fn create_session(
     _my_jwt: MyJwtToken,
     _conn: DbConn,
     creatable_session: Json<CreatableSession>,
@@ -54,4 +33,8 @@ pub fn create_session(
     //   println!("{:?}", session);
 
     Err("Not yet implemented".into())
+}
+
+pub fn exported_routes() -> Vec<Route> {
+    routes![index, players_in_group, create_session]
 }

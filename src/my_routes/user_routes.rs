@@ -1,4 +1,5 @@
 use bcrypt::verify;
+use rocket::Route;
 use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::generate_token;
@@ -6,7 +7,7 @@ use crate::models::user::{user_by_username, Credentials, UserWithToken};
 use crate::DbConn;
 
 #[put("/authentication", format = "application/json", data = "<credentials>")]
-pub fn authenticate(
+fn authenticate(
     conn: DbConn,
     credentials: Json<Credentials>,
 ) -> Result<Json<UserWithToken>, String> {
@@ -24,4 +25,8 @@ pub fn authenticate(
             }
         }
     }
+}
+
+pub fn exported_routes() -> Vec<Route> {
+    routes![authenticate]
 }

@@ -1,8 +1,8 @@
 use chrono::NaiveDate;
 use diesel;
-use diesel::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use diesel::PgConnection;
 use serde::{Deserialize, Serialize};
 
 use crate::schema::sessions;
@@ -10,7 +10,6 @@ use crate::schema::sessions;
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
-    pub group_id: i32,
     pub date: NaiveDate,
     pub first_player_id: i32,
     pub second_player_id: i32,
@@ -33,9 +32,8 @@ pub struct Session {
 }
 
 impl Session {
-    fn from_creatable_session(serial_number: i32, cs: CreatableSession) -> Session {
+    fn from_creatable_session(serial_number: i32, group_id: i32, cs: CreatableSession) -> Session {
         let CreatableSession {
-            group_id,
             date,
             first_player_id,
             second_player_id,
@@ -57,17 +55,21 @@ impl Session {
     }
 }
 
-pub fn insert_session(conn: &PgConnection, cs: CreatableSession) -> Result<usize, Error> {
+pub fn insert_session(
+    conn: &PgConnection,
+    group_id: i32,
+    cs: CreatableSession,
+) -> Result<usize, Error> {
     conn.transaction(|| {
         let maybe_max_serial_number = sessions::table
-            .filter(sessions::group_id.eq(cs.group_id))
+            .filter(sessions::group_id.eq(group_id))
             .select(diesel::dsl::max(sessions::serial_number))
             .first::<Option<i32>>(conn)?;
 
         let serial_number = maybe_max_serial_number.map(|v| v + 1).unwrap_or(0);
 
         diesel::insert_into(sessions::table)
-            .values(Session::from_creatable_session(serial_number, cs))
+            .values(Session::from_creatable_session(serial_number, group_id, cs))
             .execute(conn)
     })
 }

@@ -9,8 +9,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use rocket_cors;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
+use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;
 mod models;
@@ -21,37 +20,24 @@ mod schema;
 pub struct DbConn(diesel::PgConnection);
 
 fn make_cors() -> Cors {
-    let cors_options = CorsOptions {
-        allowed_origins: AllowedOrigins::all(),
-        allowed_headers: AllowedHeaders::all(),
+    let cors_opts = CorsOptions {
         allow_credentials: true,
         ..Default::default()
     };
 
-    cors_options.to_cors().expect("Error while building cors!")
+    cors_opts.to_cors().expect("Error while building cors!")
 }
 
 fn main() {
-    let user_routes = routes![my_routes::user_routes::authenticate];
-
-    let game_routes = routes![
-        my_routes::game_routes::index,
-        my_routes::group_routes::groups,
-        my_routes::group_routes::groups_with_player_count,
-        my_routes::group_routes::route_group_with_players_by_id,
-        my_routes::group_routes::create_group,
-        my_routes::group_routes::route_add_player_to_group,
-        my_routes::group_routes::group_by_id,
-        my_routes::game_routes::route_get_rule_sets,
-        my_routes::game_routes::players_in_group,
-        my_routes::game_routes::players,
-        my_routes::game_routes::create_player,
-        my_routes::game_routes::create_session
-    ];
-
     rocket::ignite()
-        .mount("/api/users", user_routes)
-        .mount("/api", game_routes)
+        .mount("/api/users", my_routes::user_routes::exported_routes())
+        .mount(
+            "/api/ruleSets",
+            my_routes::rule_set_routes::exported_routes(),
+        )
+        .mount("/api/groups", my_routes::group_routes::exported_routes())
+        .mount("/api/players", my_routes::player_routes::exported_routes())
+        .mount("/api", my_routes::game_routes::exported_routes())
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();
