@@ -52,7 +52,6 @@ export class IndexComponent implements OnInit {
     const today: Date = new Date();
 
     const session: CreatableSession = {
-      groupId: this.group.id,
       date: `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`,
       firstPlayerId: this.firstDealer.id,
       secondPlayerId: this.firstPreHand.id,
@@ -61,7 +60,7 @@ export class IndexComponent implements OnInit {
       ruleSetId: -1
     };
 
-    this.apiService.createSession(session)
+    this.apiService.createSession(this.group.id, session)
       .subscribe((response) => {
         console.info(response);
       });

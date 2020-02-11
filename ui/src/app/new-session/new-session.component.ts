@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {RuleSet} from '../_interfaces/ruleset';
 import {Player} from '../_interfaces/player';
@@ -27,7 +27,7 @@ export class NewSessionComponent implements OnInit {
   playersForRearHand: SelectableValue<Player>[];
   firstRearHandId: number | undefined;
 
-  constructor(private route: ActivatedRoute, private apiService: ApiService) {
+  constructor(private route: ActivatedRoute, private apiService: ApiService, private router: Router) {
   }
 
   private updateRuleSets(): void {
@@ -70,16 +70,22 @@ export class NewSessionComponent implements OnInit {
 
   updatePreHand(preHandId: number): void {
     this.firstPreHandId = preHandId;
+
+    const selectedPlayerIds = [this.firstDealerId, this.firstPreHandId];
+
     this.playersForMiddleHand = this.group.players
-      .filter((p) => p.id !== this.firstPreHandId && p.id !== this.firstMiddleHandId)
+      .filter((p) => !selectedPlayerIds.includes(p.id))
       .map((p) => toSelectableValue(p, p.name, this.firstMiddleHandId === p.id));
   }
 
 
   updateMiddleHand(middleHandId: number): void {
     this.firstMiddleHandId = middleHandId;
+
+    const selectedPlayerIds = [this.firstDealerId, this.firstPreHandId, this.firstMiddleHandId];
+
     this.playersForRearHand = this.group.players
-      .filter((p) => p.id !== this.firstDealerId && p.id !== this.firstPreHandId && p.id !== this.firstMiddleHandId)
+      .filter((p) => !selectedPlayerIds.includes(p.id))
       .map((p) => toSelectableValue(p, p.name, this.firstRearHandId === p.id));
   }
 
@@ -92,17 +98,17 @@ export class NewSessionComponent implements OnInit {
 
     const cs: CreatableSession = {
       ruleSetId: this.ruleSetId,
-      date: today.getFullYear() + '-' + today.getMonth() + '-' + today.getDay(),
+      date: `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`,
       firstPlayerId: this.firstDealerId,
       secondPlayerId: this.firstPreHandId,
       thirdPlayerId: this.firstMiddleHandId,
       fourthPlayerId: this.firstRearHandId
     };
 
-    this.apiService.createSession(cs)
-      .subscribe((session) => {
-        console.info(JSON.stringify(session, null, 2));
-      });
+    this.apiService.createSession(this.group.id, cs).subscribe((session) => {
+      // noinspection JSIgnoredPromiseFromCall
+      this.router.navigate(['..', 'sessions', session.serialNumber], {relativeTo: this.route});
+    });
   }
 
 }

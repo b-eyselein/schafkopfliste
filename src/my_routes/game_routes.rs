@@ -1,10 +1,9 @@
 use rocket::Route;
 use rocket_contrib::json::Json;
-use uuid::Uuid;
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::player::{get_players, Player};
-use crate::models::session::CreatableSession;
+use crate::models::session::{insert_session, CreatableSession, Session};
 use crate::DbConn;
 
 #[get("/")]
@@ -12,21 +11,18 @@ fn index(conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
-#[put("/sessions", format = "application/json", data = "<creatable_session>")]
+#[put(
+    "/groups/<group_id>/sessions",
+    format = "application/json",
+    data = "<creatable_session_json>"
+)]
 fn create_session(
     _my_jwt: MyJwtToken,
-    _conn: DbConn,
-    creatable_session: Json<CreatableSession>,
-) -> Result<Json<i32>, String> {
-    println!("{:?}", creatable_session);
-
-    //    let uuid = Uuid::new_v4().to_string();
-
-    //    let session = Session::from_creatable_session(uuid, creatable_session.0);
-
-    //   println!("{:?}", session);
-
-    Err("Not yet implemented".into())
+    conn: DbConn,
+    group_id: i32,
+    creatable_session_json: Json<CreatableSession>,
+) -> Result<Json<Session>, String> {
+    insert_session(&conn.0, group_id, creatable_session_json.0).map(Json)
 }
 
 pub fn exported_routes() -> Vec<Route> {

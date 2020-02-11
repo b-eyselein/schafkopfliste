@@ -21,7 +21,6 @@
     "@angular/router": "~8.2.14",
     "angular2-uuid": "^1.1.1",
     "bulma": "^0.8.0",
-    "dexie": "^2.0.4",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

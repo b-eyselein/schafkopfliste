@@ -17,8 +17,6 @@ export class ButtonListSelectComponent<T> {
 
     option.isSelected = true;
 
-    console.info(JSON.stringify(option, null, 2));
-
     this.selected.emit(option.value);
   }
 

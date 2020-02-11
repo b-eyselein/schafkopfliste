@@ -18,12 +18,12 @@ export const routingComponents = [
 const routes: Routes = [
   {path: '', component: IndexComponent, canActivate: [AuthGuard]},
   {path: 'loginForm', component: LoginFormComponent},
+  {path: 'ruleSets', component: RuleSetListComponent, canActivate: [AuthGuard]},
+  {path: 'players', component: PlayerListComponent, canActivate: [AuthGuard]},
   {path: 'groups', component: GroupListComponent, canActivate: [AuthGuard]},
   {path: 'groups/:groupId', component: GroupComponent, canActivate: [AuthGuard]},
   {path: 'groups/:groupId/newSession', component: NewSessionComponent, canActivate: [AuthGuard]},
-  {path: 'ruleSets', component: RuleSetListComponent, canActivate: [AuthGuard]},
-  {path: 'players', component: PlayerListComponent, canActivate: [AuthGuard]},
-  {path: 'sessions/:sessionUuid', component: SessionComponent, canActivate: [AuthGuard]}
+  {path: 'groups/:groupId/sessions/:serialNumber', component: SessionComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {DexieService} from '../_services/dexie.service';
 import {ActivatedRoute} from '@angular/router';
 import {GameType, Session} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
+import {ApiService} from '../_services/api.service';
 
 interface ActingPlayer extends Player {
   hasPut: boolean;
@@ -23,15 +23,16 @@ export class SessionComponent implements OnInit {
   player: ActingPlayer;
   playedGame: GameType;
 
-  constructor(private route: ActivatedRoute, private dexieService: DexieService) {
+  constructor(private route: ActivatedRoute, private apiService: ApiService) {
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
-      const sessionUuid: string = paramMap.get('sessionUuid');
+      const groupId: number = parseInt(paramMap.get('groupId'), 10);
+      const serialNumber: number = parseInt(paramMap.get('serialNumber'), 10);
 
-      this.dexieService.sessions.get(sessionUuid)
-        .then((session) => {
+      this.apiService.getSession(groupId, serialNumber)
+        .subscribe((session) => {
           this.session = session;
           /*
           this.actingPlayers = this.session.players.map((p) => {
