@@ -4,46 +4,86 @@
 
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
-    <skl-button-list-select
-      [label]="'Regelsatz:'"
-      [options]="ruleSets"
-      (selected)="this.ruleSetId = $event.id">
-    </skl-button-list-select>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">Regelsatz:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <skl-button-list-select [options]="ruleSets" (selected)="this.ruleSetId = $event.id">
+            </skl-button-list-select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">1. Geber:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <skl-button-list-select [options]="playersForDealer" (selected)="updateDealer($event.id)">
+            </skl-button-list-select>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      [label]="'1. Geber:'"
-      [options]="playersForDealer"
-      (selected)="updateDealer($event.id)">
-    </skl-button-list-select>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">1. Vorhand:</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <skl-button-list-select *ngIf="firstDealerId" [options]="playersForPreHand"
+                                    (selected)="updatePreHand($event.id)">
+            </skl-button-list-select>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      *ngIf="firstDealerId"
-      [label]="'1. Vorhand'"
-      [options]="playersForPreHand"
-      (selected)="updatePreHand($event.id)">
-    </skl-button-list-select>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">1. Mittelhand:</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <skl-button-list-select *ngIf="firstPreHandId" [options]="playersForMiddleHand"
+                                    (selected)="updateMiddleHand($event.id)">
+            </skl-button-list-select>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      *ngIf="firstPreHandId"
-      [label]="'1. Mittelhand:'"
-      [options]="playersForMiddleHand"
-      (selected)="updateMiddleHand($event.id)">
-    </skl-button-list-select>
-
-    <br>
-
-    <skl-button-list-select
-      *ngIf="firstMiddleHandId"
-      [label]="'1. Rückhand:'"
-      [options]="playersForRearHand"
-      (selected)="updateRearHand($event.id)">
-    </skl-button-list-select>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">1. Rückhand:</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <skl-button-list-select *ngIf="firstMiddleHandId" [options]="playersForRearHand"
+                                    (selected)="updateRearHand($event.id)">
+            </skl-button-list-select>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <hr>
 

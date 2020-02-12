@@ -1,83 +1,91 @@
 <div class="container">
 
-  <h1 class="title is-3 has-text-centered">Spiel {{currentGameIndex}} eintragen</h1>
-
   <ng-container *ngIf="session; else loadingSessionBlock">
+
+    <h1 class="title is-3 has-text-centered">Gruppe {{session.group.name}}, Sitzung {{session.serialNumber}}</h1>
+
     <div class="columns">
-      <div class="column is-one-fifth"></div>
-      <div *ngFor="let p of actingPlayers; let index = index" class="column has-text-centered"
-           [ngClass]="isDealer(index) ? 'has-text-weight-bold' : ''">
-        {{p.name}}
+      <div class="column" *ngFor="let p of actingPlayers; let index = index">
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title is-centered">
+              <span [ngClass]="isDealer(index) ? 'is-uppercase' : ''">{{p.name}}</span>
+              {{isDealer(index) ? '&nbsp;(Geber)' : ''}}
+            </p>
+          </header>
+          <div class="card-content">
+
+            <div class="buttons">
+              <button class="button is-fullwidth" [ngClass]="p.hasPut ? 'is-link' : ''"
+                      (click)="p.hasPut = !p.hasPut">
+                {{p.hasPut ? '&#10004;' : '&#10008; nicht'}} gelegt
+              </button>
+
+              <button (click)="togglePlayer(p)" class="button is-fullwidth"
+                      [ngClass]="player === p ? 'is-link' : ''">
+                {{player === p ? '&#10004; spielt' : '&#10008; spielt nicht'}}
+              </button>
+
+              <button class="button is-fullwidth" [ngClass]="p.gaveContra ? 'is-link' : ''"
+                      (click)="p.gaveContra = !p.gaveContra">
+                {{p.gaveContra ? '&#10004;' : '&#10008; kein'}} Kontra / Re
+              </button>
+
+              <button (click)="p.hasWon = !p.hasWon" class="button is-fullwidth" [ngClass]="p.hasWon ? 'is-link' : ''">
+                {{p.hasWon ? '&#10004; gewonnen' : '&#10008; verloren'}}
+              </button>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Gelegt?</div>
-      <div class="column" *ngFor="let p of actingPlayers">
-        <button (click)="p.hasPut = !p.hasPut" class="button is-fullwidth"
-                [ngClass]="p.hasPut ? 'is-link' : ''">
-          {{p.hasPut ? '&#10004;' : '&#10008;'}}
-        </button>
-      </div>
-    </div>
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">Spielansage</p>
+      </header>
+      <div class="card-content">
 
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Will spielen?</div>
-      <div class="column" *ngFor="let p of actingPlayers">
-        <button (click)="p.wantsToPlay = !p.wantsToPlay" class="button is-fullwidth"
-                [ngClass]="p.wantsToPlay ? 'is-link' : ''">
-          {{p.wantsToPlay ? '&#10004;' : '&#10008;'}}
-        </button>
-      </div>
-    </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Angesagtes Spiel:</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <skl-button-list-select [options]="allowedGameTypes" (selected)="toggleGameType($event)">
+                </skl-button-list-select>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <hr>
+        <ng-container *ngIf="playedGame && playedGame.needsSuit">
 
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Spielt?</div>
-      <div class="column" *ngFor="let p of actingPlayers">
-        <button (click)="player = p" class="button is-fullwidth"
-                [ngClass]="player === p ? 'is-link' : ''" [disabled]="!p.wantsToPlay">
-          {{player === p ? '&#10004;' : '&#10008;'}}
-        </button>
-      </div>
-    </div>
+          <br>
 
-    <!--
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Spiel?</div>
-      <div class="column" *ngFor="let gt of session.allowedGameTypeIds">
-        <button (click)="playedGame = gt" class="button is-fullwidth" [ngClass]="playedGame === gt ? 'is-link' : ''">
-          {{gt.name}}
-        </button>
-      </div>
-    </div>
-    -->
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Farbe:</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <skl-button-list-select [options]="allowedSuits" (selected)="toggleSuit($event)">
+                  </skl-button-list-select>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Kontra?</div>
-      <div class="column" *ngFor="let p of actingPlayers">
-        <button (click)="p.gaveContra = !p.gaveContra" class="button is-fullwidth"
-                [ngClass]="p.gaveContra ? 'is-link' :''" [disabled]="player === p">
-          {{p.gaveContra ? '&#10004;' : '&#10008;'}}
-        </button>
-      </div>
-    </div>
+        </ng-container>
 
-    <hr>
+        <hr>
 
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Gewonnen?</div>
-      <div class="column" *ngFor="let p of actingPlayers">
-        <button (click)="p.hasWon = !p.hasWon" class="button is-fullwidth" [ngClass]="p.hasWon ? 'is-link' : ''">
-          {{p.hasWon ? '&#10004;' : '&#10008;'}}
-        </button>
-      </div>
-    </div>
-
-    <div class="columns">
-      <div class="column is-one-fifth has-text-weight-bold has-text-centered">Laufende?</div>
-      <div class="column">
+        <div class="buttons">
+          <button class="button is-link is-fullwidth" (click)="saveGame()">Spiel eintragen</button>
+        </div>
 
       </div>
     </div>

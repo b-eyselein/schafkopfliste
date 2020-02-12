@@ -3,6 +3,7 @@ use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::models::game::{select_rule_set_by_id, RuleSet};
+use crate::models::group::{get_group, Group};
 use crate::models::player::{select_player_by_id, Player};
 use crate::schema::sessions;
 
@@ -58,7 +59,7 @@ impl Session {
 #[serde(rename_all = "camelCase")]
 pub struct SessionWithPlayersAndRuleSet {
     serial_number: i32,
-    group_id: i32,
+    group: Group,
     date: NaiveDate,
     first_player: Player,
     second_player: Player,
@@ -70,6 +71,7 @@ pub struct SessionWithPlayersAndRuleSet {
 impl SessionWithPlayersAndRuleSet {
     pub fn from_db_values(
         session: Session,
+        group: Group,
         first_player: Player,
         second_player: Player,
         third_player: Player,
@@ -79,7 +81,7 @@ impl SessionWithPlayersAndRuleSet {
         SessionWithPlayersAndRuleSet {
             serial_number: session.serial_number,
             date: session.date,
-            group_id: session.group_id,
+            group,
             first_player,
             second_player,
             third_player,
@@ -113,7 +115,7 @@ pub fn select_session_with_players_and_rule_set_by_id(
 ) -> Option<SessionWithPlayersAndRuleSet> {
     let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
 
-    println!("{:?}", session);
+    let group = get_group(conn, session.group_id)?;
 
     let first_player = select_player_by_id(conn, session.first_player_id)?;
     let second_player = select_player_by_id(conn, session.second_player_id)?;
@@ -124,6 +126,7 @@ pub fn select_session_with_players_and_rule_set_by_id(
 
     Some(SessionWithPlayersAndRuleSet::from_db_values(
         session,
+        group,
         first_player,
         second_player,
         third_player,

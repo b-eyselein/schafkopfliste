@@ -1,5 +1,6 @@
 import {Player} from './player';
-import {RuleSet} from './ruleset';
+import {GameType, RuleSet} from './ruleset';
+import {Group} from './group';
 
 export interface CreatableSession {
   ruleSetId: number;
@@ -18,7 +19,7 @@ export interface Session extends CreatableSession {
 
 export interface SessionWithPlayersAndRuleSet {
   serialNumber: number;
-  groupId: number;
+  group: Group;
   firstPlayer: Player;
   secondPlayer: Player;
   thirdPlayer: Player;
@@ -28,13 +29,6 @@ export interface SessionWithPlayersAndRuleSet {
 
 export interface Game {
   gameType: GameType;
-}
-
-export interface GameType {
-  id: number;
-  name: string;
-  playerPartySize: number;
-  isDefaultGameType: boolean;
 }
 
 export interface Selectable<T> {

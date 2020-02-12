@@ -111,4 +111,9 @@ export class NewSessionComponent implements OnInit {
     });
   }
 
+  toggleRuleSet(rs: SelectableValue<RuleSet>): void {
+    this.ruleSets.forEach((srs) => srs.isSelected = false);
+
+    rs.isSelected = true;
+  }
 }
