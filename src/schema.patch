@@ -1,12 +1,19 @@
-diff --git a/src/schema.rs b/src/schema.rs
-index 870afcc..def9bdc 100644
+diff --git a/src/schema.rs b/src/updated_schema.rs
+index 0ae3ec7..5ee8cc8 100644
 --- a/src/schema.rs
-+++ b/src/schema.rs
-@@ -14,20 +14,23 @@ table! {
- 
++++ b/src/updated_schema.rs
+@@ -1,7 +1,10 @@
  table! {
-     players (id) {
-         id -> Int4,
++    use diesel::sql_types::*;
++    use crate::models::game::Schneider_schwarz;
++
+     games (serial_number, session_serial_number, group_id) {
+         serial_number -> Int4,
+         session_serial_number -> Int4,
+         group_id -> Int4,
+         game_type_json -> Jsonb,
+         laufende_count -> Int4,
+@@ -30,12 +33,15 @@ table! {
          abbreviation -> Varchar,
          name -> Varchar,
      }
@@ -14,7 +21,7 @@ index 870afcc..def9bdc 100644
  
  table! {
 +    use diesel::sql_types::*;
-+    use crate::models::game::Count_laufende;
++    use crate::models::rule_set::Count_laufende;
 +
      rule_sets (id) {
          id -> Int4,
@@ -22,7 +29,3 @@ index 870afcc..def9bdc 100644
          count_laufende -> Count_laufende,
          geier_allowed -> Bool,
          hochzeit_allowed -> Bool,
-         bettel_allowed -> Bool,
-         ramsch_allowed -> Bool,
-         farb_wenz_allowed -> Bool,
-         farb_geier_allowed -> Bool,

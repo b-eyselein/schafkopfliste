@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Game, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
+import {CreatableGame, Game, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
 import {ApiService} from '../_services/api.service';
 import {SelectableValue} from '../_interfaces/selectable-value';
-import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit} from '../_interfaces/ruleset';
+import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit, toCommitableGameType} from '../_interfaces/ruleset';
 
 interface ActingPlayer extends Player {
   hasPut: boolean;
@@ -27,6 +27,8 @@ export class SessionComponent implements OnInit {
   actingPlayers: ActingPlayer[];
   allowedGameTypes: SelectableValue<GameType>[];
   allowedSuits: SelectableValue<Suit>[] = [];
+
+  playedGames: Game[];
 
   player: ActingPlayer;
   playedGame: GameType | undefined;
@@ -69,11 +71,28 @@ export class SessionComponent implements OnInit {
   }
 
   saveGame() {
-    const game: Game = {
-      gameType: this.playedGame,
+    if (!this.playedGame) {
+      alert('You have to select a game type!');
+      return;
+    }
+
+    if (this.playedGame.needsSuit && !this.playedGameSuit) {
+      alert('You have to select a suit!');
+      console.info(this.playedGameSuit);
+      return;
+    }
+
+    // TODO: laufende, schneider/schwarz!
+    const game: CreatableGame = {
+      gameType: toCommitableGameType(this.playedGame, this.playedGameSuit),
+      laufendeCount: 0,
+      schneiderSchwarz: undefined
     };
 
     console.warn('TODO: save game:\n' + JSON.stringify(game, null, 2));
+
+    this.apiService.createGame(this.session.group.id, this.session.serialNumber, game)
+      .subscribe((g) => this.playedGames.push(g));
   }
 
 }

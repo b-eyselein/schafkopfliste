@@ -1,6 +1,10 @@
 -- Your SQL goes here
 
+create type suit as enum ('acorns', 'leaves', 'hearts', 'bells');
+
 create type count_laufende as enum ('always', 'only_losers', 'never');
+
+create type schneider_schwarz as enum ('schneider', 'schwarz');
 
 create table if not exists rule_sets (
     id                 serial primary key not null,
@@ -46,7 +50,6 @@ create table if not exists player_in_groups (
     foreign key (player_id) references players (id) on update cascade on delete cascade
 );
 
-
 create table if not exists sessions (
     serial_number    int     not null,
     group_id         int     not null,
@@ -64,6 +67,18 @@ create table if not exists sessions (
     foreign key (third_player_id) references players (id) on update cascade on delete cascade,
     foreign key (fourth_player_id) references players (id) on update cascade on delete cascade,
     foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade
+);
+
+create table if not exists games (
+    serial_number         int   not null,
+    session_serial_number int   not null,
+    group_id              int   not null,
+
+    game_type_json        jsonb not null,
+    laufende_count        int   not null default 0,
+    schneider_schwarz     schneider_schwarz,
+
+    primary key (serial_number, session_serial_number, group_id)
 );
 
 create or replace view groups_with_player_count as
@@ -98,3 +113,10 @@ values (1, 1),
        (1, 4),
        (1, 5);
 
+-- TODO: dummy data...
+
+insert into sessions (serial_number, group_id, date, first_player_id, second_player_id, third_player_id,
+                      fourth_player_id, rule_set_id)
+values (1, 1, '2020-02-12', 1, 2, 3, 4, 2);
+
+-- insert into games (serial_number, session_serial_number, group_id, game_type_json) values (1, 1, 1, '');

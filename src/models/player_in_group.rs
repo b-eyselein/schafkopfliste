@@ -1,9 +1,9 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::Serialize;
 
-use crate::models::game::{select_rule_set_by_id, RuleSet};
 use crate::models::group::Group;
 use crate::models::player::Player;
+use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::player_in_groups;
 
 table! {

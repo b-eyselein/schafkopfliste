@@ -2,7 +2,7 @@ use rocket::Route;
 use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::{get_rule_sets, RuleSet};
+use crate::models::rule_set::{get_rule_sets, RuleSet};
 use crate::DbConn;
 
 #[get("/")]

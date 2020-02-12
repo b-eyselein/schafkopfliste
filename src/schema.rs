@@ -1,4 +1,18 @@
 table! {
+    use diesel::sql_types::*;
+    use crate::models::game::Schneider_schwarz;
+
+    games (serial_number, session_serial_number, group_id) {
+        serial_number -> Int4,
+        session_serial_number -> Int4,
+        group_id -> Int4,
+        game_type_json -> Jsonb,
+        laufende_count -> Int4,
+        schneider_schwarz -> Nullable<Schneider_schwarz>,
+    }
+}
+
+table! {
     groups (id) {
         id -> Int4,
         name -> Varchar,
@@ -23,7 +37,7 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::game::Count_laufende;
+    use crate::models::rule_set::Count_laufende;
 
     rule_sets (id) {
         id -> Int4,
@@ -67,6 +81,7 @@ joinable!(sessions -> rule_sets (rule_set_id));
 joinable!(users -> players (player_id));
 
 allow_tables_to_appear_in_same_query!(
+    games,
     groups,
     player_in_groups,
     players,

@@ -2,9 +2,9 @@ use chrono::NaiveDate;
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
-use crate::models::game::{select_rule_set_by_id, RuleSet};
 use crate::models::group::{get_group, Group};
 use crate::models::player::{select_player_by_id, Player};
+use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::sessions;
 
 #[derive(Debug, Serialize, Deserialize)]

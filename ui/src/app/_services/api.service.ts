@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CreatableSession, Session, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
+import {CreatableGame, CreatableSession, Game, Session, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
@@ -101,6 +101,12 @@ export class ApiService {
 
     return this.httpClient.put<boolean>(url, playerId, ApiService.putHttpOptions)
       .pipe(tap((added) => console.info(added)));
+  }
+
+  createGame(groupId: number, sessionSerialNumber: number, game: CreatableGame): Observable<Game> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${sessionSerialNumber}/games`;
+
+    return this.httpClient.put<Game>(url, game, ApiService.putHttpOptions);
   }
 
 }

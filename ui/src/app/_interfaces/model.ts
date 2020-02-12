@@ -1,5 +1,5 @@
 import {Player} from './player';
-import {GameType, RuleSet} from './ruleset';
+import {RuleSet} from './ruleset';
 import {Group} from './group';
 
 export interface CreatableSession {
@@ -27,15 +27,33 @@ export interface SessionWithPlayersAndRuleSet {
   ruleSet: RuleSet;
 }
 
-export interface Game {
-  gameType: GameType;
+export type CommitableSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
+
+export type CommitableGameTypeGameType = 'Ruf'
+  | 'Wenz'
+  | 'Farbsolo'
+  | 'Geier'
+  | 'Ramsch'
+  | 'Bettel'
+  | 'Hochzeit'
+  | 'Farbwenz'
+  | 'Farbgeier';
+
+export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
+
+export type CommitableGameType = {
+  type: CommitableGameTypeGameType;
+  suit?: CommitableSuit;
+};
+
+export interface CreatableGame {
+  gameType: CommitableGameType;
+  laufendeCount: number;
+  schneiderSchwarz: SchneiderSchwarz | undefined;
 }
 
-export interface Selectable<T> {
-  value: T;
-  isSelected: boolean;
-}
-
-export function toSelectable<T>(value: T, isSelected: boolean = false): Selectable<T> {
-  return {value, isSelected};
+export interface Game extends CreatableGame {
+  sessionSerialNumber: number;
+  groupId: number;
+  serialNumber: number;
 }

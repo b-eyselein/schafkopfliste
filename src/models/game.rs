@@ -1,9 +1,10 @@
-use diesel::{self, prelude::*, PgConnection};
+use diesel::PgConnection;
 use serde::{Deserialize, Serialize};
+use serde_json::Value as JsonValue;
 
-use crate::schema::rule_sets;
+use crate::schema::games;
 
-#[allow(dead_code)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
 pub enum Suit {
     Acorns,
     Leaves,
@@ -11,45 +12,57 @@ pub enum Suit {
     Bells,
 }
 
-#[allow(dead_code)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[DieselType = "Schneider_schwarz"]
+pub enum SchneiderSchwarz {
+    Schneider,
+    Schwarz,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum GameType {
     Ruf { suit: Suit },
     Wenz,
-    FarbSolo { suit: Suit },
+    Farbsolo { suit: Suit },
     Geier,
     Hochzeit,
     Bettel,
     Ramsch,
-    FarbWenz { suit: Suit },
-    FarbGeier { suit: Suit },
+    Farbwenz { suit: Suit },
+    Farbgeier { suit: Suit },
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
-#[DieselType = "Count_laufende"]
-pub enum CountLaufende {
-    Always,
-    OnlyLosers,
-    Never,
-}
-
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RuleSet {
-    pub id: i32,
-    pub name: String,
-    pub count_laufende: CountLaufende,
-    pub geier_allowed: bool,
-    pub hochzeit_allowed: bool,
-    pub bettel_allowed: bool,
-    pub ramsch_allowed: bool,
-    pub farb_wenz_allowed: bool,
-    pub farb_geier_allowed: bool,
+pub struct Game {
+    serial_number: i32,
+    session_serial_number: i32,
+    group_id: i32,
+    game_type: GameType,
 }
 
-pub fn get_rule_sets(conn: &PgConnection) -> Vec<RuleSet> {
-    rule_sets::table.load::<RuleSet>(conn).unwrap_or(Vec::new())
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreatableGame {
+    game_type: GameType,
+    laufende_count: i32,
 }
 
-pub fn select_rule_set_by_id(conn: &PgConnection, id: i32) -> Option<RuleSet> {
-    rule_sets::table.find(id).first(conn).ok()
+#[derive(Debug, Queryable, Insertable)]
+#[table_name = "games"]
+struct InsertableGame {
+    serial_number: i32,
+    session_serial_number: i32,
+    group_id: i32,
+    game_type_json: JsonValue,
+}
+
+pub fn insert_game(
+    conn: &PgConnection,
+    group_id: i32,
+    session_serial_number: i32,
+    game: CreatableGame,
+) -> Result<Game, String> {
+    Err("Not yet implemented!".into())
 }

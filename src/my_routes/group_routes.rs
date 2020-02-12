@@ -1,7 +1,8 @@
 use rocket::Route;
-use rocket_contrib::json::Json;
+use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwtToken;
+use crate::models::game::{insert_game, CreatableGame, Game};
 use crate::models::group::{get_group, get_groups, insert_group, CreatableGroup, Group};
 use crate::models::player::Player;
 use crate::models::player_in_group::{
@@ -109,6 +110,30 @@ fn route_create_session(
     insert_session(&conn.0, group_id, creatable_session_json.0).map(Json)
 }
 
+#[put(
+    "/<group_id>/sessions/<session_serial_number>/games",
+    format = "application/json",
+    data = "<game_json>"
+)]
+fn route_create_game(
+    _my_jwt: MyJwtToken,
+    conn: DbConn,
+    group_id: i32,
+    session_serial_number: i32,
+    game_json: Result<Json<CreatableGame>, JsonError>,
+) -> Result<Json<Game>, String> {
+    println!("{:?}", game_json);
+
+    game_json
+        .map_err(|err| -> String {
+            println!("Error while deserializing game json: {:?}", err);
+            "Could not deserialize game!".into()
+        })
+        .and_then(|game_json| {
+            insert_game(&conn.0, group_id, session_serial_number, game_json.0).map(Json)
+        })
+}
+
 pub fn exported_routes() -> Vec<Route> {
     routes![
         groups,
@@ -120,6 +145,7 @@ pub fn exported_routes() -> Vec<Route> {
         route_add_player_to_group,
         route_get_session,
         route_get_session_with_players_and_rule_set,
-        route_create_session
+        route_create_session,
+        route_create_game
     ]
 }

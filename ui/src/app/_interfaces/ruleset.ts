@@ -1,14 +1,15 @@
 import {SelectableValue, toSelectableValue} from './selectable-value';
+import {CommitableGameType, CommitableGameTypeGameType, CommitableSuit} from './model';
 
 export interface Suit {
   name: string;
-  germanName: string;
+  commitableSuit: CommitableSuit;
 }
 
-const ACORNS: Suit = {name: 'ACORNS', germanName: 'Eichel'};
-const LEAVES: Suit = {name: 'LEAVES', germanName: 'Blatt'};
-const HEARTS: Suit = {name: 'HEARTS', germanName: 'Herz'};
-const BELLS: Suit = {name: 'BELLS', germanName: 'Schellen'};
+const ACORNS: Suit = {name: 'Eichel', commitableSuit: 'Acorns'};
+const LEAVES: Suit = {name: 'Blatt', commitableSuit: 'Leaves'};
+const HEARTS: Suit = {name: 'Herz', commitableSuit: 'Hearts'};
+const BELLS: Suit = {name: 'Schellen', commitableSuit: 'Bells'};
 
 const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
 
@@ -20,7 +21,7 @@ export interface CreatableRuleSet {
 
 export interface GameType {
 //  id: number;
-  name: string;
+  name: CommitableGameTypeGameType;
   playerPartySize: number;
   needsSuit: boolean;
   isDefaultGameType: boolean;
@@ -38,9 +39,12 @@ const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: 
 
 export function getSuitsForGameType(playedGame: GameType): SelectableValue<Suit>[] {
   return (playedGame === RUF ? RUF_SUITS : SUITS)
-    .map((gt) => toSelectableValue(gt, gt.germanName, false));
+    .map((gt) => toSelectableValue(gt, gt.name, false));
 }
 
+export function toCommitableGameType(gameType: GameType, suit: Suit | undefined): CommitableGameType {
+  return {type: gameType.name, suit: suit?.commitableSuit};
+}
 
 export interface RuleSet extends CreatableRuleSet {
   id: number;
