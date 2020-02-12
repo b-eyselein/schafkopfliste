@@ -47,6 +47,7 @@ pub struct Game {
 pub struct CreatableGame {
     game_type: GameType,
     laufende_count: i32,
+    schneider_schwarz: Option<SchneiderSchwarz>,
 }
 
 #[derive(Debug, Queryable, Insertable)]
@@ -56,13 +57,15 @@ struct InsertableGame {
     session_serial_number: i32,
     group_id: i32,
     game_type_json: JsonValue,
+    laufende_count: i32,
+    schneider_schwarz: Option<SchneiderSchwarz>,
 }
 
 pub fn insert_game(
-    conn: &PgConnection,
-    group_id: i32,
-    session_serial_number: i32,
-    game: CreatableGame,
+    _conn: &PgConnection,
+    _group_id: i32,
+    _session_serial_number: i32,
+    _game: CreatableGame,
 ) -> Result<Game, String> {
     Err("Not yet implemented!".into())
 }

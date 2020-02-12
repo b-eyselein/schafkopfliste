@@ -84,7 +84,7 @@ fn route_get_session(
 
 #[get("/<group_id>/sessions/<serial_number>/sessionWithPlayersAndRuleSet")]
 fn route_get_session_with_players_and_rule_set(
-    //    _my_jwt: MyJwtToken,
+    _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
     serial_number: i32,
@@ -113,23 +113,23 @@ fn route_create_session(
 #[put(
     "/<group_id>/sessions/<session_serial_number>/games",
     format = "application/json",
-    data = "<game_json>"
+    data = "<game_json_try>"
 )]
 fn route_create_game(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
     session_serial_number: i32,
-    game_json: Result<Json<CreatableGame>, JsonError>,
+    game_json_try: Result<Json<CreatableGame>, JsonError>,
 ) -> Result<Json<Game>, String> {
-    println!("{:?}", game_json);
-
-    game_json
+    game_json_try
         .map_err(|err| -> String {
             println!("Error while deserializing game json: {:?}", err);
             "Could not deserialize game!".into()
         })
         .and_then(|game_json| {
+            println!("{:?}", game_json);
+
             insert_game(&conn.0, group_id, session_serial_number, game_json.0).map(Json)
         })
 }
