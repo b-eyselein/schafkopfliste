@@ -1,92 +1,11 @@
 <div class="container">
 
-  <h1 class="title is-3 has-text-centered">SchafkopfListe: Neue Siztung erstellen</h1>
+  <h1 class="title is-3 has-text-centered">SchafkopfListe</h1>
 
-  <h3 class="subtitle is-4">Erlaubte Spiele:</h3>
-
-  <!--
-  <div class="columns is-multiline">
-    <div class="column" *ngFor="let gameType of gameTypes">
-      <div class="field">
-        <div class="control">
-          <button type="button" class="button is-fullwidth" (click)="gameType.isSelected = !gameType.isSelected"
-                  [ngClass]="gameType.isSelected ? 'is-link' : ''">
-            {{gameType.isSelected ? '&#10004;' : '&#10008;'}} {{gameType.value.name}}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  -->
-
-  <h3 class="subtitle is-4">Spieler:</h3>
-
-  <div class="columns">
-
-    <div class="column">
-      <div class="field">
-        <label for="firstDealer" class="label">1. Geber:</label>
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select id="firstDealer" [(ngModel)]="firstDealer">
-              <option [ngValue]="null" disabled>Bitte wählen...</option>
-              <option *ngFor="let player of players" [ngValue]="player">{{player.name}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="field">
-        <label for="firstPreHand" class="label">1. Vorhand:</label>
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select id="firstPreHand" [(ngModel)]="firstPreHand">
-              <option [ngValue]="null" disabled>Bitte wählen...</option>
-              <option *ngFor="let player of players" [ngValue]="player">{{player.name}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="field">
-        <label for="firstMiddleHand" class="label">1. Mittelhand:</label>
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select id="firstMiddleHand" [(ngModel)]="firstMiddleHand">
-              <option [ngValue]="null" disabled>Bitte wählen...</option>
-              <option *ngFor="let player of players" [ngValue]="player">{{player.name}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="field">
-        <label for="firstRearHand" class="label">1. Rückhand:</label>
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select id="firstRearHand" [(ngModel)]="firstRearHand">
-              <option [ngValue]="null" disabled>Bitte wählen...</option>
-              <option *ngFor="let player of players" [ngValue]="player">{{player.name}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <hr>
-
-  <div class="field">
-    <div class="control">
-      <button class="button is-link is-fullwidth" (click)="createSession()">Session starten</button>
-    </div>
+  <div class="buttons">
+    <a class="button is-link is-fullwidth" routerLink="./groups">Zu den Gruppen</a>
+    <a class="button is-link is-fullwidth" routerLink="./players">Zu den Spielern</a>
+    <a class="button is-link is-fullwidth" routerLink="./ruleSets">Zu den Regelsätzen</a>
   </div>
 
 </div>
