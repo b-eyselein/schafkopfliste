@@ -10,6 +10,7 @@ use crate::schema::sessions;
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
+    pub id: i32,
     pub date: NaiveDate,
     pub first_player_id: i32,
     pub second_player_id: i32,
@@ -18,22 +19,30 @@ pub struct CreatableSession {
     pub rule_set_id: i32,
 }
 
-#[derive(Debug, Serialize, Queryable, Insertable)]
+#[derive(Debug, Serialize, Identifiable, Queryable, Insertable, Associations, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[belongs_to(Group)]
 pub struct Session {
-    serial_number: i32,
+    id: i32,
     group_id: i32,
     date: NaiveDate,
+    has_ended: bool,
     first_player_id: i32,
     second_player_id: i32,
     third_player_id: i32,
     fourth_player_id: i32,
     rule_set_id: i32,
+    creator_username: String,
 }
 
 impl Session {
-    fn from_creatable_session(serial_number: i32, group_id: i32, cs: CreatableSession) -> Session {
+    fn from_creatable_session(
+        group_id: i32,
+        creator_username: String,
+        cs: CreatableSession,
+    ) -> Session {
         let CreatableSession {
+            id,
             date,
             first_player_id,
             second_player_id,
@@ -43,14 +52,16 @@ impl Session {
         } = cs;
 
         Session {
-            serial_number,
+            id,
             group_id,
             date,
+            has_ended: false,
             first_player_id,
             second_player_id,
             third_player_id,
             fourth_player_id,
             rule_set_id,
+            creator_username,
         }
     }
 }
@@ -58,7 +69,7 @@ impl Session {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SessionWithPlayersAndRuleSet {
-    serial_number: i32,
+    id: i32,
     group: Group,
     date: NaiveDate,
     first_player: Player,
@@ -79,7 +90,7 @@ impl SessionWithPlayersAndRuleSet {
         rule_set: RuleSet,
     ) -> SessionWithPlayersAndRuleSet {
         SessionWithPlayersAndRuleSet {
-            serial_number: session.serial_number,
+            id: session.id,
             date: session.date,
             group,
             first_player,
@@ -91,21 +102,8 @@ impl SessionWithPlayersAndRuleSet {
     }
 }
 
-pub fn select_session_by_id(
-    conn: &PgConnection,
-    the_group_id: i32,
-    the_serial_number: i32,
-) -> Option<Session> {
-    use crate::schema::sessions::dsl::*;
-
-    sessions
-        .filter(
-            group_id
-                .eq(the_group_id)
-                .and(serial_number.eq(the_serial_number)),
-        )
-        .first::<Session>(conn)
-        .ok()
+pub fn select_session_by_id(conn: &PgConnection, group_id: i32, id: i32) -> Option<Session> {
+    sessions::table.find((group_id, id)).first(conn).ok()
 }
 
 pub fn select_session_with_players_and_rule_set_by_id(
@@ -138,8 +136,10 @@ pub fn select_session_with_players_and_rule_set_by_id(
 pub fn insert_session(
     conn: &PgConnection,
     group_id: i32,
+    creator_username: String,
     cs: CreatableSession,
 ) -> Result<Session, String> {
+    /*
     let maybe_max_serial_number = sessions::table
         .filter(sessions::group_id.eq(group_id))
         .select(diesel::dsl::max(sessions::serial_number))
@@ -147,9 +147,14 @@ pub fn insert_session(
         .map_err(|_| -> String { "Error while querying serial for new session".into() })?;
 
     let serial_number = maybe_max_serial_number.map(|v| v + 1).unwrap_or(0);
+    */
 
     diesel::insert_into(sessions::table)
-        .values(Session::from_creatable_session(serial_number, group_id, cs))
+        .values(Session::from_creatable_session(
+            group_id,
+            creator_username,
+            cs,
+        ))
         .returning(sessions::all_columns)
         .get_result(conn)
         .map_err(|_| "Error while inserting session into db".into())

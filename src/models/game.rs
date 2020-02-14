@@ -1,15 +1,29 @@
 use diesel::PgConnection;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JsonValue;
 
 use crate::schema::games;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
-pub enum Suit {
+#[DieselType = "Bavarian_suit"]
+pub enum BavarianSuit {
     Acorns,
     Leaves,
     Hearts,
     Bells,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[DieselType = "Game_type"]
+pub enum GameType {
+    Ruf,
+    Wenz,
+    Farbsolo,
+    Geier,
+    Hochzeit,
+    Bettel,
+    Ramsch,
+    Farbwenz,
+    Farbgeier,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
@@ -19,44 +33,24 @@ pub enum SchneiderSchwarz {
     Schwarz,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum GameType {
-    Ruf { suit: Suit },
-    Wenz,
-    Farbsolo { suit: Suit },
-    Geier,
-    Hochzeit,
-    Bettel,
-    Ramsch,
-    Farbwenz { suit: Suit },
-    Farbgeier { suit: Suit },
-}
-
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Queryable, Insertable)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
-    serial_number: i32,
-    session_serial_number: i32,
+    id: i32,
+    session_id: i32,
     group_id: i32,
     game_type: GameType,
+    suit: Option<BavarianSuit>,
+    laufende_count: i32,
+    schneider_schwarz: Option<SchneiderSchwarz>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableGame {
+    id: i32,
     game_type: GameType,
-    laufende_count: i32,
-    schneider_schwarz: Option<SchneiderSchwarz>,
-}
-
-#[derive(Debug, Queryable, Insertable)]
-#[table_name = "games"]
-struct InsertableGame {
-    serial_number: i32,
-    session_serial_number: i32,
-    group_id: i32,
-    game_type_json: JsonValue,
+    suit: Option<BavarianSuit>,
     laufende_count: i32,
     schneider_schwarz: Option<SchneiderSchwarz>,
 }

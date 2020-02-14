@@ -1,6 +1,11 @@
 -- Your SQL goes here
 
-create type suit as enum ('acorns', 'leaves', 'hearts', 'bells');
+create type game_type as enum (
+    'ruf', 'wenz', 'farbsolo', 'geier',
+    'hochzeit', 'bettel', 'ramsch', 'farbwenz', 'farbgeier'
+    );
+
+create type bavarian_suit as enum ('acorns', 'leaves', 'hearts', 'bells');
 
 create type count_laufende as enum ('always', 'only_losers', 'never');
 
@@ -51,34 +56,48 @@ create table if not exists player_in_groups (
 );
 
 create table if not exists sessions (
-    serial_number    int     not null,
-    group_id         int     not null,
-    date             date    not null,
-    first_player_id  integer not null,
-    second_player_id integer not null,
-    third_player_id  integer not null,
-    fourth_player_id integer not null,
-    rule_set_id      integer not null,
+    id               int          not null,
+    group_id         int          not null,
+    date             date         not null,
+    has_ended        bool         not null default false,
+    first_player_id  integer      not null,
+    second_player_id integer      not null,
+    third_player_id  integer      not null,
+    fourth_player_id integer      not null,
+    rule_set_id      integer      not null,
+    creator_username varchar(100) not null,
 
-    primary key (serial_number, group_id),
+    primary key (id, group_id),
     foreign key (group_id) references groups (id) on delete cascade on update cascade,
     foreign key (first_player_id) references players (id) on update cascade on delete cascade,
     foreign key (second_player_id) references players (id) on update cascade on delete cascade,
     foreign key (third_player_id) references players (id) on update cascade on delete cascade,
     foreign key (fourth_player_id) references players (id) on update cascade on delete cascade,
-    foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade
+    foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade,
+    foreign key (creator_username) references users (username) on update cascade on delete cascade
 );
 
 create table if not exists games (
-    serial_number         int   not null,
-    session_serial_number int   not null,
-    group_id              int   not null,
+    id                      int       not null,
+    session_id              int       not null,
+    group_id                int       not null,
 
-    game_type_json        jsonb not null,
-    laufende_count        int   not null default 0,
-    schneider_schwarz     schneider_schwarz,
+    game_type               game_type not null,
+    suit               bavarian_suit,
+    laufende_count          int       not null default 0,
+    schneider_schwarz       schneider_schwarz,
 
-    primary key (serial_number, session_serial_number, group_id)
+    first_player_put        bool      not null default false,
+    second_player_put       bool      not null default false,
+    third_player_put        bool      not null default false,
+    fourth_player_put       bool      not null default false,
+
+    first_player_contra_re  bool      not null default false,
+    second_player_contra_re bool      not null default false,
+    third_player_contra_re  bool      not null default false,
+    fourth_player_contra_re bool      not null default false,
+
+    primary key (id, session_id, group_id)
 );
 
 create or replace view groups_with_player_count as
@@ -115,8 +134,8 @@ values (1, 1),
 
 -- TODO: dummy data...
 
-insert into sessions (serial_number, group_id, date, first_player_id, second_player_id, third_player_id,
-                      fourth_player_id, rule_set_id)
-values (1, 1, '2020-02-12', 1, 2, 3, 4, 2);
+insert into sessions (id, group_id, date, has_ended, first_player_id, second_player_id, third_player_id,
+                      fourth_player_id, rule_set_id, creator_username)
+values (1, 1, '2020-02-12', false, 1, 2, 3, 4, 2, 'default');
 
 -- insert into games (serial_number, session_serial_number, group_id, game_type_json) values (1, 1, 1, '');

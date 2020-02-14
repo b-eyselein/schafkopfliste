@@ -1,14 +1,23 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::game::Schneider_schwarz;
+    use crate::models::game::{Bavarian_suit, Game_type, Schneider_schwarz};
 
-    games (serial_number, session_serial_number, group_id) {
-        serial_number -> Int4,
-        session_serial_number -> Int4,
+    games (id, session_id, group_id) {
+        id -> Int4,
+        session_id -> Int4,
         group_id -> Int4,
-        game_type_json -> Jsonb,
+        game_type -> Game_type,
+        suit -> Nullable<Bavarian_suit>,
         laufende_count -> Int4,
         schneider_schwarz -> Nullable<Schneider_schwarz>,
+        first_player_put -> Bool,
+        second_player_put -> Bool,
+        third_player_put -> Bool,
+        fourth_player_put -> Bool,
+        first_player_contra_re -> Bool,
+        second_player_contra_re -> Bool,
+        third_player_contra_re -> Bool,
+        fourth_player_contra_re -> Bool,
     }
 }
 
@@ -53,15 +62,17 @@ table! {
 }
 
 table! {
-    sessions (serial_number, group_id) {
-        serial_number -> Int4,
+    sessions (id, group_id) {
+        id -> Int4,
         group_id -> Int4,
         date -> Date,
+        has_ended -> Bool,
         first_player_id -> Int4,
         second_player_id -> Int4,
         third_player_id -> Int4,
         fourth_player_id -> Int4,
         rule_set_id -> Int4,
+        creator_username -> Varchar,
     }
 }
 
@@ -78,6 +89,7 @@ joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));
 joinable!(sessions -> groups (group_id));
 joinable!(sessions -> rule_sets (rule_set_id));
+joinable!(sessions -> users (creator_username));
 joinable!(users -> players (player_id));
 
 allow_tables_to_appear_in_same_query!(

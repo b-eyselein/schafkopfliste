@@ -22,4 +22,6 @@ drop type if exists schneider_schwarz;
 
 drop type if exists count_laufende;
 
-drop type if exists suit;
+drop type if exists bavarian_suit;
+
+drop type if exists game_type;

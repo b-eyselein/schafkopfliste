@@ -102,12 +102,18 @@ fn route_get_session_with_players_and_rule_set(
     data = "<creatable_session_json>"
 )]
 fn route_create_session(
-    _my_jwt: MyJwtToken,
+    my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
     creatable_session_json: Json<CreatableSession>,
 ) -> Result<Json<Session>, String> {
-    insert_session(&conn.0, group_id, creatable_session_json.0).map(Json)
+    insert_session(
+        &conn.0,
+        group_id,
+        my_jwt.claims.username,
+        creatable_session_json.0,
+    )
+    .map(Json)
 }
 
 #[put(
