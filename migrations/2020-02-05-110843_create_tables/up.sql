@@ -28,7 +28,7 @@ create table if not exists rule_sets (
 
 create table if not exists players (
     id           serial primary key not null,
-    abbreviation varchar(5)         not null,
+    abbreviation varchar(5) unique  not null,
     name         varchar(100)       not null
 );
 
@@ -116,14 +116,17 @@ insert into users (username, password_hash, player_id)
 values ('default', '$2b$12$7fdsVDDPlhVmAy.ilsmyTeE7E.e2YtwI7IkQ5MGaDVsE5wDm58vGq', null);
 
 insert into groups (id, name, default_rule_set_id)
-values (1, 'LS 6 Info Uni Wue', 2);
+values (1, 'LS 6 Info Uni Wue', 2),
+       (2, 'Gruppe 2', 1);
 
 insert into players (id, abbreviation, name)
 values (1, 'BE', 'Björn Eyselein'),
        (2, 'AG', 'Alexander Gehrke'),
        (3, 'JK', 'Jonathan Krebs'),
        (4, 'MK', 'Markus Krug'),
-       (5, 'CW', 'Christoph Wick');
+       (5, 'CW', 'Christoph Wick'),
+       (6, 'AHe', 'Amar Hekalo'),
+       (7, 'AHa', 'Alexander Hartelt');
 
 insert into player_in_groups (group_id, player_id)
 values (1, 1),

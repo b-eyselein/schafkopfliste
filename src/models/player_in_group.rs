@@ -2,7 +2,7 @@ use diesel::{self, prelude::*, PgConnection};
 use serde::Serialize;
 
 use crate::models::group::Group;
-use crate::models::player::Player;
+use crate::models::player::{select_players, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::player_in_groups;
 
@@ -69,7 +69,7 @@ pub fn select_groups_with_player_count(conn: &PgConnection) -> Vec<GroupWithPlay
         .unwrap_or(Vec::new())
 }
 
-pub fn select_players_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<Player> {
+pub fn select_players_in_group(conn: &PgConnection, the_group_id: &i32) -> Vec<Player> {
     use crate::schema::player_in_groups::dsl::*;
     use crate::schema::players::dsl::*;
 
@@ -83,17 +83,21 @@ pub fn select_players_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<Pl
 
 pub fn select_group_with_players_and_rule_set_by_id(
     conn: &PgConnection,
-    the_group_id: i32,
+    the_group_id: &i32,
 ) -> Option<GroupWithPlayersAndRuleSet> {
     use crate::models::group::get_group;
 
     get_group(conn, the_group_id).map(|g| {
         let default_rule_set = g
             .default_rule_set_id
-            .and_then(|id| select_rule_set_by_id(conn, id));
-        let players = select_players_in_group(conn, the_group_id);
+            .and_then(|id| select_rule_set_by_id(conn, &id));
 
-        GroupWithPlayersAndRuleSet::new(g.id, g.name, default_rule_set, players)
+        GroupWithPlayersAndRuleSet::new(
+            g.id,
+            g.name,
+            default_rule_set,
+            select_players_in_group(conn, the_group_id),
+        )
     })
 }
 
@@ -111,7 +115,7 @@ pub fn add_player_to_group(conn: &PgConnection, group_id: i32, player_id: i32) -
 #[allow(dead_code)]
 pub fn select_groups_for_player(
     conn: &PgConnection,
-    the_player_id: i32,
+    the_player_id: &i32,
 ) -> Vec<(PlayerInGroup, Group)> {
     use crate::schema::groups::dsl::*;
     use crate::schema::player_in_groups::dsl::*;
@@ -123,13 +127,21 @@ pub fn select_groups_for_player(
         .unwrap_or(Vec::new())
 }
 
-#[allow(dead_code)]
-pub fn get_player_ids_in_group(conn: &PgConnection, the_group_id: i32) -> Vec<i32> {
-    use crate::schema::player_in_groups::dsl::*;
+pub fn select_players_and_group_membership(
+    conn: &PgConnection,
+    the_group_id: &i32,
+) -> Vec<(Player, bool)> {
+    let player_ids_in_group: Vec<i32> = player_in_groups::table
+        .filter(player_in_groups::group_id.eq(the_group_id))
+        .select(player_in_groups::player_id)
+        .load(conn)
+        .unwrap_or(Vec::new());
 
-    player_in_groups
-        .filter(group_id.eq(the_group_id))
-        .select(player_id)
-        .load::<i32>(conn)
-        .unwrap_or(Vec::new())
+    select_players(conn)
+        .into_iter()
+        .map(|p| {
+            let is_in_group = player_ids_in_group.contains(&p.id);
+            (p, is_in_group)
+        })
+        .collect()
 }

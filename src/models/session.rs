@@ -82,7 +82,8 @@ pub struct CompleteSession {
 
 impl CompleteSession {
     pub fn from_db_values(
-        session: Session,
+        id: i32,
+        date: NaiveDate,
         group: Group,
         first_player: Player,
         second_player: Player,
@@ -92,8 +93,8 @@ impl CompleteSession {
         played_games: Vec<Game>,
     ) -> CompleteSession {
         CompleteSession {
-            id: session.id,
-            date: session.date,
+            id,
+            date,
             group,
             first_player,
             second_player,
@@ -109,33 +110,25 @@ pub fn select_session_by_id(conn: &PgConnection, group_id: i32, id: i32) -> Opti
     sessions::table.find((id, group_id)).first(conn).ok()
 }
 
-pub fn select_session_with_players_and_rule_set_by_id(
+pub fn select_complete_session_by_id(
     conn: &PgConnection,
     the_group_id: i32,
     the_serial_number: i32,
 ) -> Option<CompleteSession> {
     let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
 
-    let group = get_group(conn, session.group_id)?;
-
-    let first_player = select_player_by_id(conn, session.first_player_id)?;
-    let second_player = select_player_by_id(conn, session.second_player_id)?;
-    let third_player = select_player_by_id(conn, session.third_player_id)?;
-    let fourth_player = select_player_by_id(conn, session.fourth_player_id)?;
-
-    let rule_set = select_rule_set_by_id(conn, session.rule_set_id)?;
-
-    let played_games = select_games_for_session(conn, &session);
+    let games = select_games_for_session(conn, &session);
 
     Some(CompleteSession::from_db_values(
-        session,
-        group,
-        first_player,
-        second_player,
-        third_player,
-        fourth_player,
-        rule_set,
-        played_games,
+        session.id,
+        session.date,
+        get_group(conn, &session.group_id)?,
+        select_player_by_id(conn, &session.first_player_id)?,
+        select_player_by_id(conn, &session.second_player_id)?,
+        select_player_by_id(conn, &session.third_player_id)?,
+        select_player_by_id(conn, &session.fourth_player_id)?,
+        select_rule_set_by_id(conn, &session.rule_set_id)?,
+        games,
     ))
 }
 

@@ -1,0 +1,21 @@
+<div class="container">
+
+  <ng-container *ngIf="group; else loadingGroupComponent">
+
+    <h1 class="title is-3 has-text-centered">Gruppe {{group.name}}: Spieler</h1>
+
+    <div class="columns is-multiline" *ngIf="group.players">
+
+     <div class="column is-2" *ngFor="let player of group.players">
+       <button class="button is-link is-fullwidth">{{player.name}}</button>
+     </div>
+
+    </div>
+
+  </ng-container>
+
+</div>
+
+<ng-template #loadingGroupComponent>
+  <div class="notification is-primary has-text-centered">Lade Gruppe und Spieler...</div>
+</ng-template>

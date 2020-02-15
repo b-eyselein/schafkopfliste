@@ -8,10 +8,8 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
 import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player-to-group.component';
-import {RuleSetListComponent} from './rule-set-list/rule-set-list.component';
-import {NewSessionComponent} from './new-session/new-session.component';
 import {ButtonListSelectComponent} from './_components/button-list-select/button-list-select.component';
-import { GamesTableComponent } from './_components/games-table/games-table.component';
+import {GamesTableComponent} from './_components/games-table/games-table.component';
 
 @NgModule({
   declarations: [
@@ -20,8 +18,6 @@ import { GamesTableComponent } from './_components/games-table/games-table.compo
     CreatePlayerComponent,
     CreateGroupComponent,
     AddPlayerToGroupComponent,
-    RuleSetListComponent,
-    NewSessionComponent,
     ButtonListSelectComponent,
     GamesTableComponent,
   ],
