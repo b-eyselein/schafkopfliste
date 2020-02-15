@@ -2,7 +2,7 @@ use rocket::Route;
 use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::{insert_game, CreatableGame, Game};
+use crate::models::game::{insert_game, Game};
 use crate::models::group::{get_group, get_groups, insert_group, CreatableGroup, Group};
 use crate::models::player::Player;
 use crate::models::player_in_group::{
@@ -12,17 +12,17 @@ use crate::models::player_in_group::{
 };
 use crate::models::session::{
     insert_session, select_session_by_id, select_session_with_players_and_rule_set_by_id,
-    CreatableSession, Session, SessionWithPlayersAndRuleSet,
+    CompleteSession, CreatableSession, Session,
 };
 use crate::DbConn;
 
 #[get("/")]
-fn groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
+fn route_groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
     Json(get_groups(&conn.0))
 }
 
 #[put("/", format = "application/json", data = "<group_name_json>")]
-fn create_group(
+fn route_create_group(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_name_json: Json<CreatableGroup>,
@@ -33,7 +33,10 @@ fn create_group(
 }
 
 #[get("/groupsWithPlayerCount")]
-fn groups_with_player_count(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<GroupWithPlayerCount>> {
+fn route_groups_with_player_count(
+    _my_jwt: MyJwtToken,
+    conn: DbConn,
+) -> Json<Vec<GroupWithPlayerCount>> {
     Json(select_groups_with_player_count(&conn.0))
 }
 
@@ -49,7 +52,7 @@ fn route_group_with_players_by_id(
 }
 
 #[get("/<group_id>")]
-fn group_by_id(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
+fn route_group_by_id(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
     Json(get_group(&conn.0, group_id))
 }
 
@@ -68,7 +71,7 @@ fn route_add_player_to_group(
 }
 
 #[get("/<group_id>/players")]
-fn players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
+fn route_players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Player>> {
     Json(select_players_in_group(&conn.0, group_id))
 }
 
@@ -88,7 +91,7 @@ fn route_get_session_with_players_and_rule_set(
     conn: DbConn,
     group_id: i32,
     serial_number: i32,
-) -> Json<Option<SessionWithPlayersAndRuleSet>> {
+) -> Json<Option<CompleteSession>> {
     Json(select_session_with_players_and_rule_set_by_id(
         &conn.0,
         group_id,
@@ -117,7 +120,7 @@ fn route_create_session(
 }
 
 #[put(
-    "/<group_id>/sessions/<session_serial_number>/games",
+    "/<group_id>/sessions/<session_id>/games",
     format = "application/json",
     data = "<game_json_try>"
 )]
@@ -125,8 +128,8 @@ fn route_create_game(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
-    session_serial_number: i32,
-    game_json_try: Result<Json<CreatableGame>, JsonError>,
+    session_id: i32,
+    game_json_try: Result<Json<Game>, JsonError>,
 ) -> Result<Json<Game>, String> {
     game_json_try
         .map_err(|err| -> String {
@@ -136,18 +139,18 @@ fn route_create_game(
         .and_then(|game_json| {
             println!("{:?}", game_json);
 
-            insert_game(&conn.0, group_id, session_serial_number, game_json.0).map(Json)
+            insert_game(&conn.0, group_id, session_id, game_json.0).map(Json)
         })
 }
 
 pub fn exported_routes() -> Vec<Route> {
     routes![
-        groups,
-        create_group,
-        groups_with_player_count,
+        route_groups,
+        route_create_group,
+        route_groups_with_player_count,
         route_group_with_players_by_id,
-        group_by_id,
-        players_in_group,
+        route_group_by_id,
+        route_players_in_group,
         route_add_player_to_group,
         route_get_session,
         route_get_session_with_players_and_rule_set,

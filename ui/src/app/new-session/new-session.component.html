@@ -4,90 +4,64 @@
 
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <label class="label">Regelsatz:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <skl-button-list-select [options]="ruleSets" (selected)="this.ruleSetId = $event.id">
-            </skl-button-list-select>
-          </div>
-        </div>
-      </div>
-    </div>
+    <skl-button-list-select
+      label="Regelsatz:"
+      [isValid]="submitted && !ruleSetId"
+      [options]="ruleSets"
+      (selected)="this.ruleSetId = $event.id">
+    </skl-button-list-select>
 
     <hr>
 
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <label class="label">1. Geber:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <skl-button-list-select [options]="playersForDealer" (selected)="updateDealer($event.id)">
-            </skl-button-list-select>
-          </div>
-        </div>
-      </div>
-    </div>
+    <skl-button-list-select
+      label="1. Geber:"
+      [isValid]="submitted && !firstDealerId"
+      [options]="playersForDealer"
+      (selected)="updateDealer($event.id)">
+    </skl-button-list-select>
 
     <br>
 
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">1. Vorhand:</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <skl-button-list-select *ngIf="firstDealerId" [options]="playersForPreHand"
-                                    (selected)="updatePreHand($event.id)">
-            </skl-button-list-select>
-          </div>
-        </div>
-      </div>
-    </div>
+    <skl-button-list-select
+      *ngIf="firstDealerId"
+      label="1. Vorhand:"
+      [isValid]="submitted && !firstPreHandId"
+      [options]="playersForPreHand"
+      (selected)="updatePreHand($event.id)">
+    </skl-button-list-select>
 
     <br>
 
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">1. Mittelhand:</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <skl-button-list-select *ngIf="firstPreHandId" [options]="playersForMiddleHand"
-                                    (selected)="updateMiddleHand($event.id)">
-            </skl-button-list-select>
-          </div>
-        </div>
-      </div>
-    </div>
+    <skl-button-list-select
+      *ngIf="firstPreHandId"
+      label="1. Mittelhand"
+      [isValid]="submitted && !firstMiddleHandId"
+      [options]="playersForMiddleHand"
+      (selected)="updateMiddleHand($event.id)">
+    </skl-button-list-select>
 
     <br>
 
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">1. Rückhand:</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <skl-button-list-select *ngIf="firstMiddleHandId" [options]="playersForRearHand"
-                                    (selected)="updateRearHand($event.id)">
-            </skl-button-list-select>
-          </div>
-        </div>
-      </div>
-    </div>
+    <skl-button-list-select
+      *ngIf="firstMiddleHandId"
+      label="1. Rückhand:"
+      [isValid]="submitted && !firstRearHandId"
+      [options]="playersForRearHand"
+      (selected)="updateRearHand($event.id)">
+    </skl-button-list-select>
 
     <hr>
 
-    <button class="button is-link is-fullwidth" (click)="createSession()">Sitzung starten</button>
+    <button class="button is-link is-fullwidth" (click)="createSession()" [disabled]="createdSession">
+      Sitzung starten
+    </button>
+
+    <br>
+
+    <div class="notification is-primary" *ngIf="createdSession">
+      Sitzung mit der ID {{createdSession.id}} wurde erstellt.
+      <a [routerLink]="['../', 'sessions', createdSession.id]">Zur Sitzung</a>
+    </div>
 
   </ng-container>
 

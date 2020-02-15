@@ -7,7 +7,7 @@ use crate::models::user::{user_by_username, Credentials, UserWithToken};
 use crate::DbConn;
 
 #[put("/authentication", format = "application/json", data = "<credentials>")]
-fn authenticate(
+fn route_authenticate(
     conn: DbConn,
     credentials: Json<Credentials>,
 ) -> Result<Json<UserWithToken>, String> {
@@ -28,5 +28,5 @@ fn authenticate(
 }
 
 pub fn exported_routes() -> Vec<Route> {
-    routes![authenticate]
+    routes![route_authenticate]
 }

@@ -6,18 +6,15 @@ table! {
         id -> Int4,
         session_id -> Int4,
         group_id -> Int4,
+        acting_player_id -> Int4,
         game_type -> Game_type,
         suit -> Nullable<Bavarian_suit>,
+        is_doubled -> Bool,
         laufende_count -> Int4,
         schneider_schwarz -> Nullable<Schneider_schwarz>,
-        first_player_put -> Bool,
-        second_player_put -> Bool,
-        third_player_put -> Bool,
-        fourth_player_put -> Bool,
-        first_player_contra_re -> Bool,
-        second_player_contra_re -> Bool,
-        third_player_contra_re -> Bool,
-        fourth_player_contra_re -> Bool,
+        players_having_put_ids -> Array<Int4>,
+        players_with_contra_ids -> Array<Int4>,
+        players_having_won_ids -> Array<Int4>,
     }
 }
 
@@ -51,6 +48,8 @@ table! {
     rule_sets (id) {
         id -> Int4,
         name -> Varchar,
+        base_price -> Int4,
+        solo_price -> Int4,
         count_laufende -> Count_laufende,
         geier_allowed -> Bool,
         hochzeit_allowed -> Bool,
@@ -84,6 +83,7 @@ table! {
     }
 }
 
+joinable!(games -> players (acting_player_id));
 joinable!(groups -> rule_sets (default_rule_set_id));
 joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));

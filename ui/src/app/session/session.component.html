@@ -2,7 +2,15 @@
 
   <ng-container *ngIf="session; else loadingSessionBlock">
 
-    <h1 class="title is-3 has-text-centered">Gruppe {{session.group.name}}, Sitzung {{session.serialNumber}}</h1>
+    <h1 class="title is-3 has-text-centered">Gruppe {{session.group.name}}, Sitzung {{session.id}},
+      Spiel {{currentGameIndex}}</h1>
+
+
+    <div class="box" *ngIf="session.playedGames && session.playedGames.length > 0">
+      <skl-games-table [session]="session"></skl-games-table>
+    </div>
+
+    <br>
 
     <div class="columns">
       <div class="column" *ngFor="let p of actingPlayers; let index = index">
@@ -16,13 +24,11 @@
           <div class="card-content">
 
             <div class="buttons">
-              <button class="button is-fullwidth" [ngClass]="p.hasPut ? 'is-link' : ''"
-                      (click)="p.hasPut = !p.hasPut">
+              <button class="button is-fullwidth" [ngClass]="p.hasPut ? 'is-link' : ''" (click)="p.hasPut = !p.hasPut">
                 {{p.hasPut ? '&#10004;' : '&#10008; nicht'}} gelegt
               </button>
 
-              <button (click)="togglePlayer(p)" class="button is-fullwidth"
-                      [ngClass]="player === p ? 'is-link' : ''">
+              <button (click)="togglePlayer(p)" class="button is-fullwidth" [ngClass]="player === p ? 'is-link' : ''">
                 {{player === p ? '&#10004; spielt' : '&#10008; spielt nicht'}}
               </button>
 
@@ -43,43 +49,52 @@
 
     <div class="card">
       <header class="card-header">
-        <p class="card-header-title">Spielansage</p>
+        <p class="card-header-title">Spielansage und -ergebnis</p>
       </header>
       <div class="card-content">
 
+        <skl-button-list-select
+          label="Angesagtes Spiel:"
+          [options]="allowedGameTypes"
+          (selected)="toggleGameType($event)">
+        </skl-button-list-select>
+
+        <br>
+
+        <skl-button-list-select
+          label="Farbe:"
+          [options]="allowedSuits"
+          (selected)="toggleSuit($event)"
+          [allDisabled]="!playedGameType || !playedGameType.needsSuit">
+        </skl-button-list-select>
+
+        <br>
+
         <div class="field is-horizontal">
           <div class="field-label">
-            <label class="label">Angesagtes Spiel:</label>
+            <label class="label">Tout:</label>
           </div>
           <div class="field-body">
             <div class="field">
               <div class="control">
-                <skl-button-list-select [options]="allowedGameTypes" (selected)="toggleGameType($event)">
-                </skl-button-list-select>
+                <div class="buttons">
+                  <button class="button is-fullwidth" [ngClass]="tout ? 'is-link': ''"
+                          [disabled]="!playedGameType || !playedGameType.canBeTout">
+                    {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <ng-container *ngIf="playedGame && playedGame.needsSuit">
+        <br>
 
-          <br>
-
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Farbe:</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <skl-button-list-select [options]="allowedSuits" (selected)="toggleSuit($event)">
-                  </skl-button-list-select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </ng-container>
+        <skl-button-list-select
+          label="Schneider / Schwarz:"
+          [options]="schneiderSchwarzValues"
+          (selected)="toggleSchneiderSchwarz($event)">
+        </skl-button-list-select>
 
         <hr>
 

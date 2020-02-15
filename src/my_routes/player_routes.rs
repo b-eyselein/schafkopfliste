@@ -6,12 +6,12 @@ use crate::models::player::{get_players, insert_player, CreatablePlayer, Player}
 use crate::DbConn;
 
 #[get("/")]
-fn players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
+fn route_players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
 #[put("/", format = "application/json", data = "<player_json>")]
-fn create_player(
+fn route_create_player(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     player_json: Json<CreatablePlayer>,
@@ -22,5 +22,5 @@ fn create_player(
 }
 
 pub fn exported_routes() -> Vec<Route> {
-    routes![players, create_player]
+    routes![route_players, route_create_player]
 }

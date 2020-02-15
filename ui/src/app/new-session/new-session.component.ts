@@ -5,12 +5,14 @@ import {ApiService} from '../_services/api.service';
 import {RuleSet} from '../_interfaces/ruleset';
 import {Player} from '../_interfaces/player';
 import {SelectableValue, toSelectableValue} from '../_interfaces/selectable-value';
-import {CreatableSession} from '../_interfaces/model';
+import {CreatableSession, Session} from '../_interfaces/model';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
 
   group: GroupWithPlayersAndRuleSet;
+
+  submitted = false;
 
   ruleSets: SelectableValue<RuleSet>[];
   ruleSetId: number | undefined;
@@ -26,6 +28,8 @@ export class NewSessionComponent implements OnInit {
 
   playersForRearHand: SelectableValue<Player>[];
   firstRearHandId: number | undefined;
+
+  createdSession: Session | undefined;
 
   constructor(private route: ActivatedRoute, private apiService: ApiService, private router: Router) {
   }
@@ -94,6 +98,13 @@ export class NewSessionComponent implements OnInit {
   }
 
   createSession(): void {
+    this.submitted = true;
+
+    if (!this.ruleSetId || !this.firstDealerId || !this.firstPreHandId || !this.firstMiddleHandId || !this.firstRearHandId) {
+      alert('You have to select a rule set and a player for every position!');
+      return;
+    }
+
     const today = new Date();
 
     const cs: CreatableSession = {
@@ -105,15 +116,8 @@ export class NewSessionComponent implements OnInit {
       fourthPlayerId: this.firstRearHandId
     };
 
-    this.apiService.createSession(this.group.id, cs).subscribe((session) => {
-      // noinspection JSIgnoredPromiseFromCall
-      this.router.navigate(['..', 'sessions', session.serialNumber], {relativeTo: this.route});
-    });
+    this.apiService.createSession(this.group.id, cs)
+      .subscribe((session) => this.createdSession = session);
   }
 
-  toggleRuleSet(rs: SelectableValue<RuleSet>): void {
-    this.ruleSets.forEach((srs) => srs.isSelected = false);
-
-    rs.isSelected = true;
-  }
 }

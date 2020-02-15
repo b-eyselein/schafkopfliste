@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CreatableGame, CreatableSession, Game, Session, SessionWithPlayersAndRuleSet} from '../_interfaces/model';
+import {CreatableSession, Game, Session, CompleteSession} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
@@ -66,10 +66,10 @@ export class ApiService {
     return this.httpClient.get<Session>(url);
   }
 
-  getSessionWithPlayersAndRuleSet(groupId: number, serialNumber: number): Observable<SessionWithPlayersAndRuleSet | undefined> {
+  getCompleteSession(groupId: number, serialNumber: number): Observable<CompleteSession | undefined> {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${serialNumber}/sessionWithPlayersAndRuleSet`;
 
-    return this.httpClient.get<SessionWithPlayersAndRuleSet>(url);
+    return this.httpClient.get<CompleteSession>(url);
   }
 
   // Creation
@@ -103,7 +103,7 @@ export class ApiService {
       .pipe(tap((added) => console.info(added)));
   }
 
-  createGame(groupId: number, sessionSerialNumber: number, game: CreatableGame): Observable<Game> {
+  createGame(groupId: number, sessionSerialNumber: number, game: Game): Observable<Game> {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${sessionSerialNumber}/games`;
 
     return this.httpClient.put<Game>(url, game, ApiService.putHttpOptions);

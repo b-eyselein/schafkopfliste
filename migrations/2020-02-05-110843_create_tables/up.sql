@@ -15,6 +15,8 @@ create table if not exists rule_sets (
     id                 serial primary key not null,
     name               varchar(100)       not null,
 
+    base_price         integer            not null default 5,
+    solo_price         integer            not null default 15,
     count_laufende     count_laufende     not null default 'always',
     geier_allowed      boolean            not null default false,
     hochzeit_allowed   boolean            not null default false,
@@ -82,22 +84,20 @@ create table if not exists games (
     session_id              int       not null,
     group_id                int       not null,
 
+    acting_player_id        int       not null,
     game_type               game_type not null,
-    suit               bavarian_suit,
+    suit                    bavarian_suit,
+
+    is_doubled              bool      not null default false,
     laufende_count          int       not null default 0,
-    schneider_schwarz       schneider_schwarz,
+    schneider_schwarz       schneider_schwarz  default null,
 
-    first_player_put        bool      not null default false,
-    second_player_put       bool      not null default false,
-    third_player_put        bool      not null default false,
-    fourth_player_put       bool      not null default false,
+    players_having_put_ids  integer[] not null default '{}',
+    players_with_contra_ids integer[] not null default '{}',
+    players_having_won_ids  integer[] not null default '{}',
 
-    first_player_contra_re  bool      not null default false,
-    second_player_contra_re bool      not null default false,
-    third_player_contra_re  bool      not null default false,
-    fourth_player_contra_re bool      not null default false,
-
-    primary key (id, session_id, group_id)
+    primary key (id, session_id, group_id),
+    foreign key (acting_player_id) references players (id) on update cascade on delete cascade
 );
 
 create or replace view groups_with_player_count as

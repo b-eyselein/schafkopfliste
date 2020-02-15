@@ -2,6 +2,7 @@ use chrono::NaiveDate;
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
+use crate::models::game::{select_games_for_session, Game};
 use crate::models::group::{get_group, Group};
 use crate::models::player::{select_player_by_id, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
@@ -10,7 +11,6 @@ use crate::schema::sessions;
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
-    pub id: i32,
     pub date: NaiveDate,
     pub first_player_id: i32,
     pub second_player_id: i32,
@@ -37,12 +37,12 @@ pub struct Session {
 
 impl Session {
     fn from_creatable_session(
+        id: i32,
         group_id: i32,
         creator_username: String,
         cs: CreatableSession,
     ) -> Session {
         let CreatableSession {
-            id,
             date,
             first_player_id,
             second_player_id,
@@ -68,7 +68,7 @@ impl Session {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct SessionWithPlayersAndRuleSet {
+pub struct CompleteSession {
     id: i32,
     group: Group,
     date: NaiveDate,
@@ -77,9 +77,10 @@ pub struct SessionWithPlayersAndRuleSet {
     third_player: Player,
     fourth_player: Player,
     rule_set: RuleSet,
+    played_games: Vec<Game>,
 }
 
-impl SessionWithPlayersAndRuleSet {
+impl CompleteSession {
     pub fn from_db_values(
         session: Session,
         group: Group,
@@ -88,8 +89,9 @@ impl SessionWithPlayersAndRuleSet {
         third_player: Player,
         fourth_player: Player,
         rule_set: RuleSet,
-    ) -> SessionWithPlayersAndRuleSet {
-        SessionWithPlayersAndRuleSet {
+        played_games: Vec<Game>,
+    ) -> CompleteSession {
+        CompleteSession {
             id: session.id,
             date: session.date,
             group,
@@ -98,19 +100,20 @@ impl SessionWithPlayersAndRuleSet {
             third_player,
             fourth_player,
             rule_set,
+            played_games,
         }
     }
 }
 
 pub fn select_session_by_id(conn: &PgConnection, group_id: i32, id: i32) -> Option<Session> {
-    sessions::table.find((group_id, id)).first(conn).ok()
+    sessions::table.find((id, group_id)).first(conn).ok()
 }
 
 pub fn select_session_with_players_and_rule_set_by_id(
     conn: &PgConnection,
     the_group_id: i32,
     the_serial_number: i32,
-) -> Option<SessionWithPlayersAndRuleSet> {
+) -> Option<CompleteSession> {
     let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
 
     let group = get_group(conn, session.group_id)?;
@@ -122,7 +125,9 @@ pub fn select_session_with_players_and_rule_set_by_id(
 
     let rule_set = select_rule_set_by_id(conn, session.rule_set_id)?;
 
-    Some(SessionWithPlayersAndRuleSet::from_db_values(
+    let played_games = select_games_for_session(conn, &session);
+
+    Some(CompleteSession::from_db_values(
         session,
         group,
         first_player,
@@ -130,6 +135,7 @@ pub fn select_session_with_players_and_rule_set_by_id(
         third_player,
         fourth_player,
         rule_set,
+        played_games,
     ))
 }
 
@@ -139,22 +145,18 @@ pub fn insert_session(
     creator_username: String,
     cs: CreatableSession,
 ) -> Result<Session, String> {
-    /*
-    let maybe_max_serial_number = sessions::table
+    let maybe_max_id = sessions::table
         .filter(sessions::group_id.eq(group_id))
-        .select(diesel::dsl::max(sessions::serial_number))
+        .select(diesel::dsl::max(sessions::id))
         .first::<Option<i32>>(conn)
         .map_err(|_| -> String { "Error while querying serial for new session".into() })?;
 
-    let serial_number = maybe_max_serial_number.map(|v| v + 1).unwrap_or(0);
-    */
+    let id = maybe_max_id.map(|v| v + 1).unwrap_or(0);
+
+    let session = Session::from_creatable_session(id, group_id, creator_username, cs);
 
     diesel::insert_into(sessions::table)
-        .values(Session::from_creatable_session(
-            group_id,
-            creator_username,
-            cs,
-        ))
+        .values(session)
         .returning(sessions::all_columns)
         .get_result(conn)
         .map_err(|_| "Error while inserting session into db".into())

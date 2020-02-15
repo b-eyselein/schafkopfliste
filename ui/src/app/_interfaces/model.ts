@@ -13,23 +13,24 @@ export interface CreatableSession {
 }
 
 export interface Session extends CreatableSession {
-  serialNumber: number;
+  id: number;
   groupId: number;
 }
 
-export interface SessionWithPlayersAndRuleSet {
-  serialNumber: number;
+export interface CompleteSession {
+  id: number;
   group: Group;
   firstPlayer: Player;
   secondPlayer: Player;
   thirdPlayer: Player;
   fourthPlayer: Player;
   ruleSet: RuleSet;
+  playedGames: Game[];
 }
 
-export type CommitableSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
+export type BavarianSuitName = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
-export type CommitableGameTypeGameType = 'Ruf'
+export type GameTypeName = 'Ruf'
   | 'Wenz'
   | 'Farbsolo'
   | 'Geier'
@@ -41,19 +42,20 @@ export type CommitableGameTypeGameType = 'Ruf'
 
 export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
-export type CommitableGameType = {
-  type: CommitableGameTypeGameType;
-  suit?: CommitableSuit;
-};
+export interface Game {
+  id: number;
+  sessionId: number;
+  groupId: number;
 
-export interface CreatableGame {
-  gameType: CommitableGameType;
+  actingPlayerId: number;
+  gameType: GameTypeName;
+  suit: BavarianSuitName | undefined;
+
+  isDoubled: boolean;
   laufendeCount: number;
   schneiderSchwarz: SchneiderSchwarz | undefined;
-}
 
-export interface Game extends CreatableGame {
-  sessionSerialNumber: number;
-  groupId: number;
-  serialNumber: number;
+  playersHavingPutIds: number[];
+  playersWithContraIds: number[];
+  playersHavingWonIds: number[];
 }

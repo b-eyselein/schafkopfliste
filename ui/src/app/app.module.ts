@@ -11,6 +11,7 @@ import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player
 import {RuleSetListComponent} from './rule-set-list/rule-set-list.component';
 import {NewSessionComponent} from './new-session/new-session.component';
 import {ButtonListSelectComponent} from './_components/button-list-select/button-list-select.component';
+import { GamesTableComponent } from './_components/games-table/games-table.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import {ButtonListSelectComponent} from './_components/button-list-select/button
     RuleSetListComponent,
     NewSessionComponent,
     ButtonListSelectComponent,
+    GamesTableComponent,
   ],
   imports: [
     BrowserModule,

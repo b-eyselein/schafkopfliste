@@ -19,9 +19,17 @@
 
         <hr>
 
-        <div class="columns is-multiline" *ngIf="group.players.length > 0; else noPlayersFoundBlock">
-          <div class="column is-one-quarter" *ngFor="let player of group.players">
-            <div class="box is-fullwidth has-text-centered">{{player.name}}</div>
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">Mitglieder</p>
+          </header>
+          <div class="card-content">
+            <div class="columns is-multiline" *ngIf="group.players.length > 0; else noPlayersFoundBlock">
+              <div class="column is-one-quarter" *ngFor="let player of group.players">
+                <div class="box is-fullwidth has-text-centered">{{player.name}}</div>
+              </div>
+            </div>
+
           </div>
         </div>
 

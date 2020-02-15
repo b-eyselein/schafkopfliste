@@ -1,7 +1,7 @@
-diff --git a/src/schema.rs b/schema.rs.save
-index 680e868..c6e639a 100644
---- a/src/schema.rs
-+++ b/schema.rs.save
+diff --git a/src/schema.rs.orig b/src/schema.rs
+index 0cae4b4..44b62d4 100644
+--- a/src/schema.rs.orig
++++ b/src/schema.rs
 @@ -1,7 +1,10 @@
  table! {
 +    use diesel::sql_types::*;
@@ -11,9 +11,9 @@ index 680e868..c6e639a 100644
          id -> Int4,
          session_id -> Int4,
          group_id -> Int4,
+         acting_player_id -> Int4,
          game_type -> Game_type,
-         suit -> Nullable<Bavarian_suit>,
-@@ -39,12 +42,15 @@ table! {
+@@ -36,12 +39,15 @@ table! {
          abbreviation -> Varchar,
          name -> Varchar,
      }
@@ -26,6 +26,6 @@ index 680e868..c6e639a 100644
      rule_sets (id) {
          id -> Int4,
          name -> Varchar,
+         base_price -> Int4,
+         solo_price -> Int4,
          count_laufende -> Count_laufende,
-         geier_allowed -> Bool,
-         hochzeit_allowed -> Bool,

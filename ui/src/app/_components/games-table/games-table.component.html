@@ -1,0 +1,48 @@
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <tr>
+      <th rowspan="2">Nummer</th>
+      <th rowspan="2">Geber</th>
+      <th rowspan="2" title="Gedoppelt">2x</th>
+      <th colspan="4">Leger</th>
+      <th rowspan="2">Spiel</th>
+      <th rowspan="2">Farbe</th>
+      <th rowspan="2">Spieler</th>
+      <th colspan="4">Kontra</th>
+      <th colspan="4">Gewinner</th>
+      <th colspan="2" title="Schneider / Schwarz">SN / SW</th>
+    </tr>
+    <tr>
+      <!-- Leger -->
+      <th *ngFor="let p of players" title="{{p.name}}">{{p.abbreviation}}</th>
+
+      <!-- Kontra -->
+      <th *ngFor="let p of players" title="{{p.name}}">{{p.abbreviation}}</th>
+
+      <!-- Gewinner -->
+      <th *ngFor="let p of players" title="{{p.name}}">{{p.abbreviation}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let playedGame of session.playedGames">
+      <td>{{playedGame.id}}</td>
+      <td><code>TODO!</code></td>
+      <td>{{playedGame.isDoubled ? '' : '&#10004;'}}</td>
+      <!-- Leger -->
+      <td *ngFor="let p of players">{{playerHasPut(playedGame, p) ? '&#10004;' : ''}}</td>
+
+      <td>{{playedGame.gameType}}</td>
+      <td>{{getSuitGermanName(playedGame)}}</td>
+      <td>{{getActingPlayer(playedGame).abbreviation}}</td>
+
+      <!-- Kontra -->
+      <td *ngFor="let p of players">{{playerGaveContra(playedGame, p) ? '&#10004;' : ''}}</td>
+
+      <!-- Gewinner -->
+      <td *ngFor="let p of players">{{playerHasWon(playedGame, p) ? '&#10004;' : ''}}</td>
+
+      <td>{{playedGame.schneiderSchwarz}}</td>
+    </tr>
+  </tbody>
+</table>
+
