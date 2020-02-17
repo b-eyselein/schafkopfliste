@@ -4,7 +4,7 @@ import {CompleteSession, Game, SchneiderSchwarz} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
 import {ApiService} from '../_services/api.service';
 import {SelectableValue, toSelectableValue} from '../_interfaces/selectable-value';
-import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit, SUITS} from '../_interfaces/ruleset';
+import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit} from '../_interfaces/ruleset';
 
 interface ActingPlayer extends Player {
   hasPut: boolean;
@@ -35,15 +35,11 @@ export class SessionComponent implements OnInit {
 
   readonly playerIndexes = [0, 1, 2, 3];
 
-  readonly schneiderSchwarzValues: SelectableValue<SchneiderSchwarz | undefined>[] = [
-    ...['Schneider', 'Schwarz'].map((snsw: SchneiderSchwarz) => toSelectableValue<SchneiderSchwarz>(snsw, snsw))
-  ];
-
   session: CompleteSession;
 
   selectablePlayers: SelectableValue<Player>[];
   allowedGameTypes: SelectableValue<GameType>[];
-  allowedSuits: SelectableValue<Suit>[] = SUITS.map((rs) => toSelectableValue(rs, rs.name));
+  allowedSuits: SelectableValue<Suit>[];
 
   currentGameIndex = 1;
 
@@ -52,10 +48,13 @@ export class SessionComponent implements OnInit {
   player: ActingPlayer;
   playedGameType: GameType | undefined;
   playedGameSuit: Suit;
+  tout = false;
 
   isDoubled = false;
   schneiderSchwarz: SchneiderSchwarz | undefined;
-  tout = false;
+  laufendeCount = 0;
+
+  doubledGames: number = 0;
 
   submitted = false;
 
@@ -83,38 +82,44 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  private resetDataAfterRecording(): void {
+  private resetData(wasThrownIn: boolean = false): void {
     console.info('Resetting values...');
 
-    this.currentGameIndex++;
+    if (!wasThrownIn) {
+      this.currentGameIndex++;
+    } else {
+      this.doubledGames++;
+    }
+
+    if (this.doubledGames > 0) {
+      this.doubledGames--;
+      this.isDoubled = true;
+    }
+
 
     this.actingPlayers = getActingPlayers(this.session);
 
     this.player = undefined;
     this.playedGameType = undefined;
     this.playedGameSuit = undefined;
-
-    this.isDoubled = false;
     this.tout = false;
+
+    this.schneiderSchwarz = undefined;
+    this.laufendeCount = 0;
 
     this.submitted = false;
   }
 
-  isDealer(index: number): boolean {
-    return (this.currentGameIndex - 1) % 4 === index;
+  getDealer(): Player {
+    return this.actingPlayers[(this.currentGameIndex - 1) % 4];
   }
 
   togglePlayer(p: ActingPlayer): void {
     this.player = this.player === p ? undefined : p;
   }
 
-  toggleGameType(gameType: GameType | undefined): void {
-    if (gameType) {
-      this.playedGameType = this.playedGameType === gameType ? undefined : gameType;
-      this.allowedSuits = this.playedGameType ? getSuitsForGameType(this.playedGameType) : [];
-    } else {
-
-    }
+  onGameTypeUpdate(): void {
+    this.allowedSuits = this.playedGameType ? getSuitsForGameType(this.playedGameType) : undefined;
   }
 
   toggleSuit(suit: Suit | undefined): void {
@@ -137,22 +142,20 @@ export class SessionComponent implements OnInit {
       .map((ap) => ap.id);
   }
 
-  private getPlayersHavingWonIds(): number[] {
+  getPlayersHavingWonIds(): number[] {
     return this.actingPlayers
       .filter((ap) => ap.hasWon)
       .map((ap) => ap.id);
   }
 
+  throwIn(): void {
+    this.resetData(true);
+  }
+
   saveGame() {
     this.submitted = true;
 
-    if (!this.player || !this.playedGameType) {
-      return;
-    }
-
-    if (this.playedGameType.needsSuit && !this.playedGameSuit) {
-      alert('You have to select a suit!');
-      console.info(this.playedGameSuit);
+    if (!this.player || !this.playedGameType || (this.playedGameType.needsSuit && !this.playedGameSuit)) {
       return;
     }
 
@@ -163,7 +166,7 @@ export class SessionComponent implements OnInit {
       return;
     }
 
-    // TODO: laufende, schneider/schwarz!
+    // TODO: laufende!
     const game: Game = {
       id: this.currentGameIndex,
       sessionId: this.session.id,
@@ -171,10 +174,10 @@ export class SessionComponent implements OnInit {
 
       actingPlayerId: this.player.id,
       gameType: this.playedGameType.name,
-      suit: this.playedGameSuit.commitableSuit,
+      suit: this.playedGameSuit?.commitableSuit,
 
       isDoubled: this.isDoubled,
-      laufendeCount: 0,
+      laufendeCount: this.laufendeCount,
       schneiderSchwarz: this.schneiderSchwarz,
 
       playersHavingPut: {Right: this.getPlayersHavingPutIds()},
@@ -185,7 +188,7 @@ export class SessionComponent implements OnInit {
     this.apiService.createGame(this.session.group.id, this.session.id, game)
       .subscribe((g) => {
         this.session.playedGames.push(g);
-        this.resetDataAfterRecording();
+        this.resetData();
       });
   }
 

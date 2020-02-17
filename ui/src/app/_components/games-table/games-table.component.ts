@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CompleteSession, Game} from '../../_interfaces/model';
+import {CompleteSession, Game, isLeft} from '../../_interfaces/model';
 import {Player} from '../../_interfaces/player';
 import {SUITS} from '../../_interfaces/ruleset';
 
@@ -21,11 +21,20 @@ export class GamesTableComponent implements OnInit {
     return [this.session.firstPlayer, this.session.secondPlayer, this.session.thirdPlayer, this.session.fourthPlayer];
   }
 
-  playerHasPut(playedGame: Game, player: Player): boolean {
-    if (Array.isArray(playedGame.playersHavingPut)) {
-      return playedGame.playersHavingPut.includes(player.id);
+  getDealer(playedGame: Game): Player {
+    return this.players[(playedGame.id - 1) % 4];
+  }
+
+  playersHavingPut(playedGame: Game): number | string {
+    const php = playedGame.playersHavingPut;
+
+    if (isLeft(php)) {
+      return php.Left;
     } else {
-      return false;
+      return this.players
+        .filter((p) => php.Right.includes(p.id))
+        .map((p) => p.abbreviation)
+        .join(', ');
     }
   }
 
@@ -37,15 +46,24 @@ export class GamesTableComponent implements OnInit {
     return this.players.find((p) => p.id === playedGame.actingPlayerId);
   }
 
-  playerGaveContra(playedGame: Game, p: Player) {
-    if (Array.isArray(playedGame.playersWithContra)) {
-      return playedGame.playersWithContra.includes(p.id);
+  playersWithContra(playedGame: Game): number | string {
+    const pwc = playedGame.playersWithContra;
+
+    if (isLeft(pwc)) {
+      return pwc.Left;
     } else {
-      return false;
+      return this.players
+        .filter((p) => pwc.Right.includes(p.id))
+        .map((p) => p.abbreviation)
+        .join(', ');
     }
   }
 
-  playerHasWon(playedGame: Game, p: Player): boolean {
-    return playedGame.playersHavingWonIds.includes(p.id);
+  playersHavingWon(playedGame: Game): string {
+    return this.players
+      .filter((p) => playedGame.playersHavingWonIds.includes(p.id))
+      .map((p) => p.abbreviation)
+      .join(', ');
   }
+
 }

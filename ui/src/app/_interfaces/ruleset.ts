@@ -11,6 +11,8 @@ const LEAVES: Suit = {name: 'Blatt', commitableSuit: 'Leaves'};
 const HEARTS: Suit = {name: 'Herz', commitableSuit: 'Hearts'};
 const BELLS: Suit = {name: 'Schellen', commitableSuit: 'Bells'};
 
+const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
+
 export const SUITS: Suit[] = [ACORNS, LEAVES, HEARTS, BELLS];
 
 export interface CreatableRuleSet {
@@ -36,8 +38,12 @@ const RAMSCH: GameType = {name: 'Ramsch', playerPartySize: 1, needsSuit: false, 
 const FARB_WENZ: GameType = {name: 'Farbwenz', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 
-export function getSuitsForGameType(playedGame: GameType): SelectableValue<Suit>[] {
-  return SUITS.map((gt) => toSelectableValue(gt, gt.name));
+export function getSuitsForGameType(playedGame: GameType): SelectableValue<Suit>[] | undefined {
+  if (!playedGame.needsSuit) {
+    return undefined;
+  } else {
+    return (playedGame === RUF ? RUF_SUITS : SUITS).map((gt) => toSelectableValue(gt, gt.name));
+  }
 }
 
 export interface RuleSet extends CreatableRuleSet {

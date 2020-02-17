@@ -42,6 +42,30 @@ export type GameTypeName = 'Ruf'
 
 export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
+/*
+export interface Either<T, U> {
+
+}
+ */
+
+type Either<T, U> = Left<T, U> | Right<T, U>;
+
+export interface Left<T, U> {
+  Left: T;
+}
+
+export function isLeft<T, U>(e: Either<T, U>): e is Left<T, U> {
+  return 'Left' in e;
+}
+
+export interface Right<T, U> {
+  Right: U;
+}
+
+export function isRight<T, U>(e: Either<T, U>): e is Right<T, U> {
+  return 'Right' in e;
+}
+
 export interface Game {
   id: number;
   sessionId: number;
@@ -55,7 +79,7 @@ export interface Game {
   laufendeCount: number;
   schneiderSchwarz: SchneiderSchwarz | undefined;
 
-  playersHavingPut: { Left: number } | { Right: number[] };
-  playersWithContra: { Left: number } | { Right: number[] };
+  playersHavingPut: Either<number, number[]>;
+  playersWithContra: Either<number, number[]>;
   playersHavingWonIds: number[];
 }
