@@ -9,6 +9,8 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
+use either::{Either, Left, Right};
+
 use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;

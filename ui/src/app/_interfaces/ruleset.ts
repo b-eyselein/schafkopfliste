@@ -37,10 +37,7 @@ const FARB_WENZ: GameType = {name: 'Farbwenz', playerPartySize: 1, needsSuit: tr
 const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 
 export function getSuitsForGameType(playedGame: GameType): SelectableValue<Suit>[] {
-  return SUITS.map((gt) => {
-    const isDisabled = playedGame === RUF && gt === HEARTS;
-    return toSelectableValue(gt, gt.name, false, undefined, isDisabled);
-  });
+  return SUITS.map((gt) => toSelectableValue(gt, gt.name));
 }
 
 export interface RuleSet extends CreatableRuleSet {
@@ -69,5 +66,5 @@ export function getAllowedGameTypes(ruleSet: RuleSet): SelectableValue<GameType>
 
   return maybeGameTypes
     .filter((gt) => gt)
-    .map((gt) => toSelectableValue(gt, gt.name, false));
+    .map((gt) => toSelectableValue(gt, gt.name));
 }

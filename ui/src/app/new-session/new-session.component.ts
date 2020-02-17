@@ -52,7 +52,7 @@ export class NewSessionComponent implements OnInit {
           this.updateRuleSets();
 
           this.playersForDealer = this.group.players
-            .map((p) => toSelectableValue(p, p.name, this.firstDealerId === p.id));
+            .map((p) => toSelectableValue(p, p.name/*, this.firstDealerId === p.id*/));
         });
     });
   }
@@ -60,16 +60,18 @@ export class NewSessionComponent implements OnInit {
   getSelectableRuleSets(ruleSets: RuleSet[]): SelectableValue<RuleSet>[] {
     return ruleSets.map((rs) => toSelectableValue(
       rs, rs.name,
-      this.group.default_rule_set && rs.id === this.group.default_rule_set.id,
+//      this.group.default_rule_set && rs.id === this.group.default_rule_set.id,
       JSON.stringify(rs, null, 2)
     ));
   }
 
   updateDealer(dealerId: number): void {
+    console.info(dealerId);
+
     this.firstDealerId = dealerId;
     this.playersForPreHand = this.group.players
       .filter((p) => p.id !== this.firstDealerId)
-      .map((p) => toSelectableValue(p, p.name, this.firstPreHandId === p.id));
+      .map((p) => toSelectableValue(p, p.name/*, this.firstPreHandId === p.id*/));
   }
 
   updatePreHand(preHandId: number): void {
@@ -79,7 +81,7 @@ export class NewSessionComponent implements OnInit {
 
     this.playersForMiddleHand = this.group.players
       .filter((p) => !selectedPlayerIds.includes(p.id))
-      .map((p) => toSelectableValue(p, p.name, this.firstMiddleHandId === p.id));
+      .map((p) => toSelectableValue(p, p.name/*, this.firstMiddleHandId === p.id*/));
   }
 
 
@@ -90,7 +92,7 @@ export class NewSessionComponent implements OnInit {
 
     this.playersForRearHand = this.group.players
       .filter((p) => !selectedPlayerIds.includes(p.id))
-      .map((p) => toSelectableValue(p, p.name, this.firstRearHandId === p.id));
+      .map((p) => toSelectableValue(p, p.name/*, this.firstRearHandId === p.id*/));
   }
 
   updateRearHand(rearHandId: number): void {

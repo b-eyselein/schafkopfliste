@@ -55,7 +55,7 @@ export interface Game {
   laufendeCount: number;
   schneiderSchwarz: SchneiderSchwarz | undefined;
 
-  playersHavingPutIds: number[];
-  playersWithContraIds: number[];
+  playersHavingPut: { Left: number } | { Right: number[] };
+  playersWithContra: { Left: number } | { Right: number[] };
   playersHavingWonIds: number[];
 }

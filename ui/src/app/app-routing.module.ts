@@ -10,6 +10,7 @@ import {GroupComponent} from './group/group.component';
 import {RuleSetListComponent} from './rule-set-list/rule-set-list.component';
 import {NewSessionComponent} from './new-session/new-session.component';
 import {PlayersInGroupComponent} from './players-in-group/players-in-group.component';
+import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
 
 
 export const routingComponents = [
@@ -34,7 +35,9 @@ const routes: Routes = [
   {path: 'groups/:groupId', component: GroupComponent, canActivate: [AuthGuard]},
   {path: 'groups/:groupId/players', component: PlayersInGroupComponent, canActivate: [AuthGuard]},
   {path: 'groups/:groupId/newSession', component: NewSessionComponent, canActivate: [AuthGuard]},
-  {path: 'groups/:groupId/sessions/:serialNumber', component: SessionComponent, canActivate: [AuthGuard]}
+  {path: 'groups/:groupId/sessions/:serialNumber', component: SessionComponent, canActivate: [AuthGuard]},
+
+  {path: 'groups/:groupId/uploadSpreadsheet', component: UploadSpreadsheetComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

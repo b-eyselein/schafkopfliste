@@ -22,7 +22,11 @@ export class GamesTableComponent implements OnInit {
   }
 
   playerHasPut(playedGame: Game, player: Player): boolean {
-    return playedGame.playersHavingPutIds.includes(player.id);
+    if (Array.isArray(playedGame.playersHavingPut)) {
+      return playedGame.playersHavingPut.includes(player.id);
+    } else {
+      return false;
+    }
   }
 
   getSuitGermanName(playedGame: Game): string {
@@ -34,7 +38,11 @@ export class GamesTableComponent implements OnInit {
   }
 
   playerGaveContra(playedGame: Game, p: Player) {
-    return playedGame.playersWithContraIds.includes(p.id);
+    if (Array.isArray(playedGame.playersWithContra)) {
+      return playedGame.playersWithContra.includes(p.id);
+    } else {
+      return false;
+    }
   }
 
   playerHasWon(playedGame: Game, p: Player): boolean {

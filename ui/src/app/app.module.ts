@@ -10,6 +10,7 @@ import {CreateGroupComponent} from './_forms/create-group/create-group.component
 import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player-to-group.component';
 import {ButtonListSelectComponent} from './_components/button-list-select/button-list-select.component';
 import {GamesTableComponent} from './_components/games-table/games-table.component';
+import { UploadSpreadsheetComponent } from './upload-spreadsheet/upload-spreadsheet.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import {GamesTableComponent} from './_components/games-table/games-table.compone
     AddPlayerToGroupComponent,
     ButtonListSelectComponent,
     GamesTableComponent,
+    UploadSpreadsheetComponent,
   ],
   imports: [
     BrowserModule,

@@ -10,99 +10,116 @@
       <skl-games-table [session]="session"></skl-games-table>
     </div>
 
-    <br>
+    <div class="box">
 
-    <div class="columns">
-      <div class="column" *ngFor="let p of actingPlayers; let index = index">
-        <div class="card">
-          <header class="card-header">
-            <p class="card-header-title is-centered">
-              <span [ngClass]="isDealer(index) ? 'is-uppercase' : ''">{{p.name}}</span>
-              {{isDealer(index) ? '&nbsp;(Geber)' : ''}}
-            </p>
-          </header>
-          <div class="card-content">
-
-            <div class="buttons">
-              <button class="button is-fullwidth" [ngClass]="p.hasPut ? 'is-link' : ''" (click)="p.hasPut = !p.hasPut">
-                {{p.hasPut ? '&#10004;' : '&#10008; nicht'}} gelegt
-              </button>
-
-              <button (click)="togglePlayer(p)" class="button is-fullwidth" [ngClass]="player === p ? 'is-link' : ''">
-                {{player === p ? '&#10004; spielt' : '&#10008; spielt nicht'}}
-              </button>
-
-              <button class="button is-fullwidth" [ngClass]="p.gaveContra ? 'is-link' : ''"
-                      (click)="p.gaveContra = !p.gaveContra">
-                {{p.gaveContra ? '&#10004;' : '&#10008; kein'}} Kontra / Re
-              </button>
-
-              <button (click)="p.hasWon = !p.hasWon" class="button is-fullwidth" [ngClass]="p.hasWon ? 'is-link' : ''">
-                {{p.hasWon ? '&#10004; gewonnen' : '&#10008; verloren'}}
-              </button>
-            </div>
-
-          </div>
+      <div class="columns">
+        <div class="column has-text-centered">
+          <label class="label">Leger:</label>
+        </div>
+        <div class="column" *ngFor="let pi of playerIndexes">
+          <button class="button is-fullwidth" (click)="actingPlayers[pi].hasPut = !actingPlayers[pi].hasPut"
+                  [ngClass]="{'is-link': actingPlayers[pi].hasPut}">
+            {{actingPlayers[pi].abbreviation}}
+          </button>
         </div>
       </div>
-    </div>
 
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">Spielansage und -ergebnis</p>
-      </header>
-      <div class="card-content">
 
-        <skl-button-list-select
-          label="Angesagtes Spiel:"
-          [options]="allowedGameTypes"
-          (selected)="toggleGameType($event)">
-        </skl-button-list-select>
+      <div class="columns">
+        <div class="column has-text-centered">
+          <label class="label">Spieler:</label>
+        </div>
+        <div class="column" *ngFor="let pi of playerIndexes">
+          <button class="button is-fullwidth" (click)="togglePlayer(actingPlayers[pi])"
+                  [ngClass]="{'is-link': player === actingPlayers[pi]}">
+            {{actingPlayers[pi].abbreviation}}
+          </button>
+        </div>
+      </div>
 
-        <br>
+      <div class="columns">
+        <div class="column is-one-fifth has-text-centered">
+            <span class="label">
+              <label for="game_type" [ngClass]="{'has-text-danger': this.submitted && !playedGameType}">
+                Angesagtes Spiel
+              </label> /
+              <label for="suit" [ngClass]="{'has-text-danger': this.submitted && !this.playedGameSuit}">
+                Farbe
+              </label>:
+            </span>
+        </div>
 
-        <skl-button-list-select
-          label="Farbe:"
-          [options]="allowedSuits"
-          (selected)="toggleSuit($event)"
-          [allDisabled]="!playedGameType || !playedGameType.needsSuit">
-        </skl-button-list-select>
+        <div class="column">
+          <div class="columns">
+            <div class="column">
+              <div class="select is-fullwidth">
+                <select id="game_type" [(ngModel)]="playedGameType" required>
+                  <option [ngValue]="undefined">Bitte wählen</option>
+                  <option *ngFor="let option of allowedGameTypes" [ngValue]="option.value">{{option.name}}</option>
+                </select>
+              </div>
+            </div>
 
-        <br>
-
-        <div class="field is-horizontal">
-          <div class="field-label">
-            <label class="label">Tout:</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <div class="buttons">
-                  <button class="button is-fullwidth" [ngClass]="tout ? 'is-link': ''"
-                          [disabled]="!playedGameType || !playedGameType.canBeTout">
-                    {{tout ? '&#10004;' : '&#10008; kein'}} Tout
-                  </button>
-                </div>
+            <div class="column">
+              <div class="select is-fullwidth">
+                <select id="suit" [(ngModel)]="playedGameSuit">
+                  <option [ngValue]="undefined">Bitte wählen</option>
+                  <option *ngFor="let option of allowedSuits" [ngValue]="option.value">{{option.name}}</option>
+                </select>
               </div>
             </div>
           </div>
         </div>
 
-        <br>
-
-        <skl-button-list-select
-          label="Schneider / Schwarz:"
-          [options]="schneiderSchwarzValues"
-          (selected)="toggleSchneiderSchwarz($event)">
-        </skl-button-list-select>
-
-        <hr>
-
-        <div class="buttons">
-          <button class="button is-link is-fullwidth" (click)="saveGame()">Spiel eintragen</button>
+        <div class="column is-one-fifth">
+          <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="tout = !tout">
+            {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+          </button>
         </div>
-
       </div>
+
+      <div class="columns">
+        <div class="column has-text-centered">
+          <label class="label">Kontra/Re:</label>
+        </div>
+        <div class="column" *ngFor="let pi of playerIndexes">
+          <button class="button is-fullwidth" (click)="actingPlayers[pi].gaveContra = !actingPlayers[pi].gaveContra"
+                  [ngClass]="{'is-link': actingPlayers[pi].gaveContra}">
+            {{actingPlayers[pi].abbreviation}}
+          </button>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column has-text-centered">
+          <label class="label">Gewonnen:</label>
+        </div>
+        <div class="column" *ngFor="let pi of playerIndexes">
+          <button class="button is-fullwidth" (click)="actingPlayers[pi].hasWon = !actingPlayers[pi].hasWon"
+                  [ngClass]="{'is-link': actingPlayers[pi].hasWon}">
+            {{actingPlayers[pi].abbreviation}}
+          </button>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column is-one-fifth has-text-centered">
+          <label class="label">Schneider / Schwarz:</label>
+        </div>
+        <div class="column" *ngFor="let snsw of ['Schneider', 'Schwarz']">
+          <button class="button is-fullwidth" (click)="toggleSchneiderSchwarz(snsw)"
+                  [ngClass]="{'is-link': schneiderSchwarz === snsw}">
+            {{snsw}}
+          </button>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="buttons">
+        <button class="button is-link is-fullwidth" (click)="saveGame()">Spiel eintragen</button>
+      </div>
+
     </div>
 
   </ng-container>
@@ -111,8 +128,4 @@
 
 <ng-template #loadingSessionBlock>
   <div class="notification is-primary has-text-centered">Lade Sitzung...</div>
-</ng-template>
-
-<ng-template #noSessionFoundBlock>
-  <div class="notification is-danger has-text-centered">Keine Sitzung gefunden!</div>
 </ng-template>
