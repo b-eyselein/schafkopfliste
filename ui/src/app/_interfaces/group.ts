@@ -21,3 +21,11 @@ export interface GroupWithPlayersAndRuleSet {
   default_rule_set: RuleSet | undefined;
   players: Player[];
 }
+
+export interface GroupWithPlayersAndMembership {
+  group: Group;
+  players: {
+    player: Player;
+    isMember: boolean;
+  }[];
+}

@@ -58,8 +58,8 @@ create table if not exists player_in_groups (
 );
 
 create table if not exists sessions (
-    id               int          not null,
-    group_id         int          not null,
+    id               integer      not null,
+    group_id         integer      not null,
     date             date         not null,
     has_ended        bool         not null default false,
     first_player_id  integer      not null,
@@ -80,21 +80,25 @@ create table if not exists sessions (
 );
 
 create table if not exists games (
-    id                      int       not null,
-    session_id              int       not null,
-    group_id                int       not null,
+    id                        integer   not null,
+    session_id                integer   not null,
+    group_id                  integer   not null,
 
-    acting_player_id        int       not null,
-    game_type               game_type not null,
-    suit                    bavarian_suit,
+    acting_player_id          integer   not null,
+    game_type                 game_type not null,
+    suit                      bavarian_suit,
 
-    is_doubled              bool      not null default false,
-    laufende_count          int       not null default 0,
-    schneider_schwarz       schneider_schwarz  default null,
+    is_doubled                bool      not null default false,
+    laufende_count            integer   not null default 0,
+    schneider_schwarz         schneider_schwarz  default null,
 
-    players_having_put_ids  integer[] not null default '{}',
-    players_with_contra_ids integer[] not null default '{}',
-    players_having_won_ids  integer[] not null default '{}',
+    players_having_put_count  integer   not null default 0,
+    players_having_put_ids    integer[],
+
+    players_with_contra_count integer   not null default 0,
+    players_with_contra_ids   integer[],
+
+    players_having_won_ids    integer[] not null default '{}',
 
     primary key (id, session_id, group_id),
     foreign key (acting_player_id) references players (id) on update cascade on delete cascade

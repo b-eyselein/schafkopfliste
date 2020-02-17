@@ -2,13 +2,16 @@
 
   <ng-container *ngIf="group; else loadingGroupComponent">
 
-    <h1 class="title is-3 has-text-centered">Gruppe {{group.name}}: Spieler</h1>
+    <h1 class="title is-3 has-text-centered">Gruppe {{group.group.name}}: Spieler</h1>
 
     <div class="columns is-multiline" *ngIf="group.players">
 
-     <div class="column is-2" *ngFor="let player of group.players">
-       <button class="button is-link is-fullwidth">{{player.name}}</button>
-     </div>
+      <div class="column is-2" *ngFor="let player of group.players">
+        <button class="button is-fullwidth" [ngClass]="player.isMember ? 'is-link': ''"
+                (click)="addPlayerToGroup(player)">
+          {{player.player.name}}
+        </button>
+      </div>
 
     </div>
 

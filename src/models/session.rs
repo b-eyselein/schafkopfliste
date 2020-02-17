@@ -3,7 +3,7 @@ use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
 use crate::models::game::{select_games_for_session, Game};
-use crate::models::group::{get_group, Group};
+use crate::models::group::{select_group_by_id, Group};
 use crate::models::player::{select_player_by_id, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::sessions;
@@ -122,7 +122,7 @@ pub fn select_complete_session_by_id(
     Some(CompleteSession::from_db_values(
         session.id,
         session.date,
-        get_group(conn, &session.group_id)?,
+        select_group_by_id(conn, &session.group_id)?,
         select_player_by_id(conn, &session.first_player_id)?,
         select_player_by_id(conn, &session.second_player_id)?,
         select_player_by_id(conn, &session.third_player_id)?,

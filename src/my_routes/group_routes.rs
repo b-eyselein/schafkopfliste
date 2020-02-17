@@ -1,9 +1,11 @@
 use rocket::Route;
-use rocket_contrib::json::{Json, JsonError};
+use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::game::{insert_game, Game};
-use crate::models::group::{get_group, get_groups, insert_group, CreatableGroup, Group};
+use crate::models::group::{
+    insert_group, select_group_by_id, select_groups, CreatableGroup, Group,
+};
 use crate::models::player::Player;
 use crate::models::player_in_group::{
     add_player_to_group, select_group_with_players_and_rule_set_by_id,
@@ -18,7 +20,7 @@ use crate::DbConn;
 
 #[get("/")]
 fn route_groups(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Group>> {
-    Json(get_groups(&conn.0))
+    Json(select_groups(&conn.0))
 }
 
 #[put("/", format = "application/json", data = "<group_name_json>")]
@@ -53,7 +55,7 @@ fn route_group_with_players_by_id(
 
 #[get("/<group_id>")]
 fn route_group_by_id(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
-    Json(get_group(&conn.0, &group_id))
+    Json(select_group_by_id(&conn.0, &group_id))
 }
 
 #[put(
@@ -76,11 +78,18 @@ fn route_players_in_group(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> J
 }
 
 #[get("/<group_id>/playersAndMembership")]
-fn route_get_players_and_membership_for_group(
-    /* _my_jwt: MyJwtToken ,*/ conn: DbConn,
+fn route_get_group_with_players_and_membership(
+    _my_jwt: MyJwtToken,
+    conn: DbConn,
     group_id: i32,
-) -> Json<Vec<(Player, bool)>> {
-    Json(select_players_and_group_membership(&conn.0, &group_id))
+) -> JsonValue {
+    let group = select_group_by_id(&conn.0, &group_id);
+    let players_with_membership = select_players_and_group_membership(&conn.0, &group_id);
+
+    json!({
+    "group" : group,
+    "players": players_with_membership
+     })
 }
 
 #[get("/<group_id>/sessions/<serial_number>")]
@@ -159,7 +168,7 @@ pub fn exported_routes() -> Vec<Route> {
         route_group_with_players_by_id,
         route_group_by_id,
         route_players_in_group,
-        route_get_players_and_membership_for_group,
+        route_get_group_with_players_and_membership,
         route_add_player_to_group,
         route_get_session,
         route_get_session_with_players_and_rule_set,

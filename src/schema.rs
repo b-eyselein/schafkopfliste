@@ -12,8 +12,10 @@ table! {
         is_doubled -> Bool,
         laufende_count -> Int4,
         schneider_schwarz -> Nullable<Schneider_schwarz>,
-        players_having_put_ids -> Array<Int4>,
-        players_with_contra_ids -> Array<Int4>,
+        players_having_put_count -> Int4,
+        players_having_put_ids -> Nullable<Array<Int4>>,
+        players_with_contra_count -> Int4,
+        players_with_contra_ids -> Nullable<Array<Int4>>,
         players_having_won_ids -> Array<Int4>,
     }
 }

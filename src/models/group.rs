@@ -27,11 +27,11 @@ impl Group {
     }
 }
 
-pub fn get_groups(conn: &PgConnection) -> Vec<Group> {
+pub fn select_groups(conn: &PgConnection) -> Vec<Group> {
     groups::table.load(conn).unwrap_or(Vec::new())
 }
 
-pub fn get_group(conn: &PgConnection, group_id: &i32) -> Option<Group> {
+pub fn select_group_by_id(conn: &PgConnection, group_id: &i32) -> Option<Group> {
     groups::table.find(group_id).first(conn).ok()
 }
 
