@@ -1,6 +1,6 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::game::{Bavarian_suit, Game_type, Schneider_schwarz};
+    use crate::models::game_enums::{Bavarian_suit, Game_type, Schneider_schwarz};
 
     games (id, session_id, group_id) {
         id -> Int4,

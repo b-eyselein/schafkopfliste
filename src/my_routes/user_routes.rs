@@ -1,5 +1,5 @@
 use bcrypt::verify;
-use rocket::Route;
+use rocket::{put, routes, Route};
 use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::generate_token;

@@ -1,4 +1,4 @@
-use rocket::Route;
+use rocket::{get, put, routes, Route};
 use rocket_contrib::json::Json;
 
 use crate::jwt_helpers::MyJwtToken;

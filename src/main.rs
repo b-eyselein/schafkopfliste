@@ -4,13 +4,8 @@
 extern crate diesel;
 #[macro_use]
 extern crate diesel_derive_enum;
-#[macro_use]
-extern crate rocket;
-#[macro_use]
-extern crate rocket_contrib;
 
-use either::{Either, Left, Right};
-
+use rocket_contrib::database;
 use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;

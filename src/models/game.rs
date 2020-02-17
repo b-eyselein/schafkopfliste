@@ -2,38 +2,9 @@ use diesel::{self, prelude::*, PgConnection};
 use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 
+use crate::models::game_enums::*;
 use crate::models::session::Session;
 use crate::schema::games;
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
-#[DieselType = "Bavarian_suit"]
-pub enum BavarianSuit {
-    Acorns,
-    Leaves,
-    Hearts,
-    Bells,
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
-#[DieselType = "Game_type"]
-pub enum GameType {
-    Ruf,
-    Wenz,
-    Farbsolo,
-    Geier,
-    Hochzeit,
-    Bettel,
-    Ramsch,
-    Farbwenz,
-    Farbgeier,
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
-#[DieselType = "Schneider_schwarz"]
-pub enum SchneiderSchwarz {
-    Schneider,
-    Schwarz,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -54,6 +25,8 @@ pub struct Game {
     players_with_contra: Either<i32, Vec<i32>>,
     players_having_won_ids: Vec<i32>,
 }
+
+impl Game {}
 
 #[derive(Debug, Identifiable, Queryable, Insertable, Associations)]
 #[belongs_to(Session)]
