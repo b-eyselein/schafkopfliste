@@ -25,7 +25,7 @@ export interface CompleteSession {
   thirdPlayer: Player;
   fourthPlayer: Player;
   ruleSet: RuleSet;
-  playedGames: Game[];
+  playedGames: PricedGame[];
 }
 
 export type BavarianSuitName = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
@@ -82,4 +82,8 @@ export interface Game {
   playersHavingPut: Either<number, number[]>;
   playersWithContra: Either<number, number[]>;
   playersHavingWonIds: number[];
+}
+
+export interface PricedGame extends Game {
+  price: number;
 }

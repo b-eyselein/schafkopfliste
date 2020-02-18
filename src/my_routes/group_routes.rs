@@ -1,9 +1,9 @@
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json;
-use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_contrib::json::{Json, JsonValue};
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::{insert_game, Game};
+use crate::models::game::{insert_game, Game, PricedGame};
 use crate::models::group::{
     insert_group, select_group_by_id, select_groups, CreatableGroup, Group,
 };
@@ -13,6 +13,7 @@ use crate::models::player_in_group::{
     select_groups_with_player_count, select_players_and_group_membership, select_players_in_group,
     GroupWithPlayerCount, GroupWithPlayersAndRuleSet,
 };
+use crate::models::rule_set::select_rule_set_by_id;
 use crate::models::session::{
     insert_session, select_complete_session_by_id, select_session_by_id, select_sessions_for_group,
     CompleteSession, CreatableSession, Session,
@@ -145,25 +146,33 @@ fn route_create_session(
 #[put(
     "/<group_id>/sessions/<session_id>/games",
     format = "application/json",
-    data = "<game_json_try>"
+    data = "<game_json>"
 )]
 fn route_create_game(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
     session_id: i32,
-    game_json_try: Result<Json<Game>, JsonError>,
-) -> Result<Json<Game>, String> {
-    game_json_try
-        .map_err(|err| -> String {
-            println!("Error while deserializing game json: {:?}", err);
-            "Could not deserialize game!".into()
-        })
-        .and_then(|game_json| {
-            println!("{:?}", game_json);
+    game_json: Json<Game>,
+) -> Result<Json<PricedGame>, String> {
+    let maybe_session = select_session_by_id(&conn.0, &group_id, &session_id);
 
-            insert_game(&conn.0, group_id, session_id, game_json.0).map(Json)
-        })
+    match maybe_session {
+        None => Err(format!(
+            "No session with id {} for group {} found!",
+            session_id, group_id
+        )),
+        Some(session) => match select_rule_set_by_id(&conn.0, &session.rule_set_id) {
+            None => Err("No ruleset for session found!".into()),
+            Some(rule_set) => {
+                let game = game_json.0;
+
+                let priced_game = PricedGame::from_game(game, &rule_set);
+
+                insert_game(&conn.0, group_id, session_id, priced_game).map(Json)
+            }
+        },
+    }
 }
 
 pub fn exported_routes() -> Vec<Route> {

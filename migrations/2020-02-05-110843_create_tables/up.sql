@@ -99,6 +99,7 @@ create table if not exists games (
     players_with_contra_ids   integer[],
 
     players_having_won_ids    integer[] not null default '{}',
+    price                     integer   not null,
 
     primary key (id, session_id, group_id),
     foreign key (acting_player_id) references players (id) on update cascade on delete cascade

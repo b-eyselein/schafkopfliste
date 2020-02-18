@@ -17,6 +17,7 @@ table! {
         players_with_contra_count -> Int4,
         players_with_contra_ids -> Nullable<Array<Int4>>,
         players_having_won_ids -> Array<Int4>,
+        price -> Int4,
     }
 }
 

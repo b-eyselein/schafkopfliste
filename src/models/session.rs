@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
-use crate::models::game::{select_games_for_session, Game};
+use crate::models::game::{select_games_for_session, PricedGame};
 use crate::models::group::{select_group_by_id, Group};
 use crate::models::player::{select_player_by_id, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
@@ -31,7 +31,7 @@ pub struct Session {
     second_player_id: i32,
     third_player_id: i32,
     fourth_player_id: i32,
-    rule_set_id: i32,
+    pub rule_set_id: i32,
     creator_username: String,
 }
 
@@ -77,7 +77,7 @@ pub struct CompleteSession {
     third_player: Player,
     fourth_player: Player,
     rule_set: RuleSet,
-    played_games: Vec<Game>,
+    played_games: Vec<PricedGame>,
 }
 
 impl CompleteSession {
@@ -90,7 +90,7 @@ impl CompleteSession {
         third_player: Player,
         fourth_player: Player,
         rule_set: RuleSet,
-        played_games: Vec<Game>,
+        played_games: Vec<PricedGame>,
     ) -> CompleteSession {
         CompleteSession {
             id,
