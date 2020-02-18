@@ -8,8 +8,9 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
+use rocket::{get, response::Redirect, routes};
 use rocket_contrib::database;
-use rocket_contrib::serve::{Options, StaticFiles};
+use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;
@@ -38,6 +39,11 @@ fn establish_connection() -> PgConnection {
         .expect("Could not establish connection to database")
 }
 
+#[get("/")]
+fn route_index() -> Redirect {
+    Redirect::to("/app/")
+}
+
 fn main() {
     let db_conn = establish_connection();
 
@@ -45,7 +51,8 @@ fn main() {
         .expect("Could not run migrations on db!");
 
     rocket::ignite()
-        .mount("/", StaticFiles::new("static", Options::None))
+        .mount("/", routes![route_index])
+        .mount("/app", StaticFiles::from("static"))
         .mount("/api/users", my_routes::user_routes::exported_routes())
         .mount(
             "/api/ruleSets",
