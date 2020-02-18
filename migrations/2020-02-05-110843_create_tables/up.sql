@@ -143,11 +143,3 @@ values (1, 1),
        (1, 7),
        (1, 8),
        (1, 9);
-
--- TODO: dummy data...
-
-insert into sessions (id, group_id, date, has_ended, first_player_id, second_player_id, third_player_id,
-                      fourth_player_id, rule_set_id, creator_username)
-values (1, 1, '2020-02-12', false, 1, 2, 3, 4, 2, 'default');
-
--- insert into games (serial_number, session_serial_number, group_id, game_type_json) values (1, 1, 1, '');

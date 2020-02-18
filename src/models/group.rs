@@ -5,12 +5,14 @@ use crate::schema::groups;
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name = "groups"]
+#[serde(rename_all = "camelCase")]
 pub struct CreatableGroup {
     pub name: String,
     pub default_rule_set_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[serde(rename_all = "camelCase")]
 pub struct Group {
     pub id: i32,
     pub name: String,

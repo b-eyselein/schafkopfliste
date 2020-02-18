@@ -14,8 +14,8 @@ use crate::models::player_in_group::{
     GroupWithPlayerCount, GroupWithPlayersAndRuleSet,
 };
 use crate::models::session::{
-    insert_session, select_complete_session_by_id, select_session_by_id, CompleteSession,
-    CreatableSession, Session,
+    insert_session, select_complete_session_by_id, select_session_by_id, select_sessions_for_group,
+    CompleteSession, CreatableSession, Session,
 };
 use crate::DbConn;
 
@@ -93,6 +93,11 @@ fn route_get_group_with_players_and_membership(
      })
 }
 
+#[get("/<group_id>/sessions")]
+fn route_get_sessions(_my_jwt: MyJwtToken, conn: DbConn, group_id: i32) -> Json<Vec<Session>> {
+    Json(select_sessions_for_group(&conn.0, &group_id))
+}
+
 #[get("/<group_id>/sessions/<serial_number>")]
 fn route_get_session(
     _my_jwt: MyJwtToken,
@@ -100,7 +105,7 @@ fn route_get_session(
     group_id: i32,
     serial_number: i32,
 ) -> Json<Option<Session>> {
-    Json(select_session_by_id(&conn.0, group_id, serial_number))
+    Json(select_session_by_id(&conn.0, &group_id, &serial_number))
 }
 
 #[get("/<group_id>/sessions/<serial_number>/sessionWithPlayersAndRuleSet")]
@@ -112,8 +117,8 @@ fn route_get_session_with_players_and_rule_set(
 ) -> Json<Option<CompleteSession>> {
     Json(select_complete_session_by_id(
         &conn.0,
-        group_id,
-        serial_number,
+        &group_id,
+        &serial_number,
     ))
 }
 
@@ -171,6 +176,7 @@ pub fn exported_routes() -> Vec<Route> {
         route_players_in_group,
         route_get_group_with_players_and_membership,
         route_add_player_to_group,
+        route_get_sessions,
         route_get_session,
         route_get_session_with_players_and_rule_set,
         route_create_session,

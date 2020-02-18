@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {RuleSet} from '../_interfaces/ruleset';
 import {Player} from '../_interfaces/player';
@@ -31,7 +31,7 @@ export class NewSessionComponent implements OnInit {
 
   createdSession: Session | undefined;
 
-  constructor(private route: ActivatedRoute, private apiService: ApiService, private router: Router) {
+  constructor(private route: ActivatedRoute, private apiService: ApiService) {
   }
 
   private updateRuleSets(): void {
@@ -47,7 +47,7 @@ export class NewSessionComponent implements OnInit {
         .subscribe((g) => {
           this.group = g;
 
-          this.ruleSetId = this.group.default_rule_set ? this.group.default_rule_set.id : null;
+          this.ruleSetId = this.group.defaultRuleSet ? this.group.defaultRuleSet.id : null;
 
           this.updateRuleSets();
 

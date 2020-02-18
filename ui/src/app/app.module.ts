@@ -12,6 +12,7 @@ import {ButtonListSelectComponent} from './_components/button-list-select/button
 import {GamesTableComponent} from './_components/games-table/games-table.component';
 import { UploadSpreadsheetComponent } from './upload-spreadsheet/upload-spreadsheet.component';
 import { SessionListComponent } from './session-list/session-list.component';
+import { RuleSetComponent } from './rule-set/rule-set.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { SessionListComponent } from './session-list/session-list.component';
     GamesTableComponent,
     UploadSpreadsheetComponent,
     SessionListComponent,
+    RuleSetComponent,
   ],
   imports: [
     BrowserModule,

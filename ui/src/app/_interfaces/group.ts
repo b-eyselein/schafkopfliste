@@ -3,7 +3,7 @@ import {RuleSet} from './ruleset';
 
 export interface CreatableGroup {
   name: string;
-  default_rule_set_id: number | undefined;
+  defaultRuleSetId: number | undefined;
 }
 
 export interface Group extends CreatableGroup {
@@ -18,7 +18,7 @@ export interface GroupWithPlayerCount extends Group {
 export interface GroupWithPlayersAndRuleSet {
   id: number;
   name: string;
-  default_rule_set: RuleSet | undefined;
+  defaultRuleSet: RuleSet | undefined;
   players: Player[];
 }
 

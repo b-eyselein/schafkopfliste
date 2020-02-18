@@ -40,6 +40,7 @@ pub struct GroupWithPlayerCount {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayersAndRuleSet {
     id: i32,
     name: String,

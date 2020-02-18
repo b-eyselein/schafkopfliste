@@ -106,14 +106,21 @@ impl CompleteSession {
     }
 }
 
-pub fn select_session_by_id(conn: &PgConnection, group_id: i32, id: i32) -> Option<Session> {
+pub fn select_sessions_for_group(conn: &PgConnection, group_id: &i32) -> Vec<Session> {
+    sessions::table
+        .filter(sessions::group_id.eq(group_id))
+        .load(conn)
+        .unwrap_or(Vec::new())
+}
+
+pub fn select_session_by_id(conn: &PgConnection, group_id: &i32, id: &i32) -> Option<Session> {
     sessions::table.find((id, group_id)).first(conn).ok()
 }
 
 pub fn select_complete_session_by_id(
     conn: &PgConnection,
-    the_group_id: i32,
-    the_serial_number: i32,
+    the_group_id: &i32,
+    the_serial_number: &i32,
 ) -> Option<CompleteSession> {
     let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
 
@@ -144,7 +151,7 @@ pub fn insert_session(
         .first::<Option<i32>>(conn)
         .map_err(|_| -> String { "Error while querying serial for new session".into() })?;
 
-    let id = maybe_max_id.map(|v| v + 1).unwrap_or(0);
+    let id = maybe_max_id.map(|v| v + 1).unwrap_or(1);
 
     let session = Session::from_creatable_session(id, group_id, creator_username, cs);
 
