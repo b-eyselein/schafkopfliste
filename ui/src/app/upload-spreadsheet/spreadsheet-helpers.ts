@@ -1,6 +1,6 @@
-import {BavarianSuitName, Game, GameTypeName, SchneiderSchwarz, Session} from '../_interfaces/model';
+import {BavarianSuitName, Game, GameTypeName, SchneiderSchwarz} from '../_interfaces/model';
 import {CellObject, WorkSheet} from 'xlsx';
-import {Group} from '../_interfaces/group';
+import {Player} from '../_interfaces/player';
 
 export const header: string[] = [
   'id', // A
@@ -65,21 +65,23 @@ function readSchneiderSchwarz(snsw: SpreadSheetSchneiderSchwarz): SchneiderSchwa
   }
 }
 
-export function readSession(group: Group, ws: WorkSheet): Session {
+export function readSessionDateAndPlayers(groupMembers: Player[], ws: WorkSheet): { date: Date | undefined, players: Player[] } {
   const dateCell: CellObject = ws['D1'];
-  console.info(dateCell.t);
-  const date: string = dateCell ? dateCell.v as string : 'TODO!';
+  const date = dateCell ? dateCell.v as Date : undefined;
 
-  return {
-    id: -1,
-    groupId: group.id,
-    date,
-    ruleSetId: group.default_rule_set_id,
-    firstPlayerId: -1,
-    secondPlayerId: -1,
-    thirdPlayerId: -1,
-    fourthPlayerId: -1,
-  };
+  const firstPlayerAbbreviation: string = ws['F4'].v;
+  const firstPlayer = groupMembers.find((p) => p.abbreviation === firstPlayerAbbreviation);
+
+  const secondPlayerAbbreviation: string = ws['E5'].v;
+  const secondPlayer = groupMembers.find((p) => p.abbreviation === secondPlayerAbbreviation);
+
+  const thirdPlayerAbbreviation: string = ws['E6'].v;
+  const thirdPlayer = groupMembers.find((p) => p.abbreviation === thirdPlayerAbbreviation);
+
+  const fourthPlayerAbbreviation: string = ws['E7'].v;
+  const fourthPlayer = groupMembers.find((p) => p.abbreviation === fourthPlayerAbbreviation);
+
+  return {date, players: [firstPlayer, secondPlayer, thirdPlayer, fourthPlayer]};
 }
 
 export function readGameFromGameRow(groupId: number, sessionId: number, gameRow: GameRow): Game {

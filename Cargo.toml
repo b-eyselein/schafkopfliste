@@ -11,7 +11,7 @@ chrono = { version = "0.4.10", features = ["serde"] }
 either = { version = "1.5.3", features = ["serde"] }
 
 rocket = "0.4.2"
-rocket_contrib = { version = "0.4.2", default-features = false, features = ["json", "diesel_postgres_pool", "uuid"] }
+rocket_contrib = { version = "0.4.2", default-features = false, features = ["json", "diesel_postgres_pool", "serve"] }
 rocket_cors = "0.5.1"
 
 uuid = { version = "0.8.1", features = ["v4", "serde"] }

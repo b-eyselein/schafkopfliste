@@ -5,7 +5,7 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_derive_enum;
 
-use rocket_contrib::database;
+use rocket_contrib::{database, serve::StaticFiles};
 use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;
@@ -27,6 +27,7 @@ fn make_cors() -> Cors {
 
 fn main() {
     rocket::ignite()
+        .mount("/", StaticFiles::from("static"))
         .mount("/api/users", my_routes::user_routes::exported_routes())
         .mount(
             "/api/ruleSets",

@@ -13,9 +13,13 @@
 
   <hr>
 
+  <input type="date" [value]="sessionDate">
+
+  <!--
   <div class="box" *ngIf="session">
     <pre>{{session | json}}</pre>
   </div>
+  -->
 
   <div class="columns is-multiline" *ngIf="readGames">
     <div class="column is-4" *ngFor="let readGame of readGames">

@@ -130,14 +130,16 @@ values (1, 'BE', 'Björn Eyselein'),
        (4, 'MK', 'Markus Krug'),
        (5, 'CW', 'Christoph Wick'),
        (6, 'AHe', 'Amar Hekalo'),
-       (7, 'AHa', 'Alexander Hartelt');
+       (7, 'AHa', 'Alexander Hartelt'),
+       (8, 'MI', 'Marianus Ifland');
 
 insert into player_in_groups (group_id, player_id)
 values (1, 1),
        (1, 2),
        (1, 3),
        (1, 4),
-       (1, 5);
+       (1, 5),
+       (1, 8);
 
 -- TODO: dummy data...
 

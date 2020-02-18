@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:dev": "ng build --watch --output-path ../static",
+    "build:prod": "ng build --progress --prod --output-path ../static",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

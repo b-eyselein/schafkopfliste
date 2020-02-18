@@ -4,3 +4,6 @@
 
 # ignore saved schema.rs after patch
 src/schema.rs.orig
+
+static/*
+!static/.gitkeep
