@@ -120,18 +120,18 @@ insert into users (username, password_hash, player_id)
 values ('default', '$2b$12$7fdsVDDPlhVmAy.ilsmyTeE7E.e2YtwI7IkQ5MGaDVsE5wDm58vGq', null);
 
 insert into groups (id, name, default_rule_set_id)
-values (1, 'LS 6 Info Uni Wue', 2),
-       (2, 'Gruppe 2', 1);
+values (1, 'LS 6 Info Uni Wue', 2);
 
-insert into players (id, abbreviation, name)
-values (1, 'BE', 'Björn Eyselein'),
-       (2, 'AG', 'Alexander Gehrke'),
-       (3, 'JK', 'Jonathan Krebs'),
-       (4, 'MK', 'Markus Krug'),
-       (5, 'CW', 'Christoph Wick'),
-       (6, 'AHe', 'Amar Hekalo'),
-       (7, 'AHa', 'Alexander Hartelt'),
-       (8, 'MI', 'Marianus Ifland');
+insert into players (abbreviation, name)
+values ('BE', 'Björn Eyselein'),
+       ('AG', 'Alexander Gehrke'),
+       ('JK', 'Jonathan Krebs'),
+       ('MK', 'Markus Krug'),
+       ('CW', 'Christoph Wick'),
+       ('AHe', 'Amar Hekalo'),
+       ('AHa', 'Alexander Hartelt'),
+       ('MI', 'Marianus Ifland'),
+       ('CR', 'Christian Reul');
 
 insert into player_in_groups (group_id, player_id)
 values (1, 1),
@@ -139,7 +139,10 @@ values (1, 1),
        (1, 3),
        (1, 4),
        (1, 5),
-       (1, 8);
+       (1, 6),
+       (1, 7),
+       (1, 8),
+       (1, 9);
 
 -- TODO: dummy data...
 

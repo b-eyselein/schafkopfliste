@@ -8,7 +8,8 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-use rocket_contrib::{database, serve::StaticFiles};
+use rocket_contrib::database;
+use rocket_contrib::serve::{Options, StaticFiles};
 use rocket_cors::{Cors, CorsOptions};
 
 mod jwt_helpers;
@@ -44,7 +45,7 @@ fn main() {
         .expect("Could not run migrations on db!");
 
     rocket::ignite()
-        .mount("/", StaticFiles::from("static"))
+        .mount("/", StaticFiles::new("static", Options::None))
         .mount("/api/users", my_routes::user_routes::exported_routes())
         .mount(
             "/api/ruleSets",

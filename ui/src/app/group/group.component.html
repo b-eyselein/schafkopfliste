@@ -1,51 +1,37 @@
 <div class="container">
 
   <ng-container *ngIf="group">
-    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Spieler</h1>
-
-    <!--
-    <div class="columns">
-      <div class="column is-one-fifth-desktop">
-        <div class="box">
-          <skl-add-player-to-group [groupId]="group.id" [memberIds]="memberIds" (playerAdded)="onPlayerAdded($event)">
-          </skl-add-player-to-group>
-        </div>
-      </div>
-
-      <div class="column">
-      -->
-
-    <ng-container *ngIf="group.default_rule_set">
-      <h2 class="subtitle is-3 has-text-centered">Standardregelsatz: {{group.default_rule_set.name}}</h2>
-    </ng-container>
+    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;</h1>
 
     <hr>
 
-    <div class="card" *ngIf="group.players.length > 0; else noPlayersFoundBlock">
-      <header class="card-header">
-        <p class="card-header-title">Mitglieder</p>
-      </header>
-      <div class="card-content">
-        <div class="columns is-multiline">
-          <div class="column is-2" *ngFor="let player of group.players">
-            <div class="box is-fullwidth has-text-centered">{{player.name}}</div>
-          </div>
-        </div>
+    <div class="columns">
+      <div class="column is-two-fifths-desktop" *ngIf="group.default_rule_set">
 
+        <h2 class="subtitle is-3">Standardregeln</h2>
+        <pre>{{group.default_rule_set | json}}</pre>
+      </div>
+      <div class="column">
+        <ng-container *ngIf="group.players.length > 0; else noPlayersFoundBlock">
+          <h2 class="subtitle is-3">Mitglieder</h2>
+
+          <div class="columns is-multiline">
+            <div class="column is-one-third" *ngFor="let player of group.players">
+              <div class="button is-static is-fullwidth has-text-centered">{{player.abbreviation}} - {{player.name}}</div>
+            </div>
+            <div class="column is-one-third">
+              <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
 
     <hr>
 
     <div class="buttons">
-      <a class="button is-primary is-fullwidth" routerLink="./players">Spieler (hinzufügen)</a>
       <a class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung starten</a>
     </div>
-
-    <!--
-      </div>
-    </div>
-    -->
   </ng-container>
 
 </div>

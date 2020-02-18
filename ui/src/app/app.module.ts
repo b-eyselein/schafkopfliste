@@ -11,6 +11,7 @@ import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player
 import {ButtonListSelectComponent} from './_components/button-list-select/button-list-select.component';
 import {GamesTableComponent} from './_components/games-table/games-table.component';
 import { UploadSpreadsheetComponent } from './upload-spreadsheet/upload-spreadsheet.component';
+import { SessionListComponent } from './session-list/session-list.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { UploadSpreadsheetComponent } from './upload-spreadsheet/upload-spreadsh
     ButtonListSelectComponent,
     GamesTableComponent,
     UploadSpreadsheetComponent,
+    SessionListComponent,
   ],
   imports: [
     BrowserModule,

@@ -39,18 +39,28 @@ pub fn get_players(conn: &PgConnection) -> Vec<Player> {
     players::table.load::<Player>(conn).unwrap_or(Vec::new())
 }
 
-pub fn insert_player(conn: &PgConnection, player: CreatablePlayer) -> Result<Player, String> {
+pub fn insert_player(
+    conn: &PgConnection,
+    creatable_player: CreatablePlayer,
+) -> Result<Player, String> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)
-        .values(&player)
+        .values(&creatable_player)
         .returning(id)
         .get_result(conn)
-        .map_err(|_| {
+        .map_err(|err| {
+            println!("could not insert player into db: {}", err);
             format!(
                 "Error inserting player with abbreviation {} into db",
-                &player.abbreviation
+                &creatable_player.abbreviation
             )
         })
-        .map(|new_player_id| Player::new(new_player_id, player.abbreviation, player.name))
+        .map(|new_player_id| {
+            Player::new(
+                new_player_id,
+                creatable_player.abbreviation,
+                creatable_player.name,
+            )
+        })
 }

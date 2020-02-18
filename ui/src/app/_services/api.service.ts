@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CreatableSession, Game, Session, CompleteSession} from '../_interfaces/model';
+import {CompleteSession, CreatableSession, Game, Session} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
@@ -42,7 +42,7 @@ export class ApiService {
     return this.httpClient.get<GroupWithPlayersAndRuleSet | undefined>(url);
   }
 
-  getGroupWithPlayersAndMembership(groupId: number) : Observable<GroupWithPlayersAndMembership | undefined> {
+  getGroupWithPlayersAndMembership(groupId: number): Observable<GroupWithPlayersAndMembership | undefined> {
     const url = `${this.baseUrl}/api/groups/${groupId}/playersAndMembership`;
 
     return this.httpClient.get<GroupWithPlayersAndMembership>(url);
@@ -70,6 +70,12 @@ export class ApiService {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${serialNumber}`;
 
     return this.httpClient.get<Session>(url);
+  }
+
+  getSessions(groupId: number): Observable<Session[]> {
+    const url = `${this.baseUrl}/api/groups/${groupId}/sessions`;
+
+    return this.httpClient.get<Session[]>(url);
   }
 
   getCompleteSession(groupId: number, serialNumber: number): Observable<CompleteSession | undefined> {

@@ -5,7 +5,7 @@
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
     <skl-button-list-select
-      label="Regelsatz:"
+      label="Regelsatz"
       [isValid]="submitted && !ruleSetId"
       [options]="ruleSets"
       (selected)="this.ruleSetId = $event.id">
@@ -14,7 +14,7 @@
     <hr>
 
     <skl-button-list-select
-      label="1. Geber:"
+      label="1. Geber"
       [isValid]="submitted && !firstDealerId"
       [options]="playersForDealer"
       (selected)="updateDealer($event.id)">
@@ -24,7 +24,7 @@
 
     <skl-button-list-select
       *ngIf="firstDealerId"
-      label="1. Vorhand:"
+      label="1. Vorhand"
       [isValid]="submitted && !firstPreHandId"
       [options]="playersForPreHand"
       (selected)="updatePreHand($event.id)">
@@ -44,7 +44,7 @@
 
     <skl-button-list-select
       *ngIf="firstMiddleHandId"
-      label="1. Rückhand:"
+      label="1. Rückhand"
       [isValid]="submitted && !firstRearHandId"
       [options]="playersForRearHand"
       (selected)="updateRearHand($event.id)">

@@ -1,6 +1,6 @@
 .idea
 
-/target
+target
 
 # ignore saved schema.rs after patch
 src/schema.rs.orig

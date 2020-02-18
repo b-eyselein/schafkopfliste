@@ -1,0 +1,10 @@
+.idea
+
+static
+target
+
+ui/node_modules
+.gitignore
+build_prod.sh
+
+start_docker_postgres.sh
