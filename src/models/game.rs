@@ -244,6 +244,7 @@ pub fn insert_game(
 
 pub fn select_games_for_session(conn: &PgConnection, session: &Session) -> Vec<PricedGame> {
     DbGame::belonging_to(session)
+        .order_by(games::id)
         .load::<DbGame>(conn)
         .unwrap_or(Vec::new())
         .into_iter()
