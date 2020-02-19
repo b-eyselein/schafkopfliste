@@ -69,9 +69,11 @@ impl Game {
             Right(contra_ids) => contra_ids.len() as u32,
         };
 
+        let doubled_mult = if self.is_doubled { 2 } else { 1 };
+
         let price_sum = base_price + schneider_schwarz_price + self.laufende_price(rule_set);
 
-        price_sum * 2_i32.pow(leger_count) * 2_i32.pow(contra_count)
+        price_sum * doubled_mult * 2_i32.pow(leger_count) * 2_i32.pow(contra_count)
     }
 }
 

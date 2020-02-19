@@ -1,13 +1,16 @@
-FROM alpine:latest
-
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    apk update && \
-    apk upgrade && \
-    apk add bash rustup && \
-    rustup-init -y && \
-    source $HOME/.cargo/bin
-#toolchain install nightly
+FROM rust:buster as builder
 
 WORKDIR /skl
 
 COPY . .
+
+RUN rustup default nightly && \
+    cargo install --path .
+
+
+FROM debian:buster-slim
+
+RUN apt-get update && apt-get install -y postgresql-client
+
+COPY --from=builder /usr/local/cargo/bin/schafkopfliste /usr/local/bin/schafkopfliste
+
