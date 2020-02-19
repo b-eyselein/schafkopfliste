@@ -28,6 +28,10 @@ export interface CompleteSession {
   playedGames: PricedGame[];
 }
 
+export function playersForSession(s: CompleteSession): Player[] {
+  return [s.firstPlayer, s.secondPlayer, s.thirdPlayer, s.fourthPlayer];
+}
+
 export type BavarianSuitName = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
 export type GameTypeName = 'Ruf'
@@ -48,7 +52,7 @@ export interface Either<T, U> {
 }
  */
 
-type Either<T, U> = Left<T, U> | Right<T, U>;
+export type Either<T, U> = Left<T, U> | Right<T, U>;
 
 export interface Left<T, U> {
   Left: T;

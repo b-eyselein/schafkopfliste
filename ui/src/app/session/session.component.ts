@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CompleteSession, Game, SchneiderSchwarz} from '../_interfaces/model';
+import {CompleteSession, Game, playersForSession, SchneiderSchwarz} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
 import {ApiService} from '../_services/api.service';
-import {SelectableValue, toSelectableValue} from '../_interfaces/selectable-value';
+import {SelectableValue} from '../_interfaces/selectable-value';
 import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit} from '../_interfaces/ruleset';
 
 interface ActingPlayer extends Player {
@@ -11,24 +11,6 @@ interface ActingPlayer extends Player {
   gaveContra: boolean;
   hasWon: boolean;
 }
-
-function toActingPlayer(p: Player): ActingPlayer {
-  return {...p, hasPut: false, gaveContra: false, hasWon: false};
-}
-
-function getPlayersForSession(s: CompleteSession): Player[] {
-  return [s.firstPlayer, s.secondPlayer, s.thirdPlayer, s.fourthPlayer];
-}
-
-
-function getSelectablePlayers(s: CompleteSession): SelectableValue<Player>[] {
-  return getPlayersForSession(s).map((p) => toSelectableValue(p, p.name));
-}
-
-function getActingPlayers(s: CompleteSession): ActingPlayer[] {
-  return getPlayersForSession(s).map(toActingPlayer);
-}
-
 
 @Component({templateUrl: './session.component.html'})
 export class SessionComponent implements OnInit {
@@ -70,8 +52,11 @@ export class SessionComponent implements OnInit {
         .subscribe((session) => {
           if (session) {
             this.session = session;
-            this.actingPlayers = getActingPlayers(this.session);
-            this.selectablePlayers = getSelectablePlayers(this.session);
+
+            this.actingPlayers = playersForSession(this.session).map((p) => {
+              return {...p, hasPut: false, gaveContra: false, hasWon: false};
+            });
+
             this.allowedGameTypes = getAllowedGameTypes(session.ruleSet);
 
             if (this.session.playedGames.length > 0) {
@@ -96,8 +81,11 @@ export class SessionComponent implements OnInit {
       this.isDoubled = true;
     }
 
-
-    this.actingPlayers = getActingPlayers(this.session);
+    this.actingPlayers.forEach((p) => {
+      p.hasPut = false;
+      p.gaveContra = false;
+      p.hasWon = false;
+    });
 
     this.player = undefined;
     this.playedGameType = undefined;

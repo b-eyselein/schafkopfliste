@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {CompleteSession, Game, isLeft} from '../../_interfaces/model';
+import {Component, Input} from '@angular/core';
+import {CompleteSession, Either, Game, isLeft} from '../../_interfaces/model';
 import {Player} from '../../_interfaces/player';
 import {SUITS} from '../../_interfaces/ruleset';
 
@@ -7,17 +7,11 @@ import {SUITS} from '../../_interfaces/ruleset';
   selector: 'skl-games-table',
   templateUrl: './games-table.component.html'
 })
-export class GamesTableComponent implements OnInit {
+export class GamesTableComponent {
 
   @Input() session: CompleteSession;
 
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
-
-  get players(): Player[] {
+  private get players(): Player[] {
     return [this.session.firstPlayer, this.session.secondPlayer, this.session.thirdPlayer, this.session.fourthPlayer];
   }
 
@@ -25,14 +19,12 @@ export class GamesTableComponent implements OnInit {
     return this.players[(playedGame.id - 1) % 4];
   }
 
-  playersHavingPut(playedGame: Game): number | string {
-    const php = playedGame.playersHavingPut;
-
-    if (isLeft(php)) {
-      return php.Left;
+  getPlayersFromEither(e: Either<number, number[]>): number | string {
+    if (isLeft(e)) {
+      return e.Left;
     } else {
       return this.players
-        .filter((p) => php.Right.includes(p.id))
+        .filter((p) => e.Right.includes(p.id))
         .map((p) => p.abbreviation)
         .join(', ');
     }
@@ -44,19 +36,6 @@ export class GamesTableComponent implements OnInit {
 
   getActingPlayer(playedGame: Game): Player {
     return this.players.find((p) => p.id === playedGame.actingPlayerId);
-  }
-
-  playersWithContra(playedGame: Game): number | string {
-    const pwc = playedGame.playersWithContra;
-
-    if (isLeft(pwc)) {
-      return pwc.Left;
-    } else {
-      return this.players
-        .filter((p) => pwc.Right.includes(p.id))
-        .map((p) => p.abbreviation)
-        .join(', ');
-    }
   }
 
   playersHavingWon(playedGame: Game): string {

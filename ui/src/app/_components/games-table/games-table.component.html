@@ -18,13 +18,13 @@
   <tbody>
     <tr *ngFor="let playedGame of session.playedGames">
       <td>{{playedGame.id}}</td>
-      <td><code>{{getDealer(playedGame).abbreviation}}</code></td>
+      <td>{{getDealer(playedGame).abbreviation}}</td>
       <td>{{playedGame.isDoubled ? '&#10004;' : ''}}</td>
-      <td>{{playersHavingPut(playedGame)}}</td>
+      <td>{{getPlayersFromEither(playedGame.playersHavingPut)}}</td>
       <td>{{playedGame.gameType}}</td>
       <td>{{getSuitGermanName(playedGame)}}</td>
       <td>{{getActingPlayer(playedGame).abbreviation}}</td>
-      <td>{{playersWithContra(playedGame)}}</td>
+      <td>{{getPlayersFromEither(playedGame.playersWithContra)}}</td>
       <td>{{playersHavingWon(playedGame)}}</td>
       <td>{{playedGame.laufendeCount}}</td>
       <td>{{playedGame.schneiderSchwarz}}</td>
@@ -32,4 +32,3 @@
     </tr>
   </tbody>
 </table>
-
