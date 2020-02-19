@@ -77,7 +77,6 @@ export class SessionComponent implements OnInit {
     }
 
     if (this.doubledGames > 0) {
-      this.doubledGames--;
       this.isDoubled = true;
     }
 
@@ -145,6 +144,10 @@ export class SessionComponent implements OnInit {
 
     if (!this.player || !this.playedGameType || (this.playedGameType.needsSuit && !this.playedGameSuit)) {
       return;
+    }
+
+    if (this.doubledGames) {
+      this.doubledGames--;
     }
 
     const playersHavingWonIds = this.getPlayersHavingWonIds();
