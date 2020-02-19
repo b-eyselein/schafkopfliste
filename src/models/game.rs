@@ -3,7 +3,7 @@ use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 
 use crate::models::game_enums::*;
-use crate::models::rule_set::RuleSet;
+use crate::models::rule_set::{CountLaufende, RuleSet};
 use crate::models::session::Session;
 use crate::schema::games;
 
@@ -28,6 +28,25 @@ pub struct Game {
 }
 
 impl Game {
+    fn laufende_price(&self, rule_set: &RuleSet) -> i32 {
+        let laufende_abs = self.laufende_count.abs();
+
+        let laufende_in_range = rule_set.min_laufende_incl <= self.laufende_count
+            && laufende_abs <= rule_set.max_laufende_incl;
+
+        let laufende_are_counted = match &rule_set.count_laufende {
+            CountLaufende::Never => false,
+            CountLaufende::OnlyLosers => self.laufende_count < 0,
+            CountLaufende::Always => true,
+        };
+
+        if laufende_in_range && laufende_are_counted {
+            laufende_abs * rule_set.laufende_price
+        } else {
+            0
+        }
+    }
+
     pub fn calculate_price(&self, rule_set: &RuleSet) -> i32 {
         let base_price = match self.game_type {
             GameType::Ruf => rule_set.base_price,
@@ -40,12 +59,6 @@ impl Game {
             Some(SchneiderSchwarz::Schwarz) => 10,
         };
 
-        let laufende_price = if self.laufende_count.abs() > 3 {
-            self.laufende_count * 5
-        } else {
-            0
-        };
-
         let leger_count = match &self.players_having_put {
             Left(count) => count.clone() as u32,
             Right(put_ids) => put_ids.len() as u32,
@@ -56,9 +69,9 @@ impl Game {
             Right(contra_ids) => contra_ids.len() as u32,
         };
 
-        (base_price + schneider_schwarz_price + laufende_price)
-            * 2_i32.pow(leger_count)
-            * 2_i32.pow(contra_count)
+        let price_sum = base_price + schneider_schwarz_price + self.laufende_price(rule_set);
+
+        price_sum * 2_i32.pow(leger_count) * 2_i32.pow(contra_count)
     }
 }
 
@@ -102,7 +115,6 @@ impl PricedGame {
             players_with_contra,
             players_having_won_ids,
         } = game;
-
 
         PricedGame {
             id,

@@ -15,12 +15,14 @@
         <table class="table is-fullwidth" *ngIf="players.length > 0; else noPlayersFoundBlock">
           <thead>
           <tr>
+            <th>ID</th>
             <th>Kürzel</th>
             <th>Name</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let p of players">
+            <td>{{p.id}}</td>
             <td>{{p.abbreviation}}</td>
             <td>{{p.name}}</td>
           </tr>
@@ -30,9 +32,6 @@
     </div>
 
   </ng-container>
-
-  <hr>
-
 
 </div>
 

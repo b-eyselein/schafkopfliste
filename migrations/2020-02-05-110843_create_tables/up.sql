@@ -18,6 +18,9 @@ create table if not exists rule_sets (
     base_price         integer            not null default 5,
     solo_price         integer            not null default 15,
     count_laufende     count_laufende     not null default 'always',
+    min_laufende_incl  integer            not null default 2,
+    max_laufende_incl  integer            not null default 4,
+    laufende_price     integer            not null default 5,
     geier_allowed      boolean            not null default false,
     hochzeit_allowed   boolean            not null default false,
     bettel_allowed     boolean            not null default false,
@@ -31,6 +34,8 @@ create table if not exists players (
     abbreviation varchar(5) unique  not null,
     name         varchar(100)       not null
 );
+
+alter sequence players_id_seq restart with 1000;
 
 create table if not exists users (
     username      varchar(100) primary key not null,
@@ -135,12 +140,12 @@ values ('BE', 'Björn Eyselein'),
        ('CR', 'Christian Reul');
 
 insert into player_in_groups (group_id, player_id)
-values (1, 1),
-       (1, 2),
-       (1, 3),
-       (1, 4),
-       (1, 5),
-       (1, 6),
-       (1, 7),
-       (1, 8),
-       (1, 9);
+values (1, 1000),
+       (1, 1001),
+       (1, 1002),
+       (1, 1003),
+       (1, 1004),
+       (1, 1005),
+       (1, 1006),
+       (1, 1007),
+       (1, 1008);
