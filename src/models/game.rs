@@ -2,7 +2,7 @@ use diesel::{self, prelude::*, PgConnection};
 use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 
-use crate::models::game_enums::*;
+use crate::models::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use crate::models::rule_set::{CountLaufende, RuleSet};
 use crate::models::session::Session;
 use crate::schema::games;
@@ -23,7 +23,7 @@ pub struct Game {
     schneider_schwarz: Option<SchneiderSchwarz>,
 
     players_having_put: Either<i32, Vec<i32>>,
-    players_with_contra: Either<i32, Vec<i32>>,
+    kontra: Option<KontraType>,
     players_having_won_ids: Vec<i32>,
 }
 
@@ -64,9 +64,12 @@ impl Game {
             Right(put_ids) => put_ids.len() as u32,
         };
 
-        let contra_count = match &self.players_with_contra {
-            Left(count) => count.clone() as u32,
-            Right(contra_ids) => contra_ids.len() as u32,
+        let contra_count = match &self.kontra {
+            None => 0,
+            Some(KontraType::Kontra) => 1,
+            Some(KontraType::Re) => 2,
+            Some(KontraType::Supra) => 3,
+            Some(KontraType::Resupra) => 4,
         };
 
         let doubled_mult = if self.is_doubled { 2 } else { 1 };
@@ -93,7 +96,7 @@ pub struct PricedGame {
     schneider_schwarz: Option<SchneiderSchwarz>,
 
     players_having_put: Either<i32, Vec<i32>>,
-    players_with_contra: Either<i32, Vec<i32>>,
+    kontra: Option<KontraType>,
     players_having_won_ids: Vec<i32>,
 
     price: i32,
@@ -114,7 +117,7 @@ impl PricedGame {
             laufende_count,
             schneider_schwarz,
             players_having_put,
-            players_with_contra,
+            kontra,
             players_having_won_ids,
         } = game;
 
@@ -129,7 +132,7 @@ impl PricedGame {
             laufende_count,
             schneider_schwarz,
             players_having_put,
-            players_with_contra,
+            kontra,
             players_having_won_ids,
             price: *price,
         }
@@ -154,8 +157,9 @@ struct DbGame {
 
     players_having_put_count: i32,
     players_having_put_ids: Option<Vec<i32>>,
-    players_with_contra_count: i32,
-    players_with_contra_ids: Option<Vec<i32>>,
+
+    kontra: Option<KontraType>,
+
     players_having_won_ids: Vec<i32>,
 
     price: i32,
@@ -168,13 +172,6 @@ impl DbGame {
             Right(players_having_put_ids) => (
                 players_having_put_ids.len() as i32,
                 Some(players_having_put_ids),
-            ),
-        };
-        let (players_with_contra_count, players_with_contra_ids) = match game.players_with_contra {
-            Left(count) => (count, None),
-            Right(players_with_contra_ids) => (
-                players_with_contra_ids.len() as i32,
-                Some(players_with_contra_ids),
             ),
         };
 
@@ -190,8 +187,7 @@ impl DbGame {
             schneider_schwarz: game.schneider_schwarz,
             players_having_put_count,
             players_having_put_ids,
-            players_with_contra_count,
-            players_with_contra_ids,
+            kontra: game.kontra,
             players_having_won_ids: game.players_having_won_ids,
             price: game.price,
         }
@@ -213,10 +209,7 @@ impl DbGame {
                 None => Left(db_game.players_having_put_count),
                 Some(players_having_put_ids) => Right(players_having_put_ids),
             },
-            players_with_contra: match db_game.players_with_contra_ids {
-                None => Left(db_game.players_with_contra_count),
-                Some(players_with_contra_ids) => Right(players_with_contra_ids),
-            },
+            kontra: db_game.kontra,
             players_having_won_ids: db_game.players_having_won_ids,
             price: db_game.price,
         }

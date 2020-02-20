@@ -99,7 +99,7 @@ export function readGameFromGameRow(groupId: number, sessionId: number, gameRow:
     schneiderSchwarz: readSchneiderSchwarz(gameRow.schneiderSchwarz),
 
     playersHavingPut: {Left: -1},
-    playersWithContra: {Left: -1},
+    kontra: undefined,
     playersHavingWonIds: []
   };
 }

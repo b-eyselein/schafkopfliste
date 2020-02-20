@@ -4,8 +4,6 @@
 extern crate diesel;
 #[macro_use]
 extern crate diesel_derive_enum;
-#[macro_use]
-extern crate diesel_migrations;
 
 use diesel::PgConnection;
 use rocket::{get, response::Redirect, routes};
@@ -17,8 +15,6 @@ mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
-
-embed_migrations!();
 
 #[database("schafkopfliste")]
 pub struct DbConn(PgConnection);
@@ -32,24 +28,12 @@ fn make_cors() -> Cors {
     cors_opts.to_cors().expect("Error while building cors!")
 }
 
-fn establish_connection() -> PgConnection {
-    use diesel::prelude::*;
-
-    diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
-        .expect("Could not establish connection to database")
-}
-
 #[get("/")]
 fn route_index() -> Redirect {
     Redirect::to("/app/")
 }
 
 fn main() {
-    let db_conn = establish_connection();
-
-    embedded_migrations::run_with_output(&db_conn, &mut std::io::stdout())
-        .expect("Could not run migrations on db!");
-
     rocket::ignite()
         .mount("/", routes![route_index])
         .mount("/app", StaticFiles::from("static"))

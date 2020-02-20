@@ -29,3 +29,12 @@ pub enum SchneiderSchwarz {
     Schneider,
     Schwarz,
 }
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[DieselType = "Kontra_type"]
+pub enum KontraType {
+    Kontra,
+    Re,
+    Supra,
+    Resupra,
+}

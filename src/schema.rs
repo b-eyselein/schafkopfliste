@@ -1,6 +1,6 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::game_enums::{Bavarian_suit, Game_type, Schneider_schwarz};
+    use crate::models::game_enums::{Bavarian_suit, Game_type, Kontra_type, Schneider_schwarz};
 
     games (id, session_id, group_id) {
         id -> Int4,
@@ -14,8 +14,7 @@ table! {
         schneider_schwarz -> Nullable<Schneider_schwarz>,
         players_having_put_count -> Int4,
         players_having_put_ids -> Nullable<Array<Int4>>,
-        players_with_contra_count -> Int4,
-        players_with_contra_ids -> Nullable<Array<Int4>>,
+        kontra -> Nullable<Kontra_type>,
         players_having_won_ids -> Array<Int4>,
         price -> Int4,
     }

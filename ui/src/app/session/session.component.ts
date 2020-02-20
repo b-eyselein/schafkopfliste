@@ -1,14 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CompleteSession, Game, playersForSession, SchneiderSchwarz} from '../_interfaces/model';
+import {CompleteSession, Game, KontraType, KontraTypeValues, playersForSession, SchneiderSchwarz} from '../_interfaces/model';
 import {Player} from '../_interfaces/player';
 import {ApiService} from '../_services/api.service';
-import {SelectableValue} from '../_interfaces/selectable-value';
-import {GameType, getAllowedGameTypes, getSuitsForGameType, Suit} from '../_interfaces/ruleset';
+import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../_interfaces/ruleset';
 
 interface ActingPlayer extends Player {
   hasPut: boolean;
-  gaveContra: boolean;
   hasWon: boolean;
 }
 
@@ -17,11 +15,13 @@ export class SessionComponent implements OnInit {
 
   readonly playerIndexes = [0, 1, 2, 3];
 
+  readonly KontraValues: KontraType[] = KontraTypeValues;
+  readonly SuitValues: Suit[] = SUITS;
+
   session: CompleteSession;
 
-  selectablePlayers: SelectableValue<Player>[];
-  allowedGameTypes: SelectableValue<GameType>[];
-  allowedSuits: SelectableValue<Suit>[];
+  allowedGameTypes: GameType[];
+  allowedSuits: Suit[];
 
   currentGameIndex = 1;
 
@@ -32,11 +32,12 @@ export class SessionComponent implements OnInit {
   playedGameSuit: Suit;
   tout = false;
 
+  kontraValue: KontraType | undefined;
   isDoubled = false;
   schneiderSchwarz: SchneiderSchwarz | undefined;
   laufendeCount = 0;
 
-  doubledGames: number = 0;
+  doubledGames = 0;
 
   submitted = false;
 
@@ -54,7 +55,7 @@ export class SessionComponent implements OnInit {
             this.session = session;
 
             this.actingPlayers = playersForSession(this.session).map((p) => {
-              return {...p, hasPut: false, gaveContra: false, hasWon: false};
+              return {...p, hasPut: false, hasWon: false};
             });
 
             this.allowedGameTypes = getAllowedGameTypes(session.ruleSet);
@@ -68,12 +69,10 @@ export class SessionComponent implements OnInit {
   }
 
   private resetData(wasThrownIn: boolean = false): void {
-    console.info('Resetting values...');
-
-    if (!wasThrownIn) {
-      this.currentGameIndex++;
-    } else {
+    if (wasThrownIn) {
       this.doubledGames++;
+    } else {
+      this.currentGameIndex++;
     }
 
     if (this.doubledGames > 0) {
@@ -82,7 +81,6 @@ export class SessionComponent implements OnInit {
 
     this.actingPlayers.forEach((p) => {
       p.hasPut = false;
-      p.gaveContra = false;
       p.hasWon = false;
     });
 
@@ -91,11 +89,17 @@ export class SessionComponent implements OnInit {
     this.playedGameSuit = undefined;
     this.tout = false;
 
+    this.kontraValue = undefined;
     this.schneiderSchwarz = undefined;
     this.laufendeCount = 0;
 
     this.submitted = false;
   }
+
+  suitCanBePlayedWithGameType(suit: Suit, gameType: GameType): boolean {
+    return gameType.needsSuit && (gameType === RUF ? suit !== HEARTS : true);
+  }
+
 
   getDealer(): Player {
     return this.actingPlayers[(this.currentGameIndex - 1) % 4];
@@ -105,27 +109,27 @@ export class SessionComponent implements OnInit {
     this.player = this.player === p ? undefined : p;
   }
 
-  onGameTypeUpdate(): void {
+  toggleGameType(gameType: GameType): void {
+    this.playedGameType = this.playedGameType === gameType ? undefined : gameType;
     this.allowedSuits = this.playedGameType ? getSuitsForGameType(this.playedGameType) : undefined;
   }
 
-  toggleSuit(suit: Suit | undefined): void {
+  toggleSuit(suit: Suit): void {
     this.playedGameSuit = this.playedGameSuit === suit ? undefined : suit;
   }
 
-  toggleSchneiderSchwarz(snsw: SchneiderSchwarz | undefined): void {
+  toggleSchneiderSchwarz(snsw: SchneiderSchwarz): void {
     this.schneiderSchwarz = this.schneiderSchwarz === snsw ? undefined : snsw;
   }
+
+  toggleKontraValue(kv: KontraType): void {
+    this.kontraValue = this.kontraValue === kv ? undefined : kv;
+  }
+
 
   private getPlayersHavingPutIds(): number[] {
     return this.actingPlayers
       .filter((ap) => ap.hasPut)
-      .map((ap) => ap.id);
-  }
-
-  private getPlayersWithContraIds(): number[] {
-    return this.actingPlayers
-      .filter((ap) => ap.gaveContra)
       .map((ap) => ap.id);
   }
 
@@ -172,7 +176,7 @@ export class SessionComponent implements OnInit {
       schneiderSchwarz: this.schneiderSchwarz,
 
       playersHavingPut: {Right: this.getPlayersHavingPutIds()},
-      playersWithContra: {Right: this.getPlayersWithContraIds()},
+      kontra: this.kontraValue,
       playersHavingWonIds,
     };
 

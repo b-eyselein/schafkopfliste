@@ -32,6 +32,9 @@ export function playersForSession(s: CompleteSession): Player[] {
   return [s.firstPlayer, s.secondPlayer, s.thirdPlayer, s.fourthPlayer];
 }
 
+export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
+export const KontraTypeValues: KontraType[] = ['Kontra', 'Re', 'Supra', 'Resupra'];
+
 export type BavarianSuitName = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
 export type GameTypeName = 'Ruf'
@@ -46,11 +49,6 @@ export type GameTypeName = 'Ruf'
 
 export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
-/*
-export interface Either<T, U> {
-
-}
- */
 
 export type Either<T, U> = Left<T, U> | Right<T, U>;
 
@@ -84,7 +82,7 @@ export interface Game {
   schneiderSchwarz: SchneiderSchwarz | undefined;
 
   playersHavingPut: Either<number, number[]>;
-  playersWithContra: Either<number, number[]>;
+  kontra: KontraType | undefined;
   playersHavingWonIds: number[];
 }
 

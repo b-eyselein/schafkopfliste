@@ -1,15 +1,18 @@
 -- Your SQL goes here
 
+-- @formatter:off
 create type game_type as enum (
-    'ruf', 'wenz', 'farbsolo', 'geier',
-    'hochzeit', 'bettel', 'ramsch', 'farbwenz', 'farbgeier'
-    );
+    'ruf', 'wenz', 'farbsolo', 'geier', 'hochzeit', 'bettel', 'ramsch', 'farbwenz', 'farbgeier'
+);
+-- @formatter:on
 
 create type bavarian_suit as enum ('acorns', 'leaves', 'hearts', 'bells');
 
 create type count_laufende as enum ('always', 'only_losers', 'never');
 
 create type schneider_schwarz as enum ('schneider', 'schwarz');
+
+create type kontra_type as enum ('kontra', 're', 'supra', 'resupra');
 
 create table if not exists rule_sets (
     id                 serial primary key not null,
@@ -85,26 +88,25 @@ create table if not exists sessions (
 );
 
 create table if not exists games (
-    id                        integer   not null,
-    session_id                integer   not null,
-    group_id                  integer   not null,
+    id                       integer   not null,
+    session_id               integer   not null,
+    group_id                 integer   not null,
 
-    acting_player_id          integer   not null,
-    game_type                 game_type not null,
-    suit                      bavarian_suit,
+    acting_player_id         integer   not null,
+    game_type                game_type not null,
+    suit                     bavarian_suit,
 
-    is_doubled                bool      not null default false,
-    laufende_count            integer   not null default 0,
-    schneider_schwarz         schneider_schwarz  default null,
+    is_doubled               bool      not null default false,
+    laufende_count           integer   not null default 0,
+    schneider_schwarz        schneider_schwarz  default null,
 
-    players_having_put_count  integer   not null default 0,
-    players_having_put_ids    integer[],
+    players_having_put_count integer   not null default 0,
+    players_having_put_ids   integer[],
 
-    players_with_contra_count integer   not null default 0,
-    players_with_contra_ids   integer[],
+    kontra                   kontra_type        default null,
 
-    players_having_won_ids    integer[] not null default '{}',
-    price                     integer   not null,
+    players_having_won_ids   integer[] not null default '{}',
+    price                    integer   not null,
 
     primary key (id, session_id, group_id),
     foreign key (acting_player_id) references players (id) on update cascade on delete cascade

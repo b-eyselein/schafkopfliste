@@ -52,7 +52,6 @@
             </div>
           </div>
 
-
           <div class="columns">
             <div class="column has-text-centered">
               <label class="label" [ngClass]="{'has-text-danger': this.submitted && !this.player}">Spieler:</label>
@@ -67,42 +66,39 @@
 
           <div class="columns">
             <div class="column is-one-fifth has-text-centered">
-            <span class="label">
-              <label for="game_type" [ngClass]="{'has-text-danger': submitted && !playedGameType}">
-                Angesagtes Spiel
-              </label> /
-              <label for="suit"
-                     [ngClass]="{'has-text-danger': submitted && playedGameType && playedGameType.needsSuit && !playedGameSuit}">
-                Farbe
-              </label>:
-            </span>
+              <label class="label" [ngClass]="{'has-text-danger': submitted && !playedGameType}">
+                Spiel:
+              </label>
             </div>
 
             <div class="column">
               <div class="columns">
-                <div class="column">
-                  <div class="select is-fullwidth">
-                    <select id="game_type" [(ngModel)]="playedGameType" (ngModelChange)="onGameTypeUpdate()" required>
-                      <option [ngValue]="undefined">Bitte wählen</option>
-                      <option *ngFor="let option of allowedGameTypes" [ngValue]="option.value">{{option.name}}</option>
-                    </select>
-                  </div>
+                <div class="column is-3" *ngFor="let gameType of allowedGameTypes">
+                  <button class="button is-fullwidth" [ngClass]="{'is-link': playedGameType === gameType}"
+                          (click)="toggleGameType(gameType)">
+                    {{gameType.name}}
+                  </button>
                 </div>
 
-                <div class="column">
-                  <div class="select is-fullwidth">
-                    <select id="suit" [(ngModel)]="playedGameSuit" [disabled]="!allowedSuits">
-                      <option [ngValue]="undefined">Bitte wählen</option>
-                      <option *ngFor="let option of allowedSuits" [ngValue]="option.value">{{option.name}}</option>
-                    </select>
-                  </div>
+                <div class="column is-3">
+                  <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="tout = !tout">
+                    {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="column is-one-fifth">
-              <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="tout = !tout">
-                {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+          <div class="columns">
+            <div class="column has-text-centered">
+              <label class="label"
+                     [ngClass]="{'has-text-danger': submitted && playedGameType && playedGameType.needsSuit && !playedGameSuit}">Farbe:</label>
+            </div>
+            <div class="column" *ngFor="let suit of SuitValues">
+              <button class="button is-fullwidth" [ngClass]="{'is-link': playedGameSuit === suit}"
+                      [disabled]="!playedGameType || !suitCanBePlayedWithGameType(suit, playedGameType)"
+                      (click)="toggleSuit(suit)">
+                {{suit.name}}
               </button>
             </div>
           </div>
@@ -111,10 +107,10 @@
             <div class="column has-text-centered">
               <label class="label">Kontra/Re:</label>
             </div>
-            <div class="column" *ngFor="let pi of playerIndexes">
-              <button class="button is-fullwidth" (click)="actingPlayers[pi].gaveContra = !actingPlayers[pi].gaveContra"
-                      [ngClass]="{'is-link': actingPlayers[pi].gaveContra}">
-                {{actingPlayers[pi].abbreviation}}
+            <div class="column" *ngFor="let kv of KontraValues">
+              <button class="button is-fullwidth" (click)="toggleKontraValue(kv)"
+                      [ngClass]="{'is-link': kontraValue === kv}">
+                {{kv}}
               </button>
             </div>
           </div>

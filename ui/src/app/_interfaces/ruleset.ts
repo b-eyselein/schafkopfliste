@@ -1,4 +1,3 @@
-import {SelectableValue, toSelectableValue} from './selectable-value';
 import {BavarianSuitName, GameTypeName} from './model';
 
 export interface Suit {
@@ -8,7 +7,7 @@ export interface Suit {
 
 const ACORNS: Suit = {name: 'Eichel', commitableSuit: 'Acorns'};
 const LEAVES: Suit = {name: 'Blatt', commitableSuit: 'Leaves'};
-const HEARTS: Suit = {name: 'Herz', commitableSuit: 'Hearts'};
+export const HEARTS: Suit = {name: 'Herz', commitableSuit: 'Hearts'};
 const BELLS: Suit = {name: 'Schellen', commitableSuit: 'Bells'};
 
 const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
@@ -28,7 +27,7 @@ export interface GameType {
   isDefaultGameType: boolean;
 }
 
-const RUF: GameType = {name: 'Ruf', playerPartySize: 2, needsSuit: true, canBeTout: true, isDefaultGameType: true};
+export const RUF: GameType = {name: 'Ruf', playerPartySize: 2, needsSuit: true, canBeTout: true, isDefaultGameType: true};
 const WENZ: GameType = {name: 'Wenz', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: true};
 const FARB_SOLO: GameType = {name: 'Farbsolo', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: true};
 const GEIER: GameType = {name: 'Geier', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: false};
@@ -38,11 +37,11 @@ const RAMSCH: GameType = {name: 'Ramsch', playerPartySize: 1, needsSuit: false, 
 const FARB_WENZ: GameType = {name: 'Farbwenz', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 
-export function getSuitsForGameType(playedGame: GameType): SelectableValue<Suit>[] | undefined {
+export function getSuitsForGameType(playedGame: GameType): Suit[]  {
   if (!playedGame.needsSuit) {
-    return undefined;
+    return [];
   } else {
-    return (playedGame === RUF ? RUF_SUITS : SUITS).map((gt) => toSelectableValue(gt, gt.name));
+    return (playedGame === RUF ? RUF_SUITS : SUITS);
   }
 }
 
@@ -59,8 +58,8 @@ export interface RuleSet extends CreatableRuleSet {
   farbGeierAllowed: boolean;
 }
 
-export function getAllowedGameTypes(ruleSet: RuleSet): SelectableValue<GameType>[] {
-  const maybeGameTypes = [
+export function getAllowedGameTypes(ruleSet: RuleSet): GameType[] {
+  return [
     RUF, WENZ, FARB_SOLO,
     ruleSet.geierAllowed ? GEIER : null,
     ruleSet.hochzeitAllowed ? HOCHZEIT : null,
@@ -68,9 +67,5 @@ export function getAllowedGameTypes(ruleSet: RuleSet): SelectableValue<GameType>
     ruleSet.ramschAllowed ? RAMSCH : null,
     ruleSet.farbWenzAllowed ? FARB_WENZ : null,
     ruleSet.farbGeierAllowed ? FARB_GEIER : null
-  ];
-
-  return maybeGameTypes
-    .filter((gt) => gt)
-    .map((gt) => toSelectableValue(gt, gt.name));
+  ].filter((gt) => gt);
 }

@@ -18,6 +18,9 @@ drop table if exists players;
 
 drop table if exists rule_sets;
 
+
+drop type if exists kontra_type;
+
 drop type if exists schneider_schwarz;
 
 drop type if exists count_laufende;
