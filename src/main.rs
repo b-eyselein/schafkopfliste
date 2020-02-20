@@ -4,6 +4,8 @@
 extern crate diesel;
 #[macro_use]
 extern crate diesel_derive_enum;
+#[macro_use]
+extern crate diesel_migrations;
 
 use diesel::PgConnection;
 use rocket::{get, response::Redirect, routes};
@@ -15,6 +17,8 @@ mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
+
+embed_migrations!();
 
 #[database("schafkopfliste")]
 pub struct DbConn(PgConnection);
@@ -34,6 +38,14 @@ fn route_index() -> Redirect {
 }
 
 fn main() {
+    use diesel::prelude::*;
+
+    let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
+        .expect("Could not establish connection to database");
+
+    embedded_migrations::run_with_output(&db_conn, &mut std::io::stdout())
+        .expect("Could not run migrations on database");
+
     rocket::ignite()
         .mount("/", routes![route_index])
         .mount("/app", StaticFiles::from("static"))
