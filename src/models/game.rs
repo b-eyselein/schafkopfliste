@@ -1,46 +1,52 @@
-use diesel::{self, prelude::*, PgConnection};
-use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 
-use crate::models::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
-use crate::models::rule_set::{CountLaufende, RuleSet};
-use crate::models::session::Session;
 use crate::schema::games;
 
-#[derive(Debug, Deserialize)]
+use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
+use super::rule_set::{CountLaufende, RuleSet};
+use super::session::Session;
+
+#[derive(Debug, Deserialize, Serialize, Identifiable, Queryable, Insertable, Associations)]
+#[belongs_to(Session)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
-    id: i32,
-    session_id: i32,
-    group_id: i32,
+    pub id: i32,
+    pub session_id: i32,
+    pub group_id: i32,
 
-    acting_player_id: i32,
-    game_type: GameType,
-    suit: Option<BavarianSuit>,
+    pub acting_player_id: i32,
+    pub game_type: GameType,
+    pub suit: Option<BavarianSuit>,
+    pub tout: bool,
 
-    is_doubled: bool,
-    laufende_count: i32,
-    schneider_schwarz: Option<SchneiderSchwarz>,
+    pub is_doubled: bool,
+    pub laufende_count: i32,
+    pub schneider_schwarz: Option<SchneiderSchwarz>,
 
-    players_having_put: Either<i32, Vec<i32>>,
-    kontra: Option<KontraType>,
-    players_having_won_ids: Vec<i32>,
+    pub players_having_put_ids: Vec<i32>,
+    pub kontra: Option<KontraType>,
+    pub players_having_won_ids: Vec<i32>,
+    pub price: i32,
 }
 
 impl Game {
-    fn laufende_price(&self, rule_set: &RuleSet) -> i32 {
-        let laufende_abs = self.laufende_count.abs();
+    fn base_price<'a>(&self, rule_set: &'a RuleSet) -> &'a i32 {
+        match self.game_type {
+            GameType::Ruf => rule_set.get_base_price(),
+            _ => rule_set.get_solo_price(),
+        }
+    }
 
-        let laufende_in_range = rule_set.min_laufende_incl <= self.laufende_count
-            && laufende_abs <= rule_set.max_laufende_incl;
+    fn laufende_price(laufende_count: &i32, rule_set: &RuleSet) -> i32 {
+        let laufende_abs: i32 = std::cmp::min(laufende_count.abs(), rule_set.max_laufende_incl);
 
         let laufende_are_counted = match &rule_set.count_laufende {
             CountLaufende::Never => false,
-            CountLaufende::OnlyLosers => self.laufende_count < 0,
+            CountLaufende::OnlyLosers => *laufende_count < 0,
             CountLaufende::Always => true,
         };
 
-        if laufende_in_range && laufende_are_counted {
+        if laufende_abs >= rule_set.min_laufende_incl && laufende_are_counted {
             laufende_abs * rule_set.laufende_price
         } else {
             0
@@ -48,10 +54,7 @@ impl Game {
     }
 
     pub fn calculate_price(&self, rule_set: &RuleSet) -> i32 {
-        let base_price = match self.game_type {
-            GameType::Ruf => rule_set.base_price,
-            _ => rule_set.solo_price,
-        };
+        let base_price = self.base_price(&rule_set);
 
         let schneider_schwarz_price = match self.schneider_schwarz {
             None => 0,
@@ -59,188 +62,69 @@ impl Game {
             Some(SchneiderSchwarz::Schwarz) => 10,
         };
 
-        let leger_count = match &self.players_having_put {
-            Left(count) => count.clone() as u32,
-            Right(put_ids) => put_ids.len() as u32,
-        };
+        let leger_count = self.players_having_put_ids.len() as u32;
 
-        let contra_count = match &self.kontra {
-            None => 0,
-            Some(KontraType::Kontra) => 1,
-            Some(KontraType::Re) => 2,
-            Some(KontraType::Supra) => 3,
-            Some(KontraType::Resupra) => 4,
-        };
+        let contra_count = self
+            .kontra
+            .as_ref()
+            .map(|kontra| kontra.get_count())
+            .unwrap_or(0);
 
         let doubled_mult = if self.is_doubled { 2 } else { 1 };
 
-        let price_sum = base_price + schneider_schwarz_price + self.laufende_price(rule_set);
+        let price_sum = base_price
+            + schneider_schwarz_price
+            + Game::laufende_price(&self.laufende_count, rule_set);
 
-        price_sum * doubled_mult * 2_i32.pow(leger_count) * 2_i32.pow(contra_count)
+        let doubled_count = leger_count + contra_count;
+
+        price_sum * doubled_mult * 2_i32.pow(doubled_count)
     }
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PricedGame {
-    id: i32,
-    session_id: i32,
-    group_id: i32,
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    acting_player_id: i32,
-    game_type: GameType,
-    suit: Option<BavarianSuit>,
+    #[test]
+    fn test_laufende_price() {
+        let rs1 = RuleSet::new(1, 5, CountLaufende::Never);
+        let rs2 = RuleSet::new(2, 5, CountLaufende::OnlyLosers);
+        let rs3 = RuleSet::new(3, 5, CountLaufende::Always);
 
-    is_doubled: bool,
-    laufende_count: i32,
-    schneider_schwarz: Option<SchneiderSchwarz>,
+        // 0 Laufende
+        assert_eq!(0, Game::laufende_price(&0, &rs1));
+        assert_eq!(0, Game::laufende_price(&0, &rs2));
+        assert_eq!(0, Game::laufende_price(&0, &rs3));
 
-    players_having_put: Either<i32, Vec<i32>>,
-    kontra: Option<KontraType>,
-    players_having_won_ids: Vec<i32>,
+        // 2 Laufende
+        assert_eq!(0, Game::laufende_price(&2, &rs1));
+        assert_eq!(0, Game::laufende_price(&2, &rs2));
+        assert_eq!(10, Game::laufende_price(&2, &rs3));
 
-    price: i32,
-}
+        // -2 Laufende
+        assert_eq!(0, Game::laufende_price(&-2, &rs1));
+        assert_eq!(10, Game::laufende_price(&-2, &rs2));
+        assert_eq!(10, Game::laufende_price(&-2, &rs3));
 
-impl PricedGame {
-    pub fn from_game(game: Game, rule_set: &RuleSet) -> PricedGame {
-        let price = &game.calculate_price(&rule_set);
+        // 4 Laufende
+        assert_eq!(0, Game::laufende_price(&4, &rs1));
+        assert_eq!(0, Game::laufende_price(&4, &rs2));
+        assert_eq!(20, Game::laufende_price(&4, &rs3));
 
-        let Game {
-            id,
-            session_id,
-            group_id,
-            acting_player_id,
-            game_type,
-            suit,
-            is_doubled,
-            laufende_count,
-            schneider_schwarz,
-            players_having_put,
-            kontra,
-            players_having_won_ids,
-        } = game;
+        // -4 Laufende
+        assert_eq!(0, Game::laufende_price(&-4, &rs1));
+        assert_eq!(20, Game::laufende_price(&-4, &rs2));
+        assert_eq!(20, Game::laufende_price(&-4, &rs3));
 
-        PricedGame {
-            id,
-            session_id,
-            group_id,
-            acting_player_id,
-            game_type,
-            suit,
-            is_doubled,
-            laufende_count,
-            schneider_schwarz,
-            players_having_put,
-            kontra,
-            players_having_won_ids,
-            price: *price,
-        }
+        // 5 Laufende
+        assert_eq!(0, Game::laufende_price(&5, &rs1));
+        assert_eq!(0, Game::laufende_price(&5, &rs2));
+        assert_eq!(20, Game::laufende_price(&5, &rs3));
+
+        // -5 Laufende
+        assert_eq!(0, Game::laufende_price(&-5, &rs1));
+        assert_eq!(20, Game::laufende_price(&-5, &rs2));
+        assert_eq!(20, Game::laufende_price(&-5, &rs3));
     }
-}
-
-#[derive(Debug, Identifiable, Queryable, Insertable, Associations)]
-#[belongs_to(Session)]
-#[table_name = "games"]
-struct DbGame {
-    id: i32,
-    session_id: i32,
-    group_id: i32,
-
-    acting_player_id: i32,
-    game_type: GameType,
-    suit: Option<BavarianSuit>,
-
-    is_doubled: bool,
-    laufende_count: i32,
-    schneider_schwarz: Option<SchneiderSchwarz>,
-
-    players_having_put_count: i32,
-    players_having_put_ids: Option<Vec<i32>>,
-
-    kontra: Option<KontraType>,
-
-    players_having_won_ids: Vec<i32>,
-
-    price: i32,
-}
-
-impl DbGame {
-    fn from_game(group_id: i32, session_id: i32, game: PricedGame) -> DbGame {
-        let (players_having_put_count, players_having_put_ids) = match game.players_having_put {
-            Left(count) => (count, None),
-            Right(players_having_put_ids) => (
-                players_having_put_ids.len() as i32,
-                Some(players_having_put_ids),
-            ),
-        };
-
-        DbGame {
-            id: game.id,
-            session_id,
-            group_id,
-            acting_player_id: game.acting_player_id,
-            game_type: game.game_type,
-            suit: game.suit,
-            is_doubled: game.is_doubled,
-            laufende_count: game.laufende_count,
-            schneider_schwarz: game.schneider_schwarz,
-            players_having_put_count,
-            players_having_put_ids,
-            kontra: game.kontra,
-            players_having_won_ids: game.players_having_won_ids,
-            price: game.price,
-        }
-    }
-
-    //noinspection RsSelfConvention
-    fn to_game(db_game: DbGame) -> PricedGame {
-        PricedGame {
-            id: db_game.id,
-            group_id: db_game.group_id,
-            session_id: db_game.session_id,
-            acting_player_id: db_game.acting_player_id,
-            game_type: db_game.game_type,
-            suit: db_game.suit,
-            is_doubled: db_game.is_doubled,
-            laufende_count: db_game.laufende_count,
-            schneider_schwarz: db_game.schneider_schwarz,
-            players_having_put: match db_game.players_having_put_ids {
-                None => Left(db_game.players_having_put_count),
-                Some(players_having_put_ids) => Right(players_having_put_ids),
-            },
-            kontra: db_game.kontra,
-            players_having_won_ids: db_game.players_having_won_ids,
-            price: db_game.price,
-        }
-    }
-}
-
-pub fn insert_game(
-    conn: &PgConnection,
-    group_id: i32,
-    session_id: i32,
-    game: PricedGame,
-) -> Result<PricedGame, String> {
-    let db_game: DbGame = DbGame::from_game(group_id, session_id, game);
-
-    diesel::insert_into(games::table)
-        .values(db_game)
-        .returning(games::all_columns)
-        .get_result(conn)
-        .map(|db_game| DbGame::to_game(db_game))
-        .map_err(|err| {
-            println!("Error while inserting game into db: {}", err);
-            "Error while inserting game into database".into()
-        })
-}
-
-pub fn select_games_for_session(conn: &PgConnection, session: &Session) -> Vec<PricedGame> {
-    DbGame::belonging_to(session)
-        .order_by(games::id)
-        .load::<DbGame>(conn)
-        .unwrap_or(Vec::new())
-        .into_iter()
-        .map(DbGame::to_game)
-        .collect()
 }

@@ -1,0 +1,179 @@
+<div class="columns">
+  <div class="column is-one-fifth-desktop">
+    <label class="has-text-weight-bold">Datum/Zeit:</label>
+  </div>
+  <div class="column">
+    <button class="button is-fullwidth is-static">{{session.date}}</button>
+  </div>
+  <div class="column">
+    <button class="button is-fullwidth is-static">{{session.time}}</button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+    <label for="currentGameIndex" class="label">Spielnummer:</label>
+  </div>
+  <div class="column">
+    <div class="field has-addons">
+      <!--
+      <p class="control">
+        <button class="button" (click)="priorGame()">-</button>
+      </p>
+      -->
+      <p class="control is-expanded">
+        <input type="number" class="input" id="currentGameIndex" [(ngModel)]="currentGameIndex">
+      </p>
+      <!--
+      <p class="control">
+        <button class="button" (click)="nextGame()">+</button>
+      </p>
+      -->
+    </div>
+  </div>
+  <div class="column">
+    <button class="button is-fullwidth" [ngClass]="{'is-link': game.isDoubled}"
+            (click)="game.isDoubled = !game.isDoubled">
+      {{game.isDoubled ? '&#10004;' : '&#10008; nicht'}} 2x ({{remainingDoubledGames}})
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+    <label class="label">Geber:</label>
+  </div>
+  <div class="column">
+    <button class="button is-fullwidth is-static">{{getDealer().name}}</button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column has-text-centered">
+    <label class="label">Leger:</label>
+  </div>
+  <div class="column" *ngFor="let player of players">
+    <button class="button is-fullwidth" (click)="togglePlayerPut(player)"
+            [ngClass]="{'is-link': playersHavingPut.includes(player.id)}" title="{{player.name}}">
+      {{player.abbreviation}}
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column has-text-centered">
+    <label class="label"
+           [ngClass]="{'has-text-danger': this.submitted && !this.game.actingPlayerId}">Spieler:</label>
+  </div>
+  <div class="column" *ngFor="let player of players">
+    <button class="button is-fullwidth" (click)="togglePlayer(player)"
+            [ngClass]="{'is-link': this.game.actingPlayerId === player.id}">
+      {{player.abbreviation}}
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+    <label class="label" [ngClass]="{'has-text-danger': submitted && !game.gameType}">
+      Spiel:
+    </label>
+  </div>
+
+  <div class="column">
+    <div class="columns">
+      <div class="column is-3" *ngFor="let gameType of allowedGameTypes">
+        <button class="button is-fullwidth" [ngClass]="{'is-link': game.gameType === gameType.name}"
+                (click)="toggleGameType(gameType)">
+          {{gameType.name}}
+        </button>
+      </div>
+
+      <div class="column is-3">
+        <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="tout = !tout">
+          {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column has-text-centered">
+    <label class="label"
+           [ngClass]="{'has-text-danger': submitted && game.gameType && playedGameType.needsSuit && !game.suit}">Farbe:</label>
+  </div>
+  <div class="column" *ngFor="let suit of SuitValues">
+    <button class="button is-fullwidth" [ngClass]="{'is-link': game.suit === suit.commitableSuit}"
+            [disabled]="!game.gameType || !suitCanBePlayedWithGameType(suit)"
+            (click)="toggleSuit(suit)">
+      {{suit.name}}
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column has-text-centered">
+    <label class="label">Kontra/Re:</label>
+  </div>
+  <div class="column" *ngFor="let kv of KontraValues">
+    <button class="button is-fullwidth" (click)="toggleKontraValue(kv)"
+            [ngClass]="{'is-link': game.kontra === kv}">
+      {{kv}}
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column has-text-centered">
+    <label class="label"
+           [ngClass]="{'has-text-danger': submitted && game.playersHavingWonIds.length === 0}">Gewonnen:</label>
+  </div>
+  <div class="column" *ngFor="let player of players">
+    <button class="button is-fullwidth" (click)="toggleWinningPlayer(player)"
+            [ngClass]="{'is-link': game.playersHavingWonIds.includes(player.id)}">
+      {{player.abbreviation}}
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+              <span class="label">
+                <label title="Schneider">SN</label> /
+                <label title="Schwarz">SW</label> /
+                <label for="laufendeCount" title="Anzahl Laufende"># L</label>:</span>
+  </div>
+  <div class="column is-one-fifth" *ngFor="let snsw of SchneiderSchwarzValues">
+    <button class="button is-fullwidth" (click)="toggleSchneiderSchwarz(snsw.value)"
+            [ngClass]="{'is-link': game.schneiderSchwarz === snsw.value}">
+      {{snsw.abbreviation}}
+    </button>
+  </div>
+  <div class="column">
+    <div class="field has-addons">
+      <p class="control">
+        <button class="button" (click)="game.laufendeCount = game.laufendeCount - 1">-</button>
+      </p>
+      <p class="control is-expanded">
+        <input type="number" class="input" id="laufendeCount" [(ngModel)]="game.laufendeCount">
+      </p>
+      <p class="control">
+        <button class="button is-static">Lauf.</button>
+      </p>
+      <p class="control">
+        <button class="button" (click)="game.laufendeCount  = game.laufendeCount  + 1">+</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column">
+    <button class="button is-warning is-fullwidth" (click)="throwIn()">Zusammenschmiss</button>
+  </div>
+  <div class="column">
+    <button class="button is-link is-fullwidth" (click)="saveGame()">Spiel eintragen</button>
+  </div>
+</div>
+

@@ -4,51 +4,115 @@
 
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
-    <skl-button-list-select
-      label="Regelsatz"
-      [isValid]="submitted && !ruleSetId"
-      [options]="ruleSets"
-      (selected)="this.ruleSetId = $event.id">
-    </skl-button-list-select>
+    <div class="field">
+      <label for="date" class="label">Datum:</label>
+      <div class="control">
+        <input type="date" id="date" class="input"
+               [value]="creatableSession.date"
+               (change)="updateDate($event.target.value)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="time" class="label">Zeit:</label>
+      <div class="control">
+        <input type="time" id="time" class="input"
+               [value]="creatableSession.time"
+               (change)="updateTime($event.target.value)">
+      </div>
+    </div>
+
+
+    <div class="field">
+      <label class="label">Regelsatz:</label>
+      <div class="control">
+
+        <div class="columns is-multiline">
+          <div class="column is-2" *ngFor="let rs of ruleSets">
+            <button class="button is-fullwidth" (click)="creatableSession.ruleSetId = rs.id" title="{{rs.name}}"
+                    [ngClass]="{'is-link': creatableSession.ruleSetId === rs.id}">
+              {{rs.name}}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <hr>
 
-    <skl-button-list-select
-      label="1. Geber"
-      [isValid]="submitted && !firstDealerId"
-      [options]="playersForDealer"
-      (selected)="updateDealer($event.id)">
-    </skl-button-list-select>
+    <div class="field">
+      <label class="label">1. Geber:</label>
+      <div class="control">
+
+        <div class="columns is-multiline">
+          <div class="column is-1" *ngFor="let p of group.players">
+            <button class="button is-fullwidth" (click)="updateDealer(p.id)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.firstPlayerId === p.id}">
+              {{p.abbreviation}}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      *ngIf="firstDealerId"
-      label="1. Vorhand"
-      [isValid]="submitted && !firstPreHandId"
-      [options]="playersForPreHand"
-      (selected)="updatePreHand($event.id)">
-    </skl-button-list-select>
+    <div class="field">
+      <label class="label">1. Vorhand:</label>
+      <div class="control">
+
+        <div class="columns is-multiline">
+          <div class="column is-1" *ngFor="let p of group.players">
+            <button class="button is-fullwidth" (click)="updatePreHand(p.id)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.secondPlayerId === p.id}"
+                    [disabled]="!playersForPreHand.includes(p)">
+              {{p.abbreviation}}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      *ngIf="firstPreHandId"
-      label="1. Mittelhand"
-      [isValid]="submitted && !firstMiddleHandId"
-      [options]="playersForMiddleHand"
-      (selected)="updateMiddleHand($event.id)">
-    </skl-button-list-select>
+    <div class="field">
+      <label class="label">1. Mittelhand:</label>
+      <div class="control">
+
+        <div class="columns is-multiline">
+          <div class="column is-1" *ngFor="let p of group.players">
+            <button class="button is-fullwidth" (click)="updateMiddleHand(p.id)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.thirdPlayerId === p.id}"
+                    [disabled]="!playersForMiddleHand.includes(p)">
+              {{p.abbreviation}}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <br>
 
-    <skl-button-list-select
-      *ngIf="firstMiddleHandId"
-      label="1. Rückhand"
-      [isValid]="submitted && !firstRearHandId"
-      [options]="playersForRearHand"
-      (selected)="updateRearHand($event.id)">
-    </skl-button-list-select>
+    <div class="field">
+      <label class="label">1. Rückhand:</label>
+      <div class="control">
+
+        <div class="columns">
+          <div class="column is-1" *ngFor="let p of group.players">
+            <button class="button is-fullwidth" (click)="updateRearHand(p.id)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.fourthPlayerId === p.id}"
+                    [disabled]="!playersForRearHand.includes(p)">
+              {{p.abbreviation}}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <hr>
 

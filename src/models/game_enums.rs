@@ -38,3 +38,14 @@ pub enum KontraType {
     Supra,
     Resupra,
 }
+
+impl KontraType {
+    pub fn get_count(&self) -> u32 {
+        match self {
+            KontraType::Kontra => 1,
+            KontraType::Re => 2,
+            KontraType::Supra => 3,
+            KontraType::Resupra => 4,
+        }
+    }
+}

@@ -8,11 +8,11 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
 import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player-to-group.component';
-import {ButtonListSelectComponent} from './_components/button-list-select/button-list-select.component';
 import {GamesTableComponent} from './_components/games-table/games-table.component';
-import { UploadSpreadsheetComponent } from './upload-spreadsheet/upload-spreadsheet.component';
-import { SessionListComponent } from './session-list/session-list.component';
-import { RuleSetComponent } from './rule-set/rule-set.component';
+import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
+import {SessionListComponent} from './session-list/session-list.component';
+import {RuleSetComponent} from './rule-set/rule-set.component';
+import { NewGameComponent } from './_forms/new-game/new-game.component';
 
 @NgModule({
   declarations: [
@@ -21,11 +21,11 @@ import { RuleSetComponent } from './rule-set/rule-set.component';
     CreatePlayerComponent,
     CreateGroupComponent,
     AddPlayerToGroupComponent,
-    ButtonListSelectComponent,
     GamesTableComponent,
     UploadSpreadsheetComponent,
     SessionListComponent,
     RuleSetComponent,
+    NewGameComponent,
   ],
   imports: [
     BrowserModule,

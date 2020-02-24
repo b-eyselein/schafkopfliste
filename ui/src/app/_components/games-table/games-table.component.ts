@@ -1,18 +1,30 @@
-import {Component, Input} from '@angular/core';
-import {CompleteSession, Either, Game, isLeft} from '../../_interfaces/model';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {CompleteSession} from '../../_interfaces/model';
 import {Player} from '../../_interfaces/player';
 import {SUITS} from '../../_interfaces/ruleset';
+import {Either, Game, isLeft} from '../../_interfaces/game';
 
 @Component({
   selector: 'skl-games-table',
   templateUrl: './games-table.component.html'
 })
-export class GamesTableComponent {
+export class GamesTableComponent implements OnChanges {
 
   @Input() session: CompleteSession;
 
+  @Input() runningGame: Game | undefined;
+
+  currentActingPlayer: Player | undefined;
+
   private get players(): Player[] {
     return [this.session.firstPlayer, this.session.secondPlayer, this.session.thirdPlayer, this.session.fourthPlayer];
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.info(this.runningGame?.actingPlayerId);
+
+    this.currentActingPlayer = this.runningGame?.actingPlayerId ?
+      this.players.find((p) => p.id = this.runningGame.actingPlayerId) : undefined;
   }
 
   getDealer(playedGame: Game): Player {

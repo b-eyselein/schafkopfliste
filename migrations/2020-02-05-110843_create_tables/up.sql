@@ -69,6 +69,7 @@ create table if not exists sessions (
     id               integer      not null,
     group_id         integer      not null,
     date             date         not null,
+    time             time         not null,
     has_ended        bool         not null default false,
     first_player_id  integer      not null,
     second_player_id integer      not null,
@@ -88,28 +89,27 @@ create table if not exists sessions (
 );
 
 create table if not exists games (
-    id                       integer   not null,
-    session_id               integer   not null,
-    group_id                 integer   not null,
+    id                     integer   not null,
+    session_id             integer   not null,
+    group_id               integer   not null,
 
-    acting_player_id         integer   not null,
-    game_type                game_type not null,
-    suit                     bavarian_suit,
+    acting_player_id       integer   not null,
+    game_type              game_type not null,
+    suit                   bavarian_suit,
+    tout                   boolean   not null default false,
 
-    is_doubled               bool      not null default false,
-    laufende_count           integer   not null default 0,
-    schneider_schwarz        schneider_schwarz  default null,
+    is_doubled             bool      not null default false,
+    laufende_count         integer   not null default 0,
+    schneider_schwarz      schneider_schwarz  default null,
 
-    players_having_put_count integer   not null default 0,
-    players_having_put_ids   integer[],
-
-    kontra                   kontra_type        default null,
-
-    players_having_won_ids   integer[] not null default '{}',
-    price                    integer   not null,
+    players_having_put_ids integer[] not null default '{}',
+    kontra                 kontra_type        default null,
+    players_having_won_ids integer[] not null default '{}',
+    price                  integer   not null,
 
     primary key (id, session_id, group_id),
-    foreign key (acting_player_id) references players (id) on update cascade on delete cascade
+    foreign key (acting_player_id) references players (id) on update cascade on delete cascade,
+    foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
 );
 
 create or replace view groups_with_player_count as

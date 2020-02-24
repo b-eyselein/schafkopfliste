@@ -30,5 +30,19 @@
       <td>{{playedGame.schneiderSchwarz}}</td>
       <td>{{playedGame.price}}</td>
     </tr>
+    <tr *ngIf="runningGame" class="is-selected">
+      <td>{{runningGame.id}}</td>
+      <td>{{getDealer(runningGame).abbreviation}}</td>
+      <td>{{runningGame.isDoubled ? '&#10004;' : ''}}</td>
+      <td>{{getPlayersFromEither(runningGame.playersHavingPut)}}</td>
+      <td>{{runningGame.gameType}}</td>
+      <td>{{getSuitGermanName(runningGame)}}</td>
+      <td>{{currentActingPlayer ? currentActingPlayer.abbreviation : ''}}</td>
+      <td>{{runningGame.kontra}}</td>
+      <td>{{playersHavingWon(runningGame)}}</td>
+      <td>{{runningGame.laufendeCount}}</td>
+      <td>{{runningGame.schneiderSchwarz}}</td>
+      <td></td>
+    </tr>
   </tbody>
 </table>

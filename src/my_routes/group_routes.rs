@@ -1,9 +1,10 @@
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json;
-use rocket_contrib::json::{Json, JsonValue};
+use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::{insert_game, Game, PricedGame};
+use crate::models::game::Game;
+use crate::models::game_dao::insert_game;
 use crate::models::group::{
     insert_group, select_group_by_id, select_groups, CreatableGroup, Group,
 };
@@ -132,15 +133,26 @@ fn route_create_session(
     my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
-    creatable_session_json: Json<CreatableSession>,
+    creatable_session_json: Result<Json<CreatableSession>, JsonError>,
 ) -> Result<Json<Session>, String> {
-    insert_session(
-        &conn.0,
-        group_id,
-        my_jwt.claims.username,
-        creatable_session_json.0,
-    )
-    .map(Json)
+    creatable_session_json
+        .map_err(|err| -> String {
+            match err {
+                JsonError::Parse(my_str, _) => println!("{}", my_str),
+                _ => (),
+            }
+            println!("Error while reading json: {:?}", err);
+            "TODO!".into()
+        })
+        .and_then(|creatable_session| {
+            insert_session(
+                &conn.0,
+                group_id,
+                my_jwt.claims.username,
+                creatable_session.0,
+            )
+            .map(Json)
+        })
 }
 
 #[put(
@@ -154,7 +166,7 @@ fn route_create_game(
     group_id: i32,
     session_id: i32,
     game_json: Json<Game>,
-) -> Result<Json<PricedGame>, String> {
+) -> Result<Json<Game>, String> {
     let maybe_session = select_session_by_id(&conn.0, &group_id, &session_id);
 
     match maybe_session {
@@ -167,9 +179,16 @@ fn route_create_game(
             Some(rule_set) => {
                 let game = game_json.0;
 
-                let priced_game = PricedGame::from_game(game, &rule_set);
+                let price = game.calculate_price(&rule_set);
 
-                insert_game(&conn.0, group_id, session_id, priced_game).map(Json)
+                let db_game = Game {
+                    session_id,
+                    group_id,
+                    price,
+                    ..game
+                };
+
+                insert_game(&conn.0, db_game).map(Json)
             }
         },
     }

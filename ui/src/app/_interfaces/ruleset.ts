@@ -1,4 +1,4 @@
-import {BavarianSuitName, GameTypeName} from './model';
+import {BavarianSuitName, GameTypeName} from './game';
 
 export interface Suit {
   name: string;
@@ -37,7 +37,7 @@ const RAMSCH: GameType = {name: 'Ramsch', playerPartySize: 1, needsSuit: false, 
 const FARB_WENZ: GameType = {name: 'Farbwenz', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
 
-export function getSuitsForGameType(playedGame: GameType): Suit[]  {
+export function getSuitsForGameType(playedGame: GameType): Suit[] {
   if (!playedGame.needsSuit) {
     return [];
   } else {

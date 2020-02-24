@@ -1,4 +1,4 @@
-import {BavarianSuitName, Game, GameTypeName, SchneiderSchwarz} from '../_interfaces/model';
+import {BavarianSuitName, Game, GameTypeName, SchneiderSchwarz} from '../_interfaces/game';
 import {CellObject, WorkSheet} from 'xlsx';
 import {Player} from '../_interfaces/player';
 

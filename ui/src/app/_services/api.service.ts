@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {CreatableGroup, Group, GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CompleteSession, CreatableSession, Game, PricedGame, Session} from '../_interfaces/model';
+import {CompleteSession, CreatableSession, Session} from '../_interfaces/model';
 import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError, tap} from 'rxjs/operators';
 import {RuleSet} from '../_interfaces/ruleset';
+import {Game, PricedGame} from '../_interfaces/game';
 
 @Injectable({
   providedIn: 'root'

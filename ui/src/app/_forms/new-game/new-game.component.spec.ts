@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ButtonListSelectComponent } from './button-list-select.component';
+import { NewGameComponent } from './new-game.component';
 
-describe('SelectComponent', () => {
-  let component: ButtonListSelectComponent;
-  let fixture: ComponentFixture<ButtonListSelectComponent>;
+describe('NewGameComponent', () => {
+  let component: NewGameComponent;
+  let fixture: ComponentFixture<NewGameComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ButtonListSelectComponent ]
+      declarations: [ NewGameComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ButtonListSelectComponent);
+    fixture = TestBed.createComponent(NewGameComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

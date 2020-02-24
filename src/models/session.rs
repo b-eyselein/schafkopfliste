@@ -1,17 +1,19 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveTime};
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
 
-use crate::models::game::{select_games_for_session, PricedGame};
-use crate::models::group::{select_group_by_id, Group};
-use crate::models::player::{select_player_by_id, Player};
-use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
+use super::game::Game;
+use super::game_dao::select_games_for_session;
+use super::group::{select_group_by_id, Group};
+use super::player::{select_player_by_id, Player};
+use super::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::sessions;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
     pub date: NaiveDate,
+    pub time: NaiveTime,
     pub first_player_id: i32,
     pub second_player_id: i32,
     pub third_player_id: i32,
@@ -26,6 +28,7 @@ pub struct Session {
     id: i32,
     group_id: i32,
     date: NaiveDate,
+    time: NaiveTime,
     has_ended: bool,
     first_player_id: i32,
     second_player_id: i32,
@@ -44,6 +47,7 @@ impl Session {
     ) -> Session {
         let CreatableSession {
             date,
+            time,
             first_player_id,
             second_player_id,
             third_player_id,
@@ -55,6 +59,7 @@ impl Session {
             id,
             group_id,
             date,
+            time,
             has_ended: false,
             first_player_id,
             second_player_id,
@@ -72,29 +77,32 @@ pub struct CompleteSession {
     id: i32,
     group: Group,
     date: NaiveDate,
+    time: NaiveTime,
     first_player: Player,
     second_player: Player,
     third_player: Player,
     fourth_player: Player,
     rule_set: RuleSet,
-    played_games: Vec<PricedGame>,
+    played_games: Vec<Game>,
 }
 
 impl CompleteSession {
     pub fn from_db_values(
         id: i32,
         date: NaiveDate,
+        time: NaiveTime,
         group: Group,
         first_player: Player,
         second_player: Player,
         third_player: Player,
         fourth_player: Player,
         rule_set: RuleSet,
-        played_games: Vec<PricedGame>,
+        played_games: Vec<Game>,
     ) -> CompleteSession {
         CompleteSession {
             id,
             date,
+            time,
             group,
             first_player,
             second_player,
@@ -129,6 +137,7 @@ pub fn select_complete_session_by_id(
     Some(CompleteSession::from_db_values(
         session.id,
         session.date,
+        session.time,
         select_group_by_id(conn, &session.group_id)?,
         select_player_by_id(conn, &session.first_player_id)?,
         select_player_by_id(conn, &session.second_player_id)?,
