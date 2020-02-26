@@ -44,14 +44,14 @@ export interface GameRow {
   firstPlayerWon: boolean;
   secondPlayerWon: boolean;
   thirdPlayerWon: boolean;
-  fourthPlayerWon: boolean
+  fourthPlayerWon: boolean;
   schneiderSchwarz: SpreadSheetSchneiderSchwarz; // P
   laufendeCount: number;
   price: number;
   firstPlayerRunningTotal: number;
   secondPlayerRunningTotal: number;
   thirdPlayerRunningTotal: number; // U
-  fourthPlayerRunningTotal: number
+  fourthPlayerRunningTotal: number;
 }
 
 function readSchneiderSchwarz(snsw: SpreadSheetSchneiderSchwarz): SchneiderSchwarz | undefined {
@@ -98,7 +98,7 @@ export function readGameFromGameRow(groupId: number, sessionId: number, gameRow:
     laufendeCount: gameRow.laufendeCount,
     schneiderSchwarz: readSchneiderSchwarz(gameRow.schneiderSchwarz),
 
-    playersHavingPut: {Left: -1},
+    playersHavingPutIds: [],
     kontra: undefined,
     playersHavingWonIds: []
   };

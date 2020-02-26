@@ -3,7 +3,7 @@ import {CompleteSession, playersForSession} from '../../_interfaces/model';
 import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
 import {Player} from '../../_interfaces/player';
 import {ApiService} from '../../_services/api.service';
-import {Game, KontraType, KontraTypeValues, Right, SchneiderSchwarz} from '../../_interfaces/game';
+import {Game, KontraType, KontraTypeValues, SchneiderSchwarz} from '../../_interfaces/game';
 
 @Component({
   selector: 'skl-new-game',
@@ -78,7 +78,7 @@ export class NewGameComponent implements OnInit {
       laufendeCount: 0,
       schneiderSchwarz: undefined,
 
-      playersHavingPut: {Right: []},
+      playersHavingPutIds: [],
       kontra: undefined,
       playersHavingWonIds: [],
     };
@@ -108,11 +108,11 @@ export class NewGameComponent implements OnInit {
   }
 
   get playersHavingPut(): number[] {
-    return (this.game.playersHavingPut as Right<number, number[]>).Right;
+    return this.game.playersHavingPutIds;
   }
 
   set playersHavingPut(ids: number[]) {
-    (this.game.playersHavingPut as Right<number, number[]>).Right = ids;
+    this.game.playersHavingPutIds = ids;
   }
 
   getDealer(): Player {
@@ -169,7 +169,7 @@ export class NewGameComponent implements OnInit {
     if (this.playersHavingPut.includes(player.id)) {
       this.playersHavingPut = this.playersHavingPut.filter((id) => id !== player.id);
     } else {
-      (this.game.playersHavingPut as Right<number, number[]>).Right.push(player.id);
+      this.game.playersHavingPutIds.push(player.id);
     }
 
     this.gameChanged.emit(this.game);

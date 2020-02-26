@@ -12,7 +12,8 @@ import {GamesTableComponent} from './_components/games-table/games-table.compone
 import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
 import {SessionListComponent} from './session-list/session-list.component';
 import {RuleSetComponent} from './rule-set/rule-set.component';
-import { NewGameComponent } from './_forms/new-game/new-game.component';
+import {NewGameComponent} from './_forms/new-game/new-game.component';
+import {PlayerAbbreviationsComponent} from './_components/player-abbreviations/player-abbreviations.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { NewGameComponent } from './_forms/new-game/new-game.component';
     SessionListComponent,
     RuleSetComponent,
     NewGameComponent,
+    PlayerAbbreviationsComponent,
   ],
   imports: [
     BrowserModule,

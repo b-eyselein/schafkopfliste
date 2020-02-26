@@ -1,6 +1,6 @@
 [package]
 name = "schafkopfliste"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Björn Eyselein <bjoern.eyselein@uni-wuerzburg.de>"]
 edition = "2018"
 
