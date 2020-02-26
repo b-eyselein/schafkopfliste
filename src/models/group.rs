@@ -40,10 +40,16 @@ pub fn select_group_by_id(conn: &PgConnection, group_id: &i32) -> Option<Group> 
 pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, String> {
     use crate::schema::groups::dsl::*;
 
-    diesel::insert_into(groups)
+    let new_group_id_try = diesel::insert_into(groups)
         .values(&cg)
         .returning(id)
-        .get_result(conn)
-        .map_err(|_| format!("Error while inserting group with name {} into db", cg.name))
-        .map(|new_group_id| Group::new(new_group_id, cg.name))
+        .get_result(conn);
+
+    match new_group_id_try {
+        Err(_) => Err(format!(
+            "Error while inserting group with name {} into db",
+            cg.name
+        )),
+        Ok(new_group_id) => Ok(Group::new(new_group_id, cg.name)),
+    }
 }

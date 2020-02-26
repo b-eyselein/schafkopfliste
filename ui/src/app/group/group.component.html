@@ -5,29 +5,29 @@
 
     <hr>
 
-    <div class="columns">
-      <div class="column is-one-third" *ngIf="group.defaultRuleSet">
-        <h2 class="subtitle is-3">Standardregeln</h2>
+    <section *ngIf="group.defaultRuleSet">
+      <h2 class="subtitle is-3">Standardregeln</h2>
 
-        <skl-rule-set [ruleSet]="group.defaultRuleSet"></skl-rule-set>
-      </div>
+      <a class="button is-link is-fullwidth" routerLink="/ruleSets">{{group.defaultRuleSet.name}}</a>
 
-      <div class="column">
+      <hr>
+    </section>
+
+    <section>
+      <h2 class="subtitle is-3">Mitglieder</h2>
+
+      <div class="columns is-multiline">
         <ng-container *ngIf="group.players.length > 0; else noPlayersFoundBlock">
-          <h2 class="subtitle is-3">Mitglieder</h2>
-
-          <div class="columns is-multiline">
-            <div class="column is-3" *ngFor="let player of group.players">
-              <div class="button is-static is-fullwidth has-text-centered">{{player.abbreviation}}
-                - {{player.name}}</div>
-            </div>
-            <div class="column is-3">
-              <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
-            </div>
+          <div class="column is-3" *ngFor="let player of group.players">
+            <div class="button is-static is-fullwidth has-text-centered">{{player.abbreviation}}
+              - {{player.name}}</div>
           </div>
         </ng-container>
+        <div class="column is-3">
+          <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
+        </div>
       </div>
-    </div>
+    </section>
 
     <hr>
 
@@ -35,7 +35,7 @@
 
       <h2 class="subtitle is-3">Sitzungen</h2>
 
-      <div class="columns">
+      <div class="columns is-multiline">
         <div class="column is-2" *ngFor="let session of sessions">
           <a class="button is-fullwidth" [routerLink]="['sessions', session.id]">{{session.id}}</a>
         </div>
