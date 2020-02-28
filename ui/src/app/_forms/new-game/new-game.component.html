@@ -90,8 +90,8 @@
       </div>
 
       <div class="column is-3">
-        <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="tout = !tout">
-          {{tout ? '&#10004;' : '&#10008; kein'}} Tout
+        <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="game.tout = !game.tout">
+          {{game.tout ? '&#10004;' : '&#10008; kein'}} Tout
         </button>
       </div>
     </div>

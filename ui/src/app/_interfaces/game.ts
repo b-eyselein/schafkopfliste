@@ -24,6 +24,7 @@ export interface Game {
   actingPlayerId: number;
   gameType: GameTypeName;
   suit: BavarianSuitName | undefined;
+  tout: boolean;
 
   isDoubled: boolean;
   laufendeCount: number;
@@ -32,8 +33,5 @@ export interface Game {
   playersHavingPutIds: number[];
   kontra: KontraType | undefined;
   playersHavingWonIds: number[];
-}
-
-export interface PricedGame extends Game {
   price: number;
 }

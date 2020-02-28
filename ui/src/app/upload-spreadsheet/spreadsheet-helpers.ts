@@ -97,9 +97,11 @@ export function readGameFromGameRow(groupId: number, sessionId: number, gameRow:
     isDoubled: gameRow.isDoubled,
     laufendeCount: gameRow.laufendeCount,
     schneiderSchwarz: readSchneiderSchwarz(gameRow.schneiderSchwarz),
+    tout: false,
 
     playersHavingPutIds: [],
     kontra: undefined,
-    playersHavingWonIds: []
+    playersHavingWonIds: [],
+    price: 0,
   };
 }

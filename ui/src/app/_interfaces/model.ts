@@ -1,7 +1,7 @@
 import {Player} from './player';
 import {RuleSet} from './ruleset';
 import {Group} from './group';
-import {PricedGame} from './game';
+import {Game} from './game';
 
 export interface CreatableSession {
   ruleSetId: number;
@@ -28,7 +28,7 @@ export interface CompleteSession {
   thirdPlayer: Player;
   fourthPlayer: Player;
   ruleSet: RuleSet;
-  playedGames: PricedGame[];
+  playedGames: Game[];
 }
 
 export function playersForSession(s: CompleteSession): Player[] {

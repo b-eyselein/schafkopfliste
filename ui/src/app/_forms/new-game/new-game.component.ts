@@ -73,6 +73,7 @@ export class NewGameComponent implements OnInit {
       actingPlayerId: undefined,
       gameType: undefined,
       suit: undefined,
+      tout: false,
 
       isDoubled: false,
       laufendeCount: 0,
@@ -81,6 +82,7 @@ export class NewGameComponent implements OnInit {
       playersHavingPutIds: [],
       kontra: undefined,
       playersHavingWonIds: [],
+      price: 0,
     };
 
   }
