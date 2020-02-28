@@ -13,7 +13,7 @@ cd target || exit
 mkdir -p ${APP_NAME}
 cd ${APP_NAME} || exit
 
-cp -r ../../{start_docker_postgres.sh,db_init.sql,Rocket.toml,static,migrations} .
+cp -r ../../{start_docker_postgres.sh,db_init.sql,Rocket.toml,static} .
 cp ../release/schafkopfliste .
 
 cd .. || exit
