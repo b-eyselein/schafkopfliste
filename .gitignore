@@ -7,3 +7,5 @@ src/schema.rs.orig
 
 static/*
 !static/.gitkeep
+
+interfaces.ts

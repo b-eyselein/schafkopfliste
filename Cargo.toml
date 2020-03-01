@@ -29,8 +29,5 @@ regex = "1.3.4"
 
 lazy_static = "1.4.0"
 
-serde_tsi = { git = "https://github.com/b-eyselein/serde_tsi.git" }
-
-[[bin]]
-name = "write-ts-types"
-path = "bin/write_ts_types.rs"
+serde_tsi = { path = "../serde-tsi" }
+serde_tsi_derive = { path = "../serde-tsi/serde_tsi_derive" }

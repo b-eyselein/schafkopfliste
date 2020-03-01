@@ -1,6 +1,7 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
-use serde_tsi::{ts_interface, HasTypescriptInterface, TsType};
+use serde_tsi::{ts_interface, HasTypescriptType, TsType};
+use serde_tsi_derive::HasTypescriptInterface;
 
 use crate::schema::players;
 
@@ -11,7 +12,7 @@ pub struct CreatablePlayer {
     pub name: String,
 }
 
-impl HasTypescriptInterface for CreatablePlayer {
+impl HasTypescriptType for CreatablePlayer {
     fn ts_type() -> TsType {
         ts_interface(
             Some("CreatablePlayer".into()),
@@ -23,7 +24,7 @@ impl HasTypescriptInterface for CreatablePlayer {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptInterface)]
 pub struct Player {
     pub id: i32,
     pub abbreviation: String,

@@ -13,6 +13,8 @@ use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
 
+use serde_tsi::{write_ts_types, HasTypescriptType, TsType};
+
 mod jwt_helpers;
 mod models;
 mod my_routes;
@@ -38,6 +40,11 @@ fn route_index() -> Redirect {
 }
 
 fn main() {
+    // Write ts types only in dev mode
+    println!("Writing ts types...");
+    let top_tier_types: Vec<TsType> = vec![crate::models::player::Player::ts_type()];
+    write_ts_types("./interfaces.ts", top_tier_types);
+
     use diesel::prelude::*;
 
     let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
