@@ -12,6 +12,7 @@ use rocket::{get, response::Redirect, routes};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
+
 use ts_type_writer::write_all_ts_types;
 
 mod jwt_helpers;
@@ -40,7 +41,9 @@ fn route_index() -> Redirect {
 }
 
 fn main() {
-    write_all_ts_types();
+    if cfg!(debug_assertions) {
+        write_all_ts_types();
+    }
 
     use diesel::prelude::*;
 
