@@ -1,14 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {
-  CreatableGroup,
-  Group,
-  GroupWithPlayerCount,
-  GroupWithPlayersAndMembership,
-  GroupWithPlayersAndRuleSet
-} from '../_interfaces/group';
+import {CreatableGroup, CreatablePlayer, Group, Player} from '../_interfaces/interfaces';
+import {GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {CompleteSession, CreatableSession, Session} from '../_interfaces/model';
-import {Player, PlayerToCreate} from '../_interfaces/player';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError} from 'rxjs/operators';
@@ -103,7 +97,7 @@ export class ApiService {
       }));
   }
 
-  createPlayer(player: PlayerToCreate): Observable<Player> {
+  createPlayer(player: CreatablePlayer): Observable<Player> {
     const url = `${this.baseUrl}/api/players`;
 
     return this.httpClient.put<Player>(url, player, ApiService.putHttpOptions);

@@ -12,13 +12,13 @@ use rocket::{get, response::Redirect, routes};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
-
-use serde_tsi::{write_ts_types, HasTypescriptType, TsType};
+use ts_type_writer::write_all_ts_types;
 
 mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
+mod ts_type_writer;
 
 embed_migrations!();
 
@@ -40,10 +40,7 @@ fn route_index() -> Redirect {
 }
 
 fn main() {
-    // Write ts types only in dev mode
-    println!("Writing ts types...");
-    let top_tier_types: Vec<TsType> = vec![crate::models::player::Player::ts_type()];
-    write_ts_types("./interfaces.ts", top_tier_types);
+    write_all_ts_types();
 
     use diesel::prelude::*;
 

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {AuthenticationService} from './_services/authentication.service';
-import {User} from './_interfaces/user';
+import {UserWithToken} from './_interfaces/interfaces';
 
 @Component({
   selector: 'skl-root',
@@ -11,7 +11,7 @@ export class AppComponent {
 
   title = 'schafkopf';
 
-  currentUser: User;
+  currentUser: UserWithToken;
 
   constructor(private authenticationService: AuthenticationService) {
     this.authenticationService.currentUser.subscribe((u) => this.currentUser = u);

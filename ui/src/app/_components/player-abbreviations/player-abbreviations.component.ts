@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Player} from '../../_interfaces/player';
+import {Player} from '../../_interfaces/interfaces';
 
 @Component({
   selector: 'skl-player-abbreviations',

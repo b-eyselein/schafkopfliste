@@ -1,6 +1,6 @@
-import {Player} from './player';
+import {Player} from './interfaces';
 import {RuleSet} from './ruleset';
-import {Group} from './group';
+import {Group} from './interfaces';
 import {Game} from './game';
 
 export interface CreatableSession {

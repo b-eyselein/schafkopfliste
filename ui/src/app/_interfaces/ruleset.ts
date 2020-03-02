@@ -14,10 +14,6 @@ const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
 
 export const SUITS: Suit[] = [ACORNS, LEAVES, HEARTS, BELLS];
 
-export interface CreatableRuleSet {
-  name: string;
-}
-
 export interface GameType {
 //  id: number;
   name: GameTypeName;
@@ -27,15 +23,71 @@ export interface GameType {
   isDefaultGameType: boolean;
 }
 
-export const RUF: GameType = {name: 'Ruf', playerPartySize: 2, needsSuit: true, canBeTout: true, isDefaultGameType: true};
+export const RUF: GameType = {
+  name: 'Ruf',
+  playerPartySize: 2,
+  needsSuit: true,
+  canBeTout: true,
+  isDefaultGameType: true
+};
+
 const WENZ: GameType = {name: 'Wenz', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: true};
-const FARB_SOLO: GameType = {name: 'Farbsolo', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: true};
-const GEIER: GameType = {name: 'Geier', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: false};
-const HOCHZEIT: GameType = {name: 'Hochzeit', playerPartySize: 2, needsSuit: false, canBeTout: true, isDefaultGameType: false};
-const BETTEL: GameType = {name: 'Bettel', playerPartySize: 1, needsSuit: false, canBeTout: false, isDefaultGameType: false};
-const RAMSCH: GameType = {name: 'Ramsch', playerPartySize: 1, needsSuit: false, canBeTout: false, isDefaultGameType: false};
-const FARB_WENZ: GameType = {name: 'Farbwenz', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
-const FARB_GEIER: GameType = {name: 'Farbgeier', playerPartySize: 1, needsSuit: true, canBeTout: true, isDefaultGameType: false};
+
+const FARB_SOLO: GameType = {
+  name: 'Farbsolo',
+  playerPartySize: 1,
+  needsSuit: true,
+  canBeTout: true,
+  isDefaultGameType: true
+};
+
+const GEIER: GameType = {
+  name: 'Geier',
+  playerPartySize: 1,
+  needsSuit: false,
+  canBeTout: true,
+  isDefaultGameType: false
+};
+
+const HOCHZEIT: GameType = {
+  name: 'Hochzeit',
+  playerPartySize: 2,
+  needsSuit: false,
+  canBeTout: true,
+  isDefaultGameType: false
+};
+
+const BETTEL: GameType = {
+  name: 'Bettel',
+  playerPartySize: 1,
+  needsSuit: false,
+  canBeTout: false,
+  isDefaultGameType: false
+};
+
+const RAMSCH: GameType = {
+  name: 'Ramsch',
+  playerPartySize: 1,
+  needsSuit: false,
+  canBeTout: false,
+  isDefaultGameType: false
+};
+
+const FARB_WENZ: GameType = {
+  name: 'Farbwenz',
+  playerPartySize: 1,
+  needsSuit: true,
+  canBeTout: true,
+  isDefaultGameType: false
+};
+
+const FARB_GEIER: GameType = {
+  name: 'Farbgeier',
+  playerPartySize: 1,
+  needsSuit: true,
+  canBeTout: true,
+  isDefaultGameType: false
+};
 
 export function getSuitsForGameType(playedGame: GameType): Suit[] {
   if (!playedGame.needsSuit) {
@@ -45,8 +97,9 @@ export function getSuitsForGameType(playedGame: GameType): Suit[] {
   }
 }
 
-export interface RuleSet extends CreatableRuleSet {
+export interface RuleSet {
   id: number;
+  name: string;
   basePrice: number;
   soloPrice: number;
   countLaufende: 'Always' | 'OnlyLosers' | 'Never';

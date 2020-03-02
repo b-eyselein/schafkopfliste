@@ -3,7 +3,7 @@ import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {RuleSet} from '../_interfaces/ruleset';
-import {Player} from '../_interfaces/player';
+import {Player} from '../_interfaces/interfaces';
 import {CreatableSession, Session} from '../_interfaces/model';
 
 function stringifyDate(date: Date): string {

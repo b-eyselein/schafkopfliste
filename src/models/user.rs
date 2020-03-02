@@ -1,8 +1,10 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
 use crate::schema::users;
 
+// FIXME: remove Serialize or password!
 #[derive(Debug, Serialize, Insertable, Queryable)]
 pub struct User {
     pub username: String,
@@ -10,13 +12,13 @@ pub struct User {
     pub player_id: Option<i32>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, HasTypescriptType)]
 pub struct Credentials {
     pub username: String,
     pub password: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, HasTypescriptType)]
 pub struct UserWithToken {
     pub name: String,
     pub token: String,

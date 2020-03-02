@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {Player} from '../_interfaces/player';
+import {Player} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './player-list.component.html'})
 export class PlayerListComponent implements OnInit {

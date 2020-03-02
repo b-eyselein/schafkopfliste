@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Player} from '../../_interfaces/player';
+import {Player} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 
 @Component({

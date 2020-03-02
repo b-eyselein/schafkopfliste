@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CompleteSession, playersForSession} from '../../_interfaces/model';
 import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
-import {Player} from '../../_interfaces/player';
+import {Player} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 import {Game, KontraType, KontraTypeValues, SchneiderSchwarz} from '../../_interfaces/game';
 

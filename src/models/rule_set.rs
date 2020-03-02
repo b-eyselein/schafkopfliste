@@ -1,9 +1,10 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
 use crate::schema::rule_sets;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Count_laufende"]
 pub enum CountLaufende {
     Always,
@@ -11,7 +12,7 @@ pub enum CountLaufende {
     Never,
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct RuleSet {
     pub id: i32,

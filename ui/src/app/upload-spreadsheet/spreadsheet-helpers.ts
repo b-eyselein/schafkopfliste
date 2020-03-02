@@ -1,6 +1,6 @@
 import {BavarianSuitName, Game, GameTypeName, SchneiderSchwarz} from '../_interfaces/game';
 import {CellObject, WorkSheet} from 'xlsx';
-import {Player} from '../_interfaces/player';
+import {Player} from '../_interfaces/interfaces';
 
 export const header: string[] = [
   'id', // A
