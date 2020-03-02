@@ -1,8 +1,16 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {CreatableGroup, CreatablePlayer, Group, Player, RuleSet} from '../_interfaces/interfaces';
+import {
+  CompleteSession,
+  CreatableGroup,
+  CreatablePlayer,
+  CreatableSession,
+  Group,
+  Player,
+  RuleSet,
+  Session
+} from '../_interfaces/interfaces';
 import {GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {CompleteSession, CreatableSession, Session} from '../_interfaces/model';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError} from 'rxjs/operators';
@@ -102,10 +110,14 @@ export class ApiService {
     return this.httpClient.put<Player>(url, player, ApiService.putHttpOptions);
   }
 
-  createSession(groupId: number, session: CreatableSession): Observable<Session> {
+  createSession(groupId: number, session: CreatableSession): Observable<Session | undefined> {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions`;
 
-    return this.httpClient.put<Session>(url, session, ApiService.putHttpOptions);
+    return this.httpClient.put<Session>(url, session, ApiService.putHttpOptions)
+      .pipe(catchError((err) => {
+        console.error(err);
+        return of(undefined);
+      }));
   }
 
   addPlayerToGroup(groupId: number, playerId: number): Observable<boolean> {

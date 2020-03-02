@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
 import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
-import {Session} from '../_interfaces/model';
+import {Session} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './group.component.html'})
 export class GroupComponent implements OnInit {

@@ -10,6 +10,10 @@ pub fn write_all_ts_types() {
         crate::models::player::CreatablePlayer::ts_type(),
         crate::models::player::Player::ts_type(),
         crate::models::rule_set::RuleSet::ts_type(),
+        crate::models::game::Game::ts_type(),
+        crate::models::session::CreatableSession::ts_type(),
+        crate::models::session::Session::ts_type(),
+        crate::models::session::CompleteSession::ts_type(),
         crate::models::group::CreatableGroup::ts_type(),
         crate::models::group::Group::ts_type(),
     ];

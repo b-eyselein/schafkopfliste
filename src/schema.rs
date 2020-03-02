@@ -69,8 +69,11 @@ table! {
     sessions (id, group_id) {
         id -> Int4,
         group_id -> Int4,
-        date -> Date,
-        time -> Time,
+        date_year -> Int4,
+        date_month -> Int4,
+        date_day_of_month -> Int4,
+        time_hours -> Int4,
+        time_minutes -> Int4,
         has_ended -> Bool,
         first_player_id -> Int4,
         second_player_id -> Int4,

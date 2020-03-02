@@ -2,21 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
-import {Player, RuleSet} from '../_interfaces/interfaces';
-import {CreatableSession, Session} from '../_interfaces/model';
-
-function stringifyDate(date: Date): string {
-
-  const oneBasedMonth = date.getMonth() + 1;
-  const month = oneBasedMonth < 10 ? ('0' + oneBasedMonth) : oneBasedMonth.toString();
-  const day = date.getDate() < 10 ? ('0' + date.getDate()) : date.getDate().toString();
-
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function stringifyTime(date: Date): string {
-  return `${date.getHours()}:${date.getMinutes()}:00`;
-}
+import {CreatableSession, Player, RuleSet, Session} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
@@ -52,28 +38,19 @@ export class NewSessionComponent implements OnInit {
           const today = new Date();
 
           this.creatableSession = {
-            date: stringifyDate(today),
-            time: stringifyTime(today),
+            dateYear: today.getFullYear(),
+            dateMonth: today.getMonth() + 1,
+            dateDayOfMonth: today.getDate(),
+            timeHours: today.getHours(),
+            timeMinutes: today.getMinutes(),
             ruleSetId: this.group.defaultRuleSet?.id,
             firstPlayerId: undefined,
             secondPlayerId: undefined,
             thirdPlayerId: undefined,
             fourthPlayerId: undefined,
           };
-
-          console.info(JSON.stringify(this.creatableSession, null, 2));
         });
-
     });
-  }
-
-  updateDate(value: string): void {
-    this.creatableSession.date = stringifyDate(new Date(value));
-  }
-
-  updateTime(value: string): void {
-    console.info(value);
-    this.creatableSession.time = value;
   }
 
   updateDealer(dealerId: number | undefined): void {
@@ -92,11 +69,14 @@ export class NewSessionComponent implements OnInit {
       .filter((p) => !selectedPlayerIds.includes(p.id));
   }
 
-
   updateMiddleHand(middleHandId: number): void {
     this.creatableSession.thirdPlayerId = middleHandId;
 
-    const selectedPlayerIds = [this.creatableSession.firstPlayerId, this.creatableSession.secondPlayerId, this.creatableSession.thirdPlayerId];
+    const selectedPlayerIds = [
+      this.creatableSession.firstPlayerId,
+      this.creatableSession.secondPlayerId,
+      this.creatableSession.thirdPlayerId
+    ];
 
     this.playersForRearHand = this.group.players
       .filter((p) => !selectedPlayerIds.includes(p.id));

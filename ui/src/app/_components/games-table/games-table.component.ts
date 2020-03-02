@@ -1,28 +1,35 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {CompleteSession} from '../../_interfaces/model';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {CompleteSession, Player} from '../../_interfaces/interfaces';
 import {SUITS} from '../../_interfaces/ruleset';
 import {Game} from '../../_interfaces/game';
-import {Player} from '../../_interfaces/interfaces';
 
 @Component({
   selector: 'skl-games-table',
   templateUrl: './games-table.component.html'
 })
-export class GamesTableComponent implements OnChanges {
+export class GamesTableComponent implements OnInit, OnChanges {
 
   @Input() session: CompleteSession;
 
   @Input() runningGame: Game | undefined;
 
+  players: Player[];
+
   currentActingPlayer: Player | undefined;
 
-  private get players(): Player[] {
-    return [this.session.firstPlayer, this.session.secondPlayer, this.session.thirdPlayer, this.session.fourthPlayer];
+  ngOnInit(): void {
+    this.players = [
+      this.session.firstPlayer,
+      this.session.secondPlayer,
+      this.session.thirdPlayer,
+      this.session.fourthPlayer
+    ];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.currentActingPlayer = this.runningGame?.actingPlayerId ?
-      this.players.find((p) => p.id = this.runningGame.actingPlayerId) : undefined;
+    if (this.runningGame && this.runningGame.actingPlayerId) {
+      this.currentActingPlayer = this.players.find((p) => p.id === this.runningGame.actingPlayerId);
+    }
   }
 
   getDealer(playedGame: Game): Player {
@@ -42,7 +49,7 @@ export class GamesTableComponent implements OnChanges {
   }
 
   playersHavingWon(playedGame: Game): Player[] {
-    return this.players.filter((p) => playedGame.playersHavingWonIds.includes(p.id))
+    return this.players.filter((p) => playedGame.playersHavingWonIds.includes(p.id));
   }
 
 }

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CompleteSession} from '../_interfaces/model';
+import {CompleteSession} from '../_interfaces/interfaces';
 import {ApiService} from '../_services/api.service';
 import {Game} from '../_interfaces/game';
 
@@ -26,4 +26,7 @@ export class SessionComponent implements OnInit {
     });
   }
 
+  updateGame($event: Game) {
+    this.game = {...$event};
+  }
 }

@@ -4,24 +4,61 @@
 
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
 
-    <div class="field">
-      <label for="date" class="label">Datum:</label>
-      <div class="control">
-        <input type="date" id="date" class="input"
-               [value]="creatableSession.date"
-               (change)="updateDate($event.target.value)">
+
+    <div class="columns">
+      <div class="column is-three-fifths-desktop">
+
+        <label class="label">
+          Datum (
+          <label for="dateDayOfMonth">Tag</label> -
+          <label for="dateMonth">Monat</label> -
+          <label for="dateYear">Jahr</label>
+          ):
+        </label>
+
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input type="number" id="dateDayOfMonth" class="input" min="1" max="31"
+                   [(ngModel)]="creatableSession.dateDayOfMonth">
+          </div>
+          <div class="control">
+            <button class="button is-static">.</button>
+          </div>
+          <div class="control is-expanded">
+            <input type="number" id="dateMonth" class="input" min="1" max="12" [(ngModel)]="creatableSession.dateMonth">
+          </div>
+          <div class="control">
+            <button class="button is-static">.</button>
+          </div>
+          <div class="control is-expanded">
+            <input type="number" id="dateYear" class="input" min="2000" max="3000"
+                   [(ngModel)]="creatableSession.dateYear">
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <label class="label">
+          Zeit (
+          <label for="timeHours">Stunden</label> :
+          <label for="timeMinutes">Minuten</label>
+          ):
+        </label>
+
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input type="number" id="timeHours" class="input" min="0" max="23" [(ngModel)]="creatableSession.timeHours">
+          </div>
+          <div class="control">
+            <button class="button is-static">:</button>
+          </div>
+          <div class="control is-expanded">
+            <input type="number" id="timeMinutes" class="input" min="0" max="59"
+                   [(ngModel)]="creatableSession.timeMinutes">
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="field">
-      <label for="time" class="label">Zeit:</label>
-      <div class="control">
-        <input type="time" id="time" class="input"
-               [value]="creatableSession.time"
-               (change)="updateTime($event.target.value)">
-      </div>
-    </div>
-
 
     <div class="field">
       <label class="label">Regelsatz:</label>

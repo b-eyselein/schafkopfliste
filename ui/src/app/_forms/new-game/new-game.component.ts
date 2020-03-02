@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CompleteSession, playersForSession} from '../../_interfaces/model';
 import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
-import {Player} from '../../_interfaces/interfaces';
+import {CompleteSession, Player} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 import {Game, KontraType, KontraTypeValues, SchneiderSchwarz} from '../../_interfaces/game';
 
@@ -32,20 +31,22 @@ export class NewGameComponent implements OnInit {
 
   currentGameIndex = 1;
 
-  tout = false;
-
   isDoubled = false;
 
   remainingDoubledGames = 0;
 
   submitted = false;
 
-
   constructor(private apiService: ApiService) {
   }
 
   ngOnInit(): void {
-    this.players = playersForSession(this.session);
+    this.players = [
+      this.session.firstPlayer,
+      this.session.secondPlayer,
+      this.session.thirdPlayer,
+      this.session.fourthPlayer
+    ];
 
     this.allowedGameTypes = getAllowedGameTypes(this.session.ruleSet);
 
@@ -53,7 +54,7 @@ export class NewGameComponent implements OnInit {
       this.currentGameIndex = Math.max(...this.session.playedGames.map((pg) => pg.id)) + 1;
     }
 
-    this.reInitGame(1);
+    this.reInitGame();
   }
 
   get playedGameType(): GameType | undefined {
@@ -64,7 +65,7 @@ export class NewGameComponent implements OnInit {
     }
   }
 
-  private reInitGame(id: number): void {
+  private reInitGame(): void {
     this.game = {
       id: this.currentGameIndex,
       sessionId: this.session.id,
@@ -98,9 +99,9 @@ export class NewGameComponent implements OnInit {
       this.isDoubled = true;
     }
 
-    this.tout = false;
-
     this.submitted = false;
+
+    this.reInitGame();
   }
 
   suitCanBePlayedWithGameType(suit: Suit): boolean {
@@ -121,8 +122,8 @@ export class NewGameComponent implements OnInit {
     return this.players[(this.currentGameIndex - 1) % 4];
   }
 
-  togglePlayer(p: Player): void {
-    this.game.actingPlayerId = this.game.actingPlayerId === p.id ? undefined : p.id;
+  togglePlayer(playerId: number): void {
+    this.game.actingPlayerId = this.game.actingPlayerId === playerId ? undefined : playerId;
 
     this.gameChanged.emit(this.game);
   }
@@ -179,6 +180,8 @@ export class NewGameComponent implements OnInit {
 
   throwIn(): void {
     this.resetData(true);
+
+    this.gameChanged.emit(this.game);
   }
 
   saveGame() {
@@ -193,7 +196,6 @@ export class NewGameComponent implements OnInit {
     }
 
     if (this.game.playersHavingWonIds.length === 0) {
-      alert('Mindestens ein Spieler muss gewonnen haben!');
       return;
     }
 
