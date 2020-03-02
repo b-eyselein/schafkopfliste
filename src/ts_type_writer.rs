@@ -14,5 +14,9 @@ pub fn write_all_ts_types() {
         crate::models::group::Group::ts_type(),
     ];
 
-    write_ts_types("./ui/src/app/_interfaces/interfaces.ts", top_tier_types);
+    write_ts_types(
+        "./ui/src/app/_interfaces/interfaces.ts",
+        top_tier_types,
+        "import {CountLaufende} from './ruleset';",
+    );
 }

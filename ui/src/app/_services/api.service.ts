@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {CreatableGroup, CreatablePlayer, Group, Player} from '../_interfaces/interfaces';
+import {CreatableGroup, CreatablePlayer, Group, Player, RuleSet} from '../_interfaces/interfaces';
 import {GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {CompleteSession, CreatableSession, Session} from '../_interfaces/model';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError} from 'rxjs/operators';
-import {RuleSet} from '../_interfaces/ruleset';
 import {Game} from '../_interfaces/game';
 
 @Injectable({

@@ -1,5 +1,4 @@
-import {Group, Player} from './interfaces';
-import {RuleSet} from './ruleset';
+import {Group, Player, RuleSet} from './interfaces';
 
 export interface GroupWithPlayerCount extends Group {
   playerCount?: number;

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {RuleSet} from '../_interfaces/ruleset';
+import {RuleSet} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './rule-set-list.component.html'})
 export class RuleSetListComponent implements OnInit {

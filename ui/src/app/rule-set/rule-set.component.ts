@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {RuleSet} from '../_interfaces/ruleset';
+import {RuleSet} from '../_interfaces/interfaces';
 
 @Component({
   selector: 'skl-rule-set',

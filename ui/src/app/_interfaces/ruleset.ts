@@ -1,4 +1,5 @@
 import {BavarianSuitName, GameTypeName} from './game';
+import {RuleSet} from './interfaces';
 
 export interface Suit {
   name: string;
@@ -97,19 +98,7 @@ export function getSuitsForGameType(playedGame: GameType): Suit[] {
   }
 }
 
-export interface RuleSet {
-  id: number;
-  name: string;
-  basePrice: number;
-  soloPrice: number;
-  countLaufende: 'Always' | 'OnlyLosers' | 'Never';
-  geierAllowed: boolean;
-  hochzeitAllowed: boolean;
-  bettelAllowed: boolean;
-  ramschAllowed: boolean;
-  farbWenzAllowed: boolean;
-  farbGeierAllowed: boolean;
-}
+export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
 
 export function getAllowedGameTypes(ruleSet: RuleSet): GameType[] {
   return [
