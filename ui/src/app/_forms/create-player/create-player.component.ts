@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-import {Player, PlayerToCreate} from '../../_interfaces/player';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../../_services/api.service';
+import {CreatablePlayer, Player} from '../../_interfaces/interfaces';
 
 @Component({
   selector: 'skl-create-player',
@@ -46,7 +46,7 @@ export class CreatePlayerComponent {
       return;
     }
 
-    const player: PlayerToCreate = {
+    const player: CreatablePlayer = {
       abbreviation: this.f.abbreviation.value,
       name: this.firstNameValue + ' ' + this.lastNameValue
     };

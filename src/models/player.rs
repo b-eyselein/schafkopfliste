@@ -1,16 +1,17 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
 use crate::schema::players;
 
-#[derive(Debug, Deserialize, Insertable)]
+#[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
 #[table_name = "players"]
 pub struct CreatablePlayer {
     pub abbreviation: String,
     pub name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptType)]
 pub struct Player {
     pub id: i32,
     pub abbreviation: String,

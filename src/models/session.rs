@@ -1,40 +1,59 @@
-use chrono::{NaiveDate, NaiveTime};
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
+
+use crate::schema::sessions;
 
 use super::game::Game;
 use super::game_dao::select_games_for_session;
 use super::group::{select_group_by_id, Group};
 use super::player::{select_player_by_id, Player};
 use super::rule_set::{select_rule_set_by_id, RuleSet};
-use crate::schema::sessions;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
-    pub date: NaiveDate,
-    pub time: NaiveTime,
-    pub first_player_id: i32,
-    pub second_player_id: i32,
-    pub third_player_id: i32,
-    pub fourth_player_id: i32,
-    pub rule_set_id: i32,
+    date_year: i32,
+    date_month: i32,
+    date_day_of_month: i32,
+    time_hours: i32,
+    time_minutes: i32,
+    first_player_id: i32,
+    second_player_id: i32,
+    third_player_id: i32,
+    fourth_player_id: i32,
+    rule_set_id: i32,
 }
 
-#[derive(Debug, Serialize, Identifiable, Queryable, Insertable, Associations, PartialEq)]
+#[derive(
+    Debug,
+    Deserialize,
+    Serialize,
+    Identifiable,
+    Queryable,
+    Insertable,
+    Associations,
+    PartialEq,
+    HasTypescriptType,
+)]
 #[serde(rename_all = "camelCase")]
 #[belongs_to(Group)]
 pub struct Session {
     id: i32,
     group_id: i32,
-    date: NaiveDate,
-    time: NaiveTime,
+
+    date_year: i32,
+    date_month: i32,
+    date_day_of_month: i32,
+    time_hours: i32,
+    time_minutes: i32,
     has_ended: bool,
     first_player_id: i32,
     second_player_id: i32,
     third_player_id: i32,
     fourth_player_id: i32,
-    pub rule_set_id: i32,
+    rule_set_id: i32,
+
     creator_username: String,
 }
 
@@ -46,8 +65,11 @@ impl Session {
         cs: CreatableSession,
     ) -> Session {
         let CreatableSession {
-            date,
-            time,
+            date_year,
+            date_month,
+            date_day_of_month,
+            time_hours,
+            time_minutes,
             first_player_id,
             second_player_id,
             third_player_id,
@@ -58,8 +80,11 @@ impl Session {
         Session {
             id,
             group_id,
-            date,
-            time,
+            date_year,
+            date_month,
+            date_day_of_month,
+            time_hours,
+            time_minutes,
             has_ended: false,
             first_player_id,
             second_player_id,
@@ -69,15 +94,22 @@ impl Session {
             creator_username,
         }
     }
+
+    pub fn rule_set_id(&self) -> &i32 {
+        &self.rule_set_id
+    }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct CompleteSession {
     id: i32,
     group: Group,
-    date: NaiveDate,
-    time: NaiveTime,
+    date_year: i32,
+    date_month: i32,
+    date_day_of_month: i32,
+    time_hours: i32,
+    time_minutes: i32,
     first_player: Player,
     second_player: Player,
     third_player: Player,
@@ -89,8 +121,11 @@ pub struct CompleteSession {
 impl CompleteSession {
     pub fn from_db_values(
         id: i32,
-        date: NaiveDate,
-        time: NaiveTime,
+        date_year: i32,
+        date_month: i32,
+        date_day_of_month: i32,
+        time_hours: i32,
+        time_minutes: i32,
         group: Group,
         first_player: Player,
         second_player: Player,
@@ -101,8 +136,11 @@ impl CompleteSession {
     ) -> CompleteSession {
         CompleteSession {
             id,
-            date,
-            time,
+            date_year,
+            date_month,
+            date_day_of_month,
+            time_hours,
+            time_minutes,
             group,
             first_player,
             second_player,
@@ -136,8 +174,11 @@ pub fn select_complete_session_by_id(
 
     Some(CompleteSession::from_db_values(
         session.id,
-        session.date,
-        session.time,
+        session.date_year,
+        session.date_month,
+        session.date_day_of_month,
+        session.time_hours,
+        session.time_minutes,
         select_group_by_id(conn, &session.group_id)?,
         select_player_by_id(conn, &session.first_player_id)?,
         select_player_by_id(conn, &session.second_player_id)?,
@@ -168,5 +209,9 @@ pub fn insert_session(
         .values(session)
         .returning(sessions::all_columns)
         .get_result(conn)
-        .map_err(|_| "Error while inserting session into db".into())
+        .map_err(|err| {
+            let base_error_msg = "Error while inserting session into db";
+            println!("{}: {}", base_error_msg, err);
+            base_error_msg.into()
+        })
 }

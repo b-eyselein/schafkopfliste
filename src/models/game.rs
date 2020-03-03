@@ -5,8 +5,18 @@ use crate::schema::games;
 use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use super::rule_set::{CountLaufende, RuleSet};
 use super::session::Session;
+use serde_tsi::prelude::*;
 
-#[derive(Debug, Deserialize, Serialize, Identifiable, Queryable, Insertable, Associations)]
+#[derive(
+    Debug,
+    Deserialize,
+    Serialize,
+    Identifiable,
+    Queryable,
+    Insertable,
+    Associations,
+    HasTypescriptType,
+)]
 #[belongs_to(Session)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {

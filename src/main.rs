@@ -13,10 +13,13 @@ use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
 
+use ts_type_writer::write_all_ts_types;
+
 mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
+mod ts_type_writer;
 
 embed_migrations!();
 
@@ -38,6 +41,10 @@ fn route_index() -> Redirect {
 }
 
 fn main() {
+    if cfg!(debug_assertions) {
+        write_all_ts_types();
+    }
+
     use diesel::prelude::*;
 
     let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {GroupWithPlayersAndMembership} from '../_interfaces/group';
-import {Player} from '../_interfaces/player';
+import {Player} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './players-in-group.component.html'})
 export class PlayersInGroupComponent implements OnInit {

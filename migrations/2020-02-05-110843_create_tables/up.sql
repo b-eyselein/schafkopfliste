@@ -3,7 +3,7 @@
 -- @formatter:off
 create type game_type as enum (
     'ruf', 'wenz', 'farbsolo', 'geier', 'hochzeit', 'bettel', 'ramsch', 'farbwenz', 'farbgeier'
-);
+    );
 -- @formatter:on
 
 create type bavarian_suit as enum ('acorns', 'leaves', 'hearts', 'bells');
@@ -43,49 +43,39 @@ alter sequence players_id_seq restart with 1000;
 create table if not exists users (
     username      varchar(100) primary key not null,
     password_hash varchar(100)             not null,
-    player_id     integer,
-
-    foreign key (player_id) references players (id) on update cascade on delete set null
+    player_id     integer                  references players (id) on update cascade on delete set null
 );
 
 create table groups (
     id                  serial primary key  not null,
     name                varchar(100) unique not null,
-    default_rule_set_id integer,
-
-    foreign key (default_rule_set_id) references rule_sets on update cascade on delete set null
+    default_rule_set_id integer             references rule_sets on update cascade on delete set null
 );
 
 create table if not exists player_in_groups (
-    group_id  integer not null,
-    player_id integer not null,
+    group_id  integer not null references groups (id) on update cascade on delete cascade,
+    player_id integer not null references players (id) on update cascade on delete cascade,
 
-    primary key (group_id, player_id),
-    foreign key (group_id) references groups (id) on update cascade on delete cascade,
-    foreign key (player_id) references players (id) on update cascade on delete cascade
+    primary key (group_id, player_id)
 );
 
 create table if not exists sessions (
-    id               integer      not null,
-    group_id         integer      not null,
-    date             date         not null,
-    time             time         not null,
-    has_ended        bool         not null default false,
-    first_player_id  integer      not null,
-    second_player_id integer      not null,
-    third_player_id  integer      not null,
-    fourth_player_id integer      not null,
-    rule_set_id      integer      not null,
-    creator_username varchar(100) not null,
+    id                integer      not null,
+    group_id          integer      not null references groups (id) on update cascade on delete cascade,
+    date_year         integer      not null check (2000 < date_year and date_year < 3000),
+    date_month        integer      not null check (1 < date_month and date_month < 12),
+    date_day_of_month integer      not null check (1 < date_day_of_month and date_day_of_month < 31),
+    time_hours        integer      not null check (0 < time_hours and time_hours < 23),
+    time_minutes      integer      not null check (0 < time_minutes and time_minutes < 59),
+    has_ended         bool         not null default false,
+    first_player_id   integer      not null references players (id) on update cascade on delete cascade,
+    second_player_id  integer      not null references players (id) on update cascade on delete cascade,
+    third_player_id   integer      not null references players (id) on update cascade on delete cascade,
+    fourth_player_id  integer      not null references players (id) on update cascade on delete cascade,
+    rule_set_id       integer      not null references rule_sets (id) on update cascade on delete cascade,
+    creator_username  varchar(100) not null references users (username) on update cascade on delete cascade,
 
-    primary key (id, group_id),
-    foreign key (group_id) references groups (id) on delete cascade on update cascade,
-    foreign key (first_player_id) references players (id) on update cascade on delete cascade,
-    foreign key (second_player_id) references players (id) on update cascade on delete cascade,
-    foreign key (third_player_id) references players (id) on update cascade on delete cascade,
-    foreign key (fourth_player_id) references players (id) on update cascade on delete cascade,
-    foreign key (rule_set_id) references rule_sets (id) on update cascade on delete cascade,
-    foreign key (creator_username) references users (username) on update cascade on delete cascade
+    primary key (id, group_id)
 );
 
 create table if not exists games (
@@ -93,7 +83,7 @@ create table if not exists games (
     session_id             integer   not null,
     group_id               integer   not null,
 
-    acting_player_id       integer   not null,
+    acting_player_id       integer   not null references players (id) on update cascade on delete cascade,
     game_type              game_type not null,
     suit                   bavarian_suit,
     tout                   boolean   not null default false,
@@ -108,7 +98,6 @@ create table if not exists games (
     price                  integer   not null,
 
     primary key (id, session_id, group_id),
-    foreign key (acting_player_id) references players (id) on update cascade on delete cascade,
     foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
 );
 

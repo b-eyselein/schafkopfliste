@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {ApiService} from '../../_services/api.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CreatableGroup, Group} from '../../_interfaces/group';
+import {CreatableGroup, Group} from '../../_interfaces/interfaces';
 
 @Component({
   selector: 'skl-create-group',

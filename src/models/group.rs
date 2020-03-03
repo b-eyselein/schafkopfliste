@@ -1,9 +1,10 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
 use crate::schema::groups;
 
-#[derive(Debug, Deserialize, Insertable)]
+#[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
 #[table_name = "groups"]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableGroup {
@@ -11,7 +12,7 @@ pub struct CreatableGroup {
     pub default_rule_set_id: Option<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct Group {
     pub id: i32,

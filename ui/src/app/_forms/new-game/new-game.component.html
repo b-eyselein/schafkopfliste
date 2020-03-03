@@ -3,10 +3,11 @@
     <label class="has-text-weight-bold">Datum/Zeit:</label>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{session.date}}</button>
+    <button class="button is-fullwidth is-static">{{session.dateDayOfMonth}}.{{session.dateMonth}}
+      .{{session.dateYear}}</button>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{session.time}}</button>
+    <button class="button is-fullwidth is-static">{{session.timeHours}}:{{session.timeMinutes}}</button>
   </div>
 </div>
 
@@ -63,11 +64,11 @@
 <div class="columns">
   <div class="column has-text-centered">
     <label class="label"
-           [ngClass]="{'has-text-danger': this.submitted && !this.game.actingPlayerId}">Spieler:</label>
+           [ngClass]="{'has-text-danger': submitted && !game.actingPlayerId}">Spieler:</label>
   </div>
   <div class="column" *ngFor="let player of players">
-    <button class="button is-fullwidth" (click)="togglePlayer(player)"
-            [ngClass]="{'is-link': this.game.actingPlayerId === player.id}">
+    <button class="button is-fullwidth" (click)="togglePlayer(player.id)"
+            [ngClass]="{'is-link': game.actingPlayerId === player.id}">
       {{player.abbreviation}}
     </button>
   </div>
@@ -90,7 +91,7 @@
       </div>
 
       <div class="column is-3">
-        <button class="button is-fullwidth" [ngClass]="{'is-link': tout}" (click)="game.tout = !game.tout">
+        <button class="button is-fullwidth" [ngClass]="{'is-link': game.tout}" (click)="game.tout = !game.tout">
           {{game.tout ? '&#10004;' : '&#10008; kein'}} Tout
         </button>
       </div>

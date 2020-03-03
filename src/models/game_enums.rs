@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Bavarian_suit"]
 pub enum BavarianSuit {
     Acorns,
@@ -9,7 +10,7 @@ pub enum BavarianSuit {
     Bells,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Game_type"]
 pub enum GameType {
     Ruf,
@@ -23,14 +24,14 @@ pub enum GameType {
     Farbgeier,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Schneider_schwarz"]
 pub enum SchneiderSchwarz {
     Schneider,
     Schwarz,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Kontra_type"]
 pub enum KontraType {
     Kontra,

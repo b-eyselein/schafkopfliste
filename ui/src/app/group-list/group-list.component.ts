@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {Group, GroupWithPlayerCount} from '../_interfaces/group';
+import {Group} from '../_interfaces/interfaces';
+import {GroupWithPlayerCount} from '../_interfaces/group';
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {

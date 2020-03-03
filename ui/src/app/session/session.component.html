@@ -7,13 +7,12 @@
     <div class="columns is-multiline">
       <div class="column is-two-fifths-widescreen is-full-desktop">
         <div class="box">
-          <skl-new-game [session]="session" (gameChanged)="game = $event"></skl-new-game>
+          <skl-new-game [session]="session" (gameChanged)="updateGame($event)"></skl-new-game>
         </div>
       </div>
 
       <div class="column">
         <div class="box">
-          <!-- *ngIf="session.playedGames && session.playedGames.length > 0" -->
           <skl-games-table [session]="session" [runningGame]="game"></skl-games-table>
         </div>
       </div>

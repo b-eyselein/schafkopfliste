@@ -134,15 +134,12 @@ fn route_create_session(
     conn: DbConn,
     group_id: i32,
     creatable_session_json: Result<Json<CreatableSession>, JsonError>,
-) -> Result<Json<Session>, String> {
+) -> Result<Json<Session>, Json<String>> {
     creatable_session_json
-        .map_err(|err| -> String {
-            match err {
-                JsonError::Parse(my_str, _) => println!("{}", my_str),
-                _ => (),
-            }
-            println!("Error while reading json: {:?}", err);
-            "TODO!".into()
+        .map_err(|err| -> Json<String> {
+            let base_error_msg = "Error while reading json";
+            println!("{}: {:?}", base_error_msg, err);
+            Json(base_error_msg.into())
         })
         .and_then(|creatable_session| {
             insert_session(
@@ -151,6 +148,10 @@ fn route_create_session(
                 my_jwt.claims.username,
                 creatable_session.0,
             )
+            .map_err(|err| -> Json<String> {
+                println!("Could not insert session into db: {}", err);
+                Json("".into())
+            })
             .map(Json)
         })
 }
@@ -174,7 +175,7 @@ fn route_create_game(
             "No session with id {} for group {} found!",
             session_id, group_id
         )),
-        Some(session) => match select_rule_set_by_id(&conn.0, &session.rule_set_id) {
+        Some(session) => match select_rule_set_by_id(&conn.0, session.rule_set_id()) {
             None => Err("No ruleset for session found!".into()),
             Some(rule_set) => {
                 let game = game_json.0;
