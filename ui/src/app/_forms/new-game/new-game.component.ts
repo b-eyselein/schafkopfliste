@@ -66,6 +66,12 @@ export class NewGameComponent implements OnInit {
   }
 
   private reInitGame(): void {
+    let isDoubled = false;
+    if (this.remainingDoubledGames > 0) {
+      this.remainingDoubledGames--;
+      isDoubled = true;
+    }
+
     this.game = {
       id: this.currentGameIndex,
       sessionId: this.session.id,
@@ -76,7 +82,7 @@ export class NewGameComponent implements OnInit {
       suit: undefined,
       tout: false,
 
-      isDoubled: false,
+      isDoubled,
       laufendeCount: 0,
       schneiderSchwarz: undefined,
 
@@ -189,10 +195,6 @@ export class NewGameComponent implements OnInit {
 
     if (!this.game.actingPlayerId || !this.playedGameType || (this.playedGameType.needsSuit && !this.game.suit)) {
       return;
-    }
-
-    if (this.remainingDoubledGames) {
-      this.remainingDoubledGames--;
     }
 
     if (this.game.playersHavingWonIds.length === 0) {
