@@ -3,11 +3,14 @@
     <label class="has-text-weight-bold">Datum/Zeit:</label>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{session.dateDayOfMonth}}.{{session.dateMonth}}
-      .{{session.dateYear}}</button>
+    <button class="button is-fullwidth is-static">
+      {{session.dateDayOfMonth | number:'2.0-0'}}.{{session.dateMonth | number:'2.0-0'}}.{{session.dateYear}}
+    </button>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{session.timeHours}}:{{session.timeMinutes}}</button>
+    <button class="button is-fullwidth is-static">
+      {{session.timeHours | number:'2.0-0'}}:{{session.timeMinutes | number:'2.0-0'}}
+    </button>
   </div>
 </div>
 

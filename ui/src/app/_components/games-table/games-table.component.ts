@@ -16,6 +16,8 @@ export class GamesTableComponent implements OnInit, OnChanges {
 
   currentActingPlayer: Player | undefined;
 
+  private saldosForPlayers: Map<number, number>;
+
   ngOnInit(): void {
     this.players = [
       this.session.firstPlayer,
@@ -23,12 +25,50 @@ export class GamesTableComponent implements OnInit, OnChanges {
       this.session.thirdPlayer,
       this.session.fourthPlayer
     ];
+
+    this.updateSaldos();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.runningGame && this.runningGame.actingPlayerId) {
       this.currentActingPlayer = this.players.find((p) => p.id === this.runningGame.actingPlayerId);
     }
+
+    this.updateSaldos();
+  }
+
+  private updateSaldos(): void {
+    if (this.players) {
+      this.saldosForPlayers = new Map(
+        this.players.map((p) => {
+          const saldos = this.session.playedGames.map((game) => {
+            const priceIsTripled = game.game.gameType !== 'Ruf' && game.game.actingPlayerId === p.id;
+
+            if (game.game.playersHavingWonIds.includes(p.id)) {
+              return (priceIsTripled ? 3 : 1) * game.price;
+            } else {
+              return (priceIsTripled ? -3 : -1) * game.price;
+            }
+          });
+
+          console.info(p.id + ' :: ' + JSON.stringify(saldos.map((p) => {
+            const sign = p < 0 ? -1 : 1;
+
+            return (sign === -1 ? '-' : ' ') + (sign * p).toString().padStart(3, '0');
+          })));
+
+          const saldo = saldos.reduce((x, y) => x + y, 0);
+
+          console.info(p.id, saldo);
+
+          return [p.id, saldo];
+        })
+      );
+    }
+  }
+
+  getSaldoForPlayer(playerId: number): number | undefined {
+    return this.saldosForPlayers.get(playerId);
   }
 
   getDealer(playedGame: Game): Player {
@@ -51,20 +91,4 @@ export class GamesTableComponent implements OnInit, OnChanges {
     return this.players.filter((p) => playedGame.playersHavingWonIds.includes(p.id));
   }
 
-  getSaldoForPlayer(playerId: number): number {
-    return this.session.playedGames
-      .map((game) => {
-        if (game.game.playersHavingWonIds.includes(playerId)) {
-          return game.price;
-        } else {
-          // TODO: triple solo...
-          if (game.game.gameType === 'Ruf') {
-            return -game.price;
-          } else {
-            return 3 * -game.price;
-          }
-        }
-      })
-      .reduce((x, y) => x + y, 0);
-  }
 }
