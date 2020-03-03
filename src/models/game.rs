@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
+use serde_tsi::prelude::*;
 
 use crate::schema::games;
 
 use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use super::rule_set::{CountLaufende, RuleSet};
 use super::session::Session;
-use serde_tsi::prelude::*;
 
 #[derive(
     Debug,
-    Deserialize,
     Serialize,
+    Deserialize,
     Identifiable,
     Queryable,
     Insertable,
@@ -36,7 +36,7 @@ pub struct Game {
     pub players_having_put_ids: Vec<i32>,
     pub kontra: Option<KontraType>,
     pub players_having_won_ids: Vec<i32>,
-    pub price: i32,
+    //    price: i32,
 }
 
 impl Game {
@@ -89,6 +89,19 @@ impl Game {
         let doubled_count = leger_count + contra_count;
 
         price_sum * doubled_mult * 2_i32.pow(doubled_count)
+    }
+}
+
+#[derive(Debug, Serialize, HasTypescriptType)]
+#[serde(rename_all = "camelCase")]
+pub struct PricedGame {
+    game: Game,
+    price: i32,
+}
+
+impl PricedGame {
+    pub fn new(game: Game, price: i32) -> PricedGame {
+        PricedGame { game, price }
     }
 }
 

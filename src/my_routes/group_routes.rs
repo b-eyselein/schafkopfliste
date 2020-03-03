@@ -3,7 +3,7 @@ use rocket_contrib::json;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::jwt_helpers::MyJwtToken;
-use crate::models::game::Game;
+use crate::models::game::{Game, PricedGame};
 use crate::models::game_dao::insert_game;
 use crate::models::group::{
     insert_group, select_group_by_id, select_groups, CreatableGroup, Group,
@@ -167,7 +167,7 @@ fn route_create_game(
     group_id: i32,
     session_id: i32,
     game_json: Json<Game>,
-) -> Result<Json<Game>, String> {
+) -> Result<Json<PricedGame>, String> {
     let maybe_session = select_session_by_id(&conn.0, &group_id, &session_id);
 
     match maybe_session {
@@ -180,16 +180,17 @@ fn route_create_game(
             Some(rule_set) => {
                 let game = game_json.0;
 
-                let price = game.calculate_price(&rule_set);
-
                 let db_game = Game {
                     session_id,
                     group_id,
-                    price,
                     ..game
                 };
 
-                insert_game(&conn.0, db_game).map(Json)
+                insert_game(&conn.0, &db_game).map(|inserted_game| {
+                    let price = &inserted_game.calculate_price(&rule_set);
+
+                    Json(PricedGame::new(inserted_game, *price))
+                })
             }
         },
     }

@@ -6,7 +6,7 @@ import {
   CreatablePlayer,
   CreatableSession,
   Group,
-  Player,
+  Player, PricedGame,
   RuleSet,
   Session
 } from '../_interfaces/interfaces';
@@ -126,10 +126,10 @@ export class ApiService {
     return this.httpClient.put<boolean>(url, playerId, ApiService.putHttpOptions);
   }
 
-  createGame(groupId: number, sessionSerialNumber: number, game: Game): Observable<Game> {
+  createGame(groupId: number, sessionSerialNumber: number, game: Game): Observable<PricedGame> {
     const url = `${this.baseUrl}/api/groups/${groupId}/sessions/${sessionSerialNumber}/games`;
 
-    return this.httpClient.put<Game>(url, game, ApiService.putHttpOptions);
+    return this.httpClient.put<PricedGame>(url, game, ApiService.putHttpOptions);
   }
 
 }

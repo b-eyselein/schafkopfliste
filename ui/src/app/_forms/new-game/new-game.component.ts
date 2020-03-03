@@ -51,7 +51,7 @@ export class NewGameComponent implements OnInit {
     this.allowedGameTypes = getAllowedGameTypes(this.session.ruleSet);
 
     if (this.session.playedGames.length > 0) {
-      this.currentGameIndex = Math.max(...this.session.playedGames.map((pg) => pg.id)) + 1;
+      this.currentGameIndex = Math.max(...this.session.playedGames.map((pg) => pg.game.id)) + 1;
     }
 
     this.reInitGame();

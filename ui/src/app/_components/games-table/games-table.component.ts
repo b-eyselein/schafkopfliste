@@ -1,7 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {CompleteSession, Player} from '../../_interfaces/interfaces';
+import {CompleteSession, Game, Player} from '../../_interfaces/interfaces';
 import {SUITS} from '../../_interfaces/ruleset';
-import {Game} from '../../_interfaces/game';
 
 @Component({
   selector: 'skl-games-table',
@@ -52,4 +51,20 @@ export class GamesTableComponent implements OnInit, OnChanges {
     return this.players.filter((p) => playedGame.playersHavingWonIds.includes(p.id));
   }
 
+  getSaldoForPlayer(playerId: number): number {
+    return this.session.playedGames
+      .map((game) => {
+        if (game.game.playersHavingWonIds.includes(playerId)) {
+          return game.price;
+        } else {
+          // TODO: triple solo...
+          if (game.game.gameType === 'Ruf') {
+            return -game.price;
+          } else {
+            return 3 * -game.price;
+          }
+        }
+      })
+      .reduce((x, y) => x + y, 0);
+  }
 }

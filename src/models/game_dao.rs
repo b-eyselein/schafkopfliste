@@ -4,7 +4,7 @@ use super::game::Game;
 use super::session::Session;
 use crate::schema::games;
 
-pub fn insert_game(conn: &PgConnection, game: Game) -> Result<Game, String> {
+pub fn insert_game(conn: &PgConnection, game: &Game) -> Result<Game, String> {
     diesel::insert_into(games::table)
         .values(game)
         .returning(games::all_columns)

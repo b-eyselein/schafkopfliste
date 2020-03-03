@@ -38,6 +38,11 @@ export interface RuleSet {
   soloPrice: number;
 }
 
+export interface PricedGame {
+  game: Game;
+  price: number;
+}
+
 export interface Game {
   actingPlayerId: number;
   gameType: any;
@@ -48,7 +53,6 @@ export interface Game {
   laufendeCount: number;
   playersHavingPutIds: number[];
   playersHavingWonIds: number[];
-  price: number;
   schneiderSchwarz: any | undefined;
   sessionId: number;
   suit: any | undefined;
@@ -93,7 +97,7 @@ export interface CompleteSession {
   fourthPlayer: Player;
   group: Group;
   id: number;
-  playedGames: Game[];
+  playedGames: PricedGame[];
   ruleSet: RuleSet;
   secondPlayer: Player;
   thirdPlayer: Player;
@@ -119,6 +123,11 @@ export interface Group {
   name: string;
 }
 
+export interface PricedGame {
+  game: Game;
+  price: number;
+}
+
 export interface Game {
   actingPlayerId: number;
   gameType: any;
@@ -129,7 +138,6 @@ export interface Game {
   laufendeCount: number;
   playersHavingPutIds: number[];
   playersHavingWonIds: number[];
-  price: number;
   schneiderSchwarz: any | undefined;
   sessionId: number;
   suit: any | undefined;
