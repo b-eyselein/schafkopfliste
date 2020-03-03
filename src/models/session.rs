@@ -156,6 +156,7 @@ impl CompleteSession {
 pub fn select_sessions_for_group(conn: &PgConnection, group_id: &i32) -> Vec<Session> {
     sessions::table
         .filter(sessions::group_id.eq(group_id))
+        .order_by(sessions::id)
         .load(conn)
         .unwrap_or(Vec::new())
 }
