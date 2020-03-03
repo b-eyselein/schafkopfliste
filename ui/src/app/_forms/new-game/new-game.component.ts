@@ -1,8 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
-import {CompleteSession, Player} from '../../_interfaces/interfaces';
+import {CompleteSession, Game, KontraType, Player, SchneiderSchwarz} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
-import {Game, KontraType, KontraTypeValues, SchneiderSchwarz} from '../../_interfaces/game';
 
 @Component({
   selector: 'skl-new-game',
@@ -10,7 +9,7 @@ import {Game, KontraType, KontraTypeValues, SchneiderSchwarz} from '../../_inter
 })
 export class NewGameComponent implements OnInit {
 
-  readonly KontraValues: KontraType[] = KontraTypeValues;
+  readonly KontraValues: KontraType[] = ['Kontra', 'Re', 'Supra', 'Resupra'];
   readonly SuitValues: Suit[] = SUITS;
 
   readonly SchneiderSchwarzValues: { abbreviation: string, value: SchneiderSchwarz }[] = [
@@ -89,7 +88,6 @@ export class NewGameComponent implements OnInit {
       playersHavingPutIds: [],
       kontra: undefined,
       playersHavingWonIds: [],
-      price: 0,
     };
 
   }

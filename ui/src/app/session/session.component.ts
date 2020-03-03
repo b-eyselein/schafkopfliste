@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CompleteSession} from '../_interfaces/interfaces';
+import {CompleteSession, Game} from '../_interfaces/interfaces';
 import {ApiService} from '../_services/api.service';
-import {Game} from '../_interfaces/game';
 
 @Component({templateUrl: './session.component.html'})
 export class SessionComponent implements OnInit {

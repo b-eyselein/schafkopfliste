@@ -5,8 +5,10 @@ import {
   CreatableGroup,
   CreatablePlayer,
   CreatableSession,
+  Game,
   Group,
-  Player, PricedGame,
+  Player,
+  PricedGame,
   RuleSet,
   Session
 } from '../_interfaces/interfaces';
@@ -14,7 +16,6 @@ import {GroupWithPlayerCount, GroupWithPlayersAndMembership, GroupWithPlayersAnd
 import {Observable, of} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {catchError} from 'rxjs/operators';
-import {Game} from '../_interfaces/game';
 
 @Injectable({
   providedIn: 'root'

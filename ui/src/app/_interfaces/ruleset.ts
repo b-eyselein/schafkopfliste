@@ -98,8 +98,6 @@ export function getSuitsForGameType(playedGame: GameType): Suit[] {
   }
 }
 
-export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
-
 export function getAllowedGameTypes(ruleSet: RuleSet): GameType[] {
   return [
     RUF, WENZ, FARB_SOLO,

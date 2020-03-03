@@ -3,9 +3,8 @@ import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {read as xlsx_read, utils as xlsx_utils, WorkBook, WorkSheet} from 'xlsx';
 import {GameRow, header, readGameFromGameRow, readSessionDateAndPlayers} from './spreadsheet-helpers';
-import {Game} from '../_interfaces/game';
+import {Game, Player} from '../_interfaces/interfaces';
 import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
-import {Player} from '../_interfaces/interfaces';
 
 
 @Component({templateUrl: './upload-spreadsheet.component.html'})
