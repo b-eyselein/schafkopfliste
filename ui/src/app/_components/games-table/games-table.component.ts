@@ -41,7 +41,7 @@ export class GamesTableComponent implements OnInit, OnChanges {
     if (this.players) {
       this.saldosForPlayers = new Map(
         this.players.map((p) => {
-          const saldos = this.session.playedGames.map((game) => {
+          const saldo = this.session.playedGames.map((game) => {
             const priceIsTripled = game.game.gameType !== 'Ruf' && game.game.actingPlayerId === p.id;
 
             if (game.game.playersHavingWonIds.includes(p.id)) {
@@ -49,17 +49,8 @@ export class GamesTableComponent implements OnInit, OnChanges {
             } else {
               return (priceIsTripled ? -3 : -1) * game.price;
             }
-          });
+          }).reduce((x, y) => x + y, 0);
 
-          console.info(p.id + ' :: ' + JSON.stringify(saldos.map((p) => {
-            const sign = p < 0 ? -1 : 1;
-
-            return (sign === -1 ? '-' : ' ') + (sign * p).toString().padStart(3, '0');
-          })));
-
-          const saldo = saldos.reduce((x, y) => x + y, 0);
-
-          console.info(p.id, saldo);
 
           return [p.id, saldo];
         })
