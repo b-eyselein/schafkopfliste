@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {GameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
+import {CompleteGameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/ruleset';
 import {CompleteSession, Game, KontraType, Player, SchneiderSchwarz} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 
@@ -25,7 +25,7 @@ export class NewGameComponent implements OnInit {
 
   game: Game;
 
-  allowedGameTypes: GameType[] = [];
+  allowedGameTypes: CompleteGameType[] = [];
   allowedSuits: Suit[] = [];
 
   currentGameIndex = 1;
@@ -56,7 +56,7 @@ export class NewGameComponent implements OnInit {
     this.reInitGame();
   }
 
-  get playedGameType(): GameType | undefined {
+  get playedGameType(): CompleteGameType | undefined {
     if (this.game.gameType) {
       return this.allowedGameTypes.find((gt) => gt.name === this.game.gameType);
     } else {
@@ -132,7 +132,7 @@ export class NewGameComponent implements OnInit {
     this.gameChanged.emit(this.game);
   }
 
-  toggleGameType(gameType: GameType): void {
+  toggleGameType(gameType: CompleteGameType): void {
     this.game.gameType = this.game.gameType === gameType.name ? undefined : gameType.name;
 
     if (!gameType.needsSuit) {

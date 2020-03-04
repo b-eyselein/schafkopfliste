@@ -111,7 +111,10 @@
     <button class="button is-fullwidth" [ngClass]="{'is-link': game.suit === suit.commitableSuit}"
             [disabled]="!game.gameType || !suitCanBePlayedWithGameType(suit)"
             (click)="toggleSuit(suit)">
-      {{suit.name}}
+      <span class="icon is-small">
+        <img src="assets/bay_{{suit.name | lowercase}}.png" alt="{{suit.name}}">
+      </span>
+      <span>{{suit.name}}</span>
     </button>
   </div>
 </div>

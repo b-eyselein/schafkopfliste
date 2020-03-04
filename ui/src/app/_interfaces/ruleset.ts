@@ -1,9 +1,8 @@
-import {BavarianSuitName, GameTypeName} from './game';
-import {RuleSet} from './interfaces';
+import {BavarianSuit, GameType, RuleSet} from './interfaces';
 
 export interface Suit {
   name: string;
-  commitableSuit: BavarianSuitName;
+  commitableSuit: BavarianSuit;
 }
 
 const ACORNS: Suit = {name: 'Eichel', commitableSuit: 'Acorns'};
@@ -15,16 +14,16 @@ const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
 
 export const SUITS: Suit[] = [ACORNS, LEAVES, HEARTS, BELLS];
 
-export interface GameType {
+export interface CompleteGameType {
 //  id: number;
-  name: GameTypeName;
+  name: GameType;
   playerPartySize: number;
   needsSuit: boolean;
   canBeTout: boolean;
   isDefaultGameType: boolean;
 }
 
-export const RUF: GameType = {
+export const RUF: CompleteGameType = {
   name: 'Ruf',
   playerPartySize: 2,
   needsSuit: true,
@@ -32,9 +31,9 @@ export const RUF: GameType = {
   isDefaultGameType: true
 };
 
-const WENZ: GameType = {name: 'Wenz', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: true};
+const WENZ: CompleteGameType = {name: 'Wenz', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: true};
 
-const FARB_SOLO: GameType = {
+const FARB_SOLO: CompleteGameType = {
   name: 'Farbsolo',
   playerPartySize: 1,
   needsSuit: true,
@@ -42,7 +41,7 @@ const FARB_SOLO: GameType = {
   isDefaultGameType: true
 };
 
-const GEIER: GameType = {
+const GEIER: CompleteGameType = {
   name: 'Geier',
   playerPartySize: 1,
   needsSuit: false,
@@ -50,7 +49,7 @@ const GEIER: GameType = {
   isDefaultGameType: false
 };
 
-const HOCHZEIT: GameType = {
+const HOCHZEIT: CompleteGameType = {
   name: 'Hochzeit',
   playerPartySize: 2,
   needsSuit: false,
@@ -58,7 +57,7 @@ const HOCHZEIT: GameType = {
   isDefaultGameType: false
 };
 
-const BETTEL: GameType = {
+const BETTEL: CompleteGameType = {
   name: 'Bettel',
   playerPartySize: 1,
   needsSuit: false,
@@ -66,7 +65,7 @@ const BETTEL: GameType = {
   isDefaultGameType: false
 };
 
-const RAMSCH: GameType = {
+const RAMSCH: CompleteGameType = {
   name: 'Ramsch',
   playerPartySize: 1,
   needsSuit: false,
@@ -74,7 +73,7 @@ const RAMSCH: GameType = {
   isDefaultGameType: false
 };
 
-const FARB_WENZ: GameType = {
+const FARB_WENZ: CompleteGameType = {
   name: 'Farbwenz',
   playerPartySize: 1,
   needsSuit: true,
@@ -82,7 +81,7 @@ const FARB_WENZ: GameType = {
   isDefaultGameType: false
 };
 
-const FARB_GEIER: GameType = {
+const FARB_GEIER: CompleteGameType = {
   name: 'Farbgeier',
   playerPartySize: 1,
   needsSuit: true,
@@ -90,7 +89,7 @@ const FARB_GEIER: GameType = {
   isDefaultGameType: false
 };
 
-export function getSuitsForGameType(playedGame: GameType): Suit[] {
+export function getSuitsForGameType(playedGame: CompleteGameType): Suit[] {
   if (!playedGame.needsSuit) {
     return [];
   } else {
@@ -98,7 +97,7 @@ export function getSuitsForGameType(playedGame: GameType): Suit[] {
   }
 }
 
-export function getAllowedGameTypes(ruleSet: RuleSet): GameType[] {
+export function getAllowedGameTypes(ruleSet: RuleSet): CompleteGameType[] {
   return [
     RUF, WENZ, FARB_SOLO,
     ruleSet.geierAllowed ? GEIER : null,

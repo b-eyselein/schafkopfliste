@@ -1,6 +1,5 @@
-import {BavarianSuitName, GameTypeName} from '../_interfaces/game';
 import {CellObject, WorkSheet} from 'xlsx';
-import {Game, Player, SchneiderSchwarz} from '../_interfaces/interfaces';
+import {BavarianSuit, Game, GameType, Player, SchneiderSchwarz} from '../_interfaces/interfaces';
 
 export const header: string[] = [
   'id', // A
@@ -37,8 +36,8 @@ export interface GameRow {
   secondPlayerPut: boolean;
   thirdPlayerPut: boolean; // F
   fourthPlayerPut: boolean;
-  gameType: GameTypeName;
-  suit: BavarianSuitName | undefined;
+  gameType: GameType;
+  suit: BavarianSuit | undefined;
   playerAbbreviation: string;
   contraCount: number; // K
   firstPlayerWon: boolean;
