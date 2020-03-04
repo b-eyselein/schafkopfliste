@@ -15,7 +15,6 @@ const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
 export const SUITS: Suit[] = [ACORNS, LEAVES, HEARTS, BELLS];
 
 export interface CompleteGameType {
-//  id: number;
   name: GameType;
   playerPartySize: number;
   needsSuit: boolean;

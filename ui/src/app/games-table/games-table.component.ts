@@ -1,6 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {CompleteSession, Game, Player} from '../../_interfaces/interfaces';
-import {SUITS} from '../../_interfaces/game_types';
+import {CompleteSession, Game, Player} from '../_interfaces/interfaces';
+import {SessionResult} from '../_interfaces/session-result';
+import {SUITS} from '../_interfaces/game_types';
 
 @Component({
   selector: 'skl-games-table',
@@ -16,7 +17,7 @@ export class GamesTableComponent implements OnInit, OnChanges {
 
   currentActingPlayer: Player | undefined;
 
-  private saldosForPlayers: Map<number, number>;
+  sessionResults: Map<number, SessionResult>;
 
   ngOnInit(): void {
     this.players = [
@@ -39,27 +40,35 @@ export class GamesTableComponent implements OnInit, OnChanges {
 
   private updateSaldos(): void {
     if (this.players) {
-      this.saldosForPlayers = new Map(
+      this.sessionResults = new Map(
         this.players.map((p) => {
-          const saldo = this.session.playedGames.map((game) => {
-            const priceIsTripled = game.game.gameType !== 'Ruf' && game.game.actingPlayerId === p.id;
+          let saldo = 0;
+          let wonGames = 0;
+          let playedGames = 0;
+          let putCount = 0;
 
-            if (game.game.playersHavingWonIds.includes(p.id)) {
-              return (priceIsTripled ? 3 : 1) * game.price;
-            } else {
-              return (priceIsTripled ? -3 : -1) * game.price;
+          this.session.playedGames.forEach((game) => {
+            const hasWon = game.game.playersHavingWonIds.includes(p.id);
+            const isPlayer = game.game.actingPlayerId === p.id;
+            const priceIsTripled = game.game.gameType !== 'Ruf' && isPlayer;
+
+            saldo += (hasWon ? 1 : -1) * (priceIsTripled ? 3 : 1) * game.price;
+
+            if (hasWon) {
+              wonGames++;
             }
-          }).reduce((x, y) => x + y, 0);
+            if (isPlayer) {
+              playedGames++;
+            }
+            if (game.game.playersHavingPutIds.includes(p.id)) {
+              putCount++;
+            }
+          });
 
-
-          return [p.id, saldo];
+          return [p.id, {saldo, wonGames, playedGames, putCount}];
         })
       );
     }
-  }
-
-  getSaldoForPlayer(playerId: number): number | undefined {
-    return this.saldosForPlayers.get(playerId);
   }
 
   getDealer(playedGame: Game): Player {

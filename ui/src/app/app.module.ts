@@ -8,7 +8,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
 import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player-to-group.component';
-import {GamesTableComponent} from './_components/games-table/games-table.component';
+import {GamesTableComponent} from './games-table/games-table.component';
 import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
 import {SessionListComponent} from './session-list/session-list.component';
 import {RuleSetComponent} from './rule-set/rule-set.component';
