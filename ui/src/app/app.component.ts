@@ -13,6 +13,8 @@ export class AppComponent {
 
   currentUser: UserWithToken;
 
+  navbarToggled = false;
+
   constructor(private authenticationService: AuthenticationService) {
     this.authenticationService.currentUser.subscribe((u) => this.currentUser = u);
   }

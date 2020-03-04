@@ -4,7 +4,7 @@
 
   <div class="buttons">
     <a class="button is-link is-fullwidth" routerLink="./groups">Zu den Gruppen</a>
-    <a class="button is-link is-fullwidth" routerLink="./players">Zu den Spielern</a>
+    <a class="button is-link is-fullwidth" routerLink="./players" *ngIf="currentUser">Zu den Spielern</a>
     <a class="button is-link is-fullwidth" routerLink="./ruleSets">Zu den Regelsätzen</a>
   </div>
 

@@ -23,7 +23,7 @@
               - {{player.name}}</div>
           </div>
         </ng-container>
-        <div class="column is-3">
+        <div class="column is-3" *ngIf="currentUser">
           <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
         </div>
       </div>
@@ -39,7 +39,7 @@
         <div class="column is-2" *ngFor="let session of sessions">
           <a class="button is-fullwidth" [routerLink]="['sessions', session.id]">{{session.id}}</a>
         </div>
-        <div class="column is-2">
+        <div class="column is-2" *ngIf="currentUser">
           <a class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung</a>
         </div>
       </div>

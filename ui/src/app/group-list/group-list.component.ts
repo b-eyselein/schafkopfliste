@@ -1,17 +1,22 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {Group} from '../_interfaces/interfaces';
+import {Group, UserWithToken} from '../_interfaces/interfaces';
 import {GroupWithPlayerCount} from '../_interfaces/group';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {
 
+  currentUser: UserWithToken;
   groups: GroupWithPlayerCount[];
 
-  constructor(private apiService: ApiService) {
+  constructor(private authenticationService: AuthenticationService, private apiService: ApiService) {
   }
 
   ngOnInit() {
+    this.authenticationService.currentUser
+      .subscribe((u) => this.currentUser = u);
+
     this.apiService.getGroupsWithPlayerCount()
       .subscribe((groups) => this.groups = groups);
   }

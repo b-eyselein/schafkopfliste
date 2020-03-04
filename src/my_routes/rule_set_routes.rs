@@ -1,12 +1,11 @@
 use rocket::{get, routes, Route};
 use rocket_contrib::json::Json;
 
-use crate::jwt_helpers::MyJwtToken;
 use crate::models::rule_set::{get_rule_sets, RuleSet};
 use crate::DbConn;
 
 #[get("/")]
-fn route_get_rule_sets(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<RuleSet>> {
+fn route_get_rule_sets(conn: DbConn) -> Json<Vec<RuleSet>> {
     Json(get_rule_sets(&conn.0))
 }
 

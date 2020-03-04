@@ -62,7 +62,10 @@ fn main() {
             my_routes::rule_set_routes::exported_routes(),
         )
         .mount("/api/players", my_routes::player_routes::exported_routes())
-        .mount("/api/groups", my_routes::group_routes::exported_routes())
+        .mount(
+            "/api/groups",
+            my_routes::all_group_routes::exported_routes(),
+        )
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();
