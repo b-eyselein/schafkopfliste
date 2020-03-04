@@ -1,6 +1,5 @@
 use rocket::{get, put, routes, Route};
-use rocket_contrib::json;
-use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwtToken;
 use crate::models::game::{Game, PricedGame};
@@ -12,7 +11,7 @@ use crate::models::player::Player;
 use crate::models::player_in_group::{
     add_player_to_group, select_group_with_players_and_rule_set_by_id,
     select_groups_with_player_count, select_players_and_group_membership, select_players_in_group,
-    GroupWithPlayerCount, GroupWithPlayersAndRuleSet,
+    GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
 };
 use crate::models::rule_set::select_rule_set_by_id;
 use crate::models::session::{
@@ -85,14 +84,8 @@ fn route_get_group_with_players_and_membership(
     _my_jwt: MyJwtToken,
     conn: DbConn,
     group_id: i32,
-) -> JsonValue {
-    let group = select_group_by_id(&conn.0, &group_id);
-    let players_with_membership = select_players_and_group_membership(&conn.0, &group_id);
-
-    json!({
-    "group" : group,
-    "players": players_with_membership
-     })
+) -> Json<Option<GroupWithPlayerMembership>> {
+    Json(select_players_and_group_membership(&conn.0, &group_id))
 }
 
 #[get("/<group_id>/sessions")]

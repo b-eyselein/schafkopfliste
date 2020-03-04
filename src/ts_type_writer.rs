@@ -16,6 +16,7 @@ pub fn write_all_ts_types() {
         crate::models::session::CompleteSession::ts_type(),
         crate::models::group::CreatableGroup::ts_type(),
         crate::models::group::Group::ts_type(),
+        crate::models::player_in_group::GroupWithPlayerMembership::ts_type(),
     ];
 
     write_ts_types("./ui/src/app/_interfaces/interfaces.ts", top_tier_types, "");

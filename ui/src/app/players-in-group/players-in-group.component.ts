@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
-import {GroupWithPlayersAndMembership} from '../_interfaces/group';
-import {Player} from '../_interfaces/interfaces';
+import {GroupWithPlayerMembership, Player} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './players-in-group.component.html'})
 export class PlayersInGroupComponent implements OnInit {
 
-  group: GroupWithPlayersAndMembership;
+  groupWithPlayerMembership: GroupWithPlayerMembership;
 
   constructor(private route: ActivatedRoute, private apiService: ApiService) {
   }
@@ -17,16 +16,12 @@ export class PlayersInGroupComponent implements OnInit {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 
       this.apiService.getGroupWithPlayersAndMembership(groupId)
-        .subscribe((group) => {
-          this.group = group;
-
-          console.info(JSON.stringify(this.group.players, null, 2));
-        });
+        .subscribe((groupWithPlayerMembership) => this.groupWithPlayerMembership = groupWithPlayerMembership);
     });
   }
 
   addPlayerToGroup(p: { player: Player, isMember: boolean }): void {
-    this.apiService.addPlayerToGroup(this.group.group.id, p.player.id)
+    this.apiService.addPlayerToGroup(this.groupWithPlayerMembership.group.id, p.player.id)
       .subscribe((isMember) => p.isMember = isMember);
   }
 

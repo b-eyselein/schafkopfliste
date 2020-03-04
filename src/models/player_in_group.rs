@@ -1,7 +1,8 @@
 use diesel::{self, prelude::*, PgConnection};
 use serde::Serialize;
+use serde_tsi::prelude::*;
 
-use crate::models::group::Group;
+use crate::models::group::{select_group_by_id, Group};
 use crate::models::player::{select_players, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::player_in_groups;
@@ -64,11 +65,18 @@ impl GroupWithPlayersAndRuleSet {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerAndMembership {
     player: Player,
     is_member: bool,
+}
+
+#[derive(Serialize, HasTypescriptType)]
+#[serde(rename_all = "camelCase")]
+pub struct GroupWithPlayerMembership {
+    group: Group,
+    player_memberships: Vec<PlayerAndMembership>,
 }
 
 pub fn select_groups_with_player_count(conn: &PgConnection) -> Vec<GroupWithPlayerCount> {
@@ -93,8 +101,6 @@ pub fn select_group_with_players_and_rule_set_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
 ) -> Option<GroupWithPlayersAndRuleSet> {
-    use crate::models::group::select_group_by_id;
-
     select_group_by_id(conn, the_group_id).map(|g| {
         let default_rule_set = g
             .default_rule_set_id
@@ -138,14 +144,16 @@ pub fn select_groups_for_player(
 pub fn select_players_and_group_membership(
     conn: &PgConnection,
     the_group_id: &i32,
-) -> Vec<PlayerAndMembership> {
+) -> Option<GroupWithPlayerMembership> {
+    let group = select_group_by_id(&conn, &the_group_id)?;
+
     let player_ids_in_group: Vec<i32> = player_in_groups::table
         .filter(player_in_groups::group_id.eq(the_group_id))
         .select(player_in_groups::player_id)
         .load(conn)
         .unwrap_or(Vec::new());
 
-    select_players(conn)
+    let player_memberships = select_players(conn)
         .into_iter()
         .map(|p| {
             let is_in_group = player_ids_in_group.contains(&p.id);
@@ -154,5 +162,10 @@ pub fn select_players_and_group_membership(
                 is_member: is_in_group,
             }
         })
-        .collect()
+        .collect();
+
+    Some(GroupWithPlayerMembership {
+        group,
+        player_memberships,
+    })
 }

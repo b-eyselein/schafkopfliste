@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {CompleteSession, Game, Player} from '../../_interfaces/interfaces';
-import {SUITS} from '../../_interfaces/ruleset';
+import {SUITS} from '../../_interfaces/game_types';
 
 @Component({
   selector: 'skl-games-table',

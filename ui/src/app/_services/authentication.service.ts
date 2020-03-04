@@ -9,7 +9,7 @@ import {Credentials, UserWithToken} from '../_interfaces/interfaces';
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
 
-  readonly baseUrl = environment.serverUrl;
+  readonly baseUrl = '/api';
 
   private currentUserSubject: BehaviorSubject<UserWithToken>;
   public currentUser: Observable<UserWithToken>;
@@ -29,7 +29,7 @@ export class AuthenticationService {
   }
 
   login(credentials: Credentials) {
-    const url = `${this.baseUrl}/api/users/authentication`;
+    const url = `${this.baseUrl}/users/authentication`;
 
     return this.http.put<UserWithToken>(url, credentials)
       .pipe(tap((user) => this.activateLogin(user)));

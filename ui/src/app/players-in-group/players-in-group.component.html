@@ -1,12 +1,12 @@
 <div class="container">
 
-  <ng-container *ngIf="group; else loadingGroupComponent">
+  <ng-container *ngIf="groupWithPlayerMembership; else loadingGroupComponent">
 
-    <h1 class="title is-3 has-text-centered">Gruppe {{group.group.name}}: Spieler</h1>
+    <h1 class="title is-3 has-text-centered">Gruppe {{groupWithPlayerMembership.group.name}}: Spieler</h1>
 
-    <div class="columns is-multiline" *ngIf="group.players">
+    <div class="columns is-multiline" *ngIf="groupWithPlayerMembership.playerMemberships">
 
-      <div class="column is-2" *ngFor="let player of group.players">
+      <div class="column is-2" *ngFor="let player of groupWithPlayerMembership.playerMemberships">
         <button class="button is-fullwidth" [ngClass]="player.isMember ? 'is-link': ''"
                 (click)="addPlayerToGroup(player)">
           {{player.player.name}}
