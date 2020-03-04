@@ -1,36 +1,39 @@
-<div class="columns">
-  <div class="column" *ngFor="let player of players">
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">{{player.name}} ({{player.abbreviation}})</p>
-      </header>
-      <div class="card-content">
-        <table class="table is-fullwidth">
-          <thead>
-            <tr></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th>Saldo</th>
-              <td>{{sessionResults.get(player.id).saldo}}</td>
-            </tr>
-            <tr>
-              <th>Gelegt</th>
-              <td>{{sessionResults.get(player.id).wonGames}}</td>
-            </tr>
-            <tr>
-              <th>Gespielt</th>
-              <td>{{sessionResults.get(player.id).putCount}}</td>
-            </tr>
-            <tr>
-              <th>Gewonnen</th>
-              <td>{{sessionResults.get(player.id).playedGames}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+<div class="box">
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th></th>
+        <th *ngFor="let player of players">
+          <span>{{player.name}}</span>
+          &nbsp;
+          <span class="icon" *ngIf="playerImages.get(player.id)">
+            <img [src]="playerImages.get(player.id)" alt="{{player.abbreviation}}">
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Saldo</th>
+        <td *ngFor="let player of players"
+            [ngClass]="sessionResults.get(player.id).saldo < 0 ? 'has-text-danger' : 'has-text-success'">
+          {{sessionResults.get(player.id).saldo}}
+        </td>
+      </tr>
+      <tr>
+        <th>Gelegt</th>
+        <td *ngFor="let player of players">{{sessionResults.get(player.id).putCount}}</td>
+      </tr>
+      <tr>
+        <th>Gespielt</th>
+        <td *ngFor="let player of players">{{sessionResults.get(player.id).playedGames}}</td>
+      </tr>
+      <tr>
+        <th>Gewonnen</th>
+        <td *ngFor="let player of players">{{sessionResults.get(player.id).wonGames}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="box">

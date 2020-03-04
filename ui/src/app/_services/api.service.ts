@@ -15,7 +15,7 @@ import {
 } from '../_interfaces/interfaces';
 import {GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {Observable, of} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +31,16 @@ export class ApiService {
   private readonly baseUrl: string = '/api';
 
   constructor(private httpClient: HttpClient) {
+  }
+
+  getPlayerPicture(playerId): Observable<string | undefined> {
+    const url = `assets/player_${playerId}.png`;
+
+    return this.httpClient.get(url, {observe: 'response', responseType: 'blob'})
+      .pipe(
+        map(() => url),
+        catchError(() => of(undefined))
+      );
   }
 
   getGroupsWithPlayerCount(): Observable<GroupWithPlayerCount[]> {
