@@ -1,4 +1,6 @@
-use diesel::{self, PgConnection};
+use std::collections::HashMap;
+
+use diesel::{self, result::Error as DbError, PgConnection};
 use serde::Serialize;
 use serde_tsi::prelude::*;
 
@@ -8,6 +10,16 @@ use super::group::{select_group_by_id, Group};
 use super::player::{select_player_by_id, Player};
 use super::rule_set::{select_rule_set_by_id, RuleSet};
 use super::session::select_session_by_id;
+
+#[derive(Debug, Queryable, Serialize, HasTypescriptType)]
+#[serde(rename_all = "camelCase")]
+pub struct SessionResult {
+    pub balance: i32,
+    pub game_count: i32,
+    pub put_count: i32,
+    pub played_games: i32,
+    pub win_count: i32,
+}
 
 #[derive(Debug, Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
@@ -33,14 +45,74 @@ pub struct CompleteSession {
     played_games: Vec<PricedGame>,
 }
 
+impl CompleteSession {
+    fn players(&self) -> Vec<&Player> {
+        vec![
+            &self.first_player,
+            &self.second_player,
+            &self.third_player,
+            &self.fourth_player,
+        ]
+    }
+
+    pub fn analyze_session(&self) -> HashMap<i32, SessionResult> {
+        self.players()
+            .iter()
+            .map(|player| {
+                let mut balance = 0;
+                let mut put_count = 0;
+                let mut played_games = 0;
+                let mut win_count = 0;
+
+                for priced_game in &self.played_games {
+                    let has_played = priced_game.player_has_acted(&player.id);
+                    let has_won = priced_game.player_has_won(&player.id);
+
+                    let solo_mult = if priced_game.is_solo() && has_played {
+                        3
+                    } else {
+                        1
+                    };
+
+                    let won_mult = if has_won { 1 } else { -1 };
+
+                    if priced_game.player_has_put(&player.id) {
+                        put_count += 1;
+                    }
+
+                    if has_played {
+                        played_games += 1;
+                    }
+
+                    if has_won {
+                        win_count += 1;
+                    }
+
+                    balance += solo_mult * won_mult * priced_game.price
+                }
+
+                let session_result = SessionResult {
+                    balance,
+                    game_count: self.played_games.len() as i32,
+                    put_count,
+                    played_games,
+                    win_count,
+                };
+
+                (player.id, session_result)
+            })
+            .collect::<HashMap<_, _>>()
+    }
+}
+
 pub fn select_complete_session_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
     the_serial_number: &i32,
-) -> Option<CompleteSession> {
-    let session = select_session_by_id(conn, the_group_id, the_serial_number).ok()?;
+) -> Result<CompleteSession, DbError> {
+    let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
 
-    let rule_set = select_rule_set_by_id(conn, &session.rule_set_id).ok()?;
+    let rule_set = select_rule_set_by_id(conn, &session.rule_set_id)?;
 
     let games = select_games_for_session(conn, &session)
         .into_iter()
@@ -51,7 +123,7 @@ pub fn select_complete_session_by_id(
         })
         .collect();
 
-    Some(CompleteSession {
+    Ok(CompleteSession {
         id: session.id,
         has_ended: session.has_ended,
         date_year: session.date_year,

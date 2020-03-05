@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
-import {Session, UserWithToken} from '../_interfaces/interfaces';
+import {GroupWithPlayersAndRuleSet, Session, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({templateUrl: './group.component.html'})

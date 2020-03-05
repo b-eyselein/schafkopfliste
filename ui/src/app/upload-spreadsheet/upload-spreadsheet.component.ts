@@ -3,8 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {read as xlsx_read, utils as xlsx_utils, WorkBook, WorkSheet} from 'xlsx';
 import {GameRow, header, readGameFromGameRow, readSessionDateAndPlayers} from './spreadsheet-helpers';
-import {Game, Player} from '../_interfaces/interfaces';
-import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
+import {Game, GroupWithPlayersAndRuleSet, Player} from '../_interfaces/interfaces';
 
 
 @Component({templateUrl: './upload-spreadsheet.component.html'})
@@ -35,7 +34,7 @@ export class UploadSpreadsheetComponent implements OnInit {
 
       const ws: WorkSheet = wb.Sheets[wb.SheetNames[0]];
 
-      const {date, players} = readSessionDateAndPlayers(this.group.players, ws);
+      const {date, players} = readSessionDateAndPlayers(this.group.players.map((p) => p.player), ws);
       this.sessionDate = date;
       this.sessionPlayers = players;
 

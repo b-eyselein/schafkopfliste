@@ -1,10 +1,12 @@
+use rocket::response::status::BadRequest;
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
-use crate::models::complete_session::CompleteSession;
+use crate::models::complete_session::{select_complete_session_by_id, CompleteSession};
+use crate::models::player_in_group::update_player_group_result;
 use crate::models::session::{select_session_by_id, CreatableSession, Session};
-use crate::my_routes::routes_helpers::{on_db_error, on_json_error};
+use crate::my_routes::routes_helpers::on_error;
 use crate::DbConn;
 
 #[get("/<group_id>/sessions")]
@@ -27,11 +29,7 @@ fn route_get_session_with_players_and_rule_set(
 ) -> Json<Option<CompleteSession>> {
     use crate::models::complete_session::select_complete_session_by_id;
 
-    Json(select_complete_session_by_id(
-        &conn.0,
-        &group_id,
-        &serial_number,
-    ))
+    Json(select_complete_session_by_id(&conn.0, &group_id, &serial_number).ok())
 }
 
 #[put(
@@ -44,11 +42,11 @@ fn route_create_session(
     conn: DbConn,
     group_id: i32,
     creatable_session_json: Result<Json<CreatableSession>, JsonError>,
-) -> Result<Json<Session>, Json<String>> {
+) -> Result<Json<Session>, BadRequest<String>> {
     use crate::models::session::insert_session;
 
     creatable_session_json
-        .map_err(|err| on_json_error("Error while reading json", err))
+        .map_err(|err| on_error("Error while reading json", err))
         .and_then(|creatable_session| {
             insert_session(
                 &conn.0,
@@ -56,7 +54,7 @@ fn route_create_session(
                 my_jwt.claims.username,
                 creatable_session.0,
             )
-            .map_err(|err2| on_db_error("Could not insert session into db", err2))
+            .map_err(|err2| on_error("Could not insert session into db", err2))
             .map(Json)
         })
 }
@@ -64,17 +62,30 @@ fn route_create_session(
 #[put("/<group_id>/sessions/<session_id>", format = "application/json")]
 fn route_end_session(
     _my_jwt: MyJwt,
-    conn: DbConn,
+    db_conn: DbConn,
     group_id: i32,
     session_id: i32,
-) -> Result<Json<bool>, Json<String>> {
+) -> Result<Json<bool>, BadRequest<String>> {
     use crate::models::session::update_end_session;
+    use diesel::Connection;
 
-    println!("{} - {}", &group_id, &session_id);
+    let conn = db_conn.0;
 
-    update_end_session(&conn.0, group_id, session_id)
-        .map_err(|err| on_db_error("Could not update has_ended in db", err))
-        .map(Json)
+    let complete_session: CompleteSession =
+        select_complete_session_by_id(&conn, &group_id, &session_id)
+            .map_err(|err| on_error("Could not read complete session from db", err))?;
+
+    let session_analysis_result = complete_session.analyze_session();
+
+    conn.transaction::<bool, diesel::result::Error, _>(|| {
+        for (player_id, session_result) in session_analysis_result {
+            update_player_group_result(&conn, player_id, &session_result).map(|_| ())?
+        }
+
+        update_end_session(&conn, group_id, session_id)
+    })
+    .map_err(|err: diesel::result::Error| on_error("Could not update has_ended in db", err))
+    .map(Json)
 }
 
 pub fn exported_routes() -> Vec<Route> {

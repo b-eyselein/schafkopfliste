@@ -18,10 +18,29 @@
 
       <div class="columns is-multiline">
         <ng-container *ngIf="group.players.length > 0; else noPlayersFoundBlock">
-          <div class="column is-3" *ngFor="let player of group.players">
-            <div class="button is-static is-fullwidth has-text-centered">{{player.abbreviation}}
-              - {{player.name}}</div>
-          </div>
+
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Saldo</th>
+                <th># Spiele (ges.)</th>
+                <th># Leger</th>
+                <th># Anzahl (gespielt)</th>
+                <th># Siege</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let player of group.players">
+                <td>{{player.player.abbreviation}} - {{player.player.name}}</td>
+                <td>{{player.sessionResult.balance}}</td>
+                <td>{{player.sessionResult.gameCount}}</td>
+                <td>{{player.sessionResult.putCount}}</td>
+                <td>{{player.sessionResult.playedGames}}</td>
+                <td>{{player.sessionResult.winCount}}</td>
+              </tr>
+            </tbody>
+          </table>
         </ng-container>
         <div class="column is-3" *ngIf="currentUser">
           <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
@@ -37,7 +56,8 @@
 
       <div class="columns is-multiline">
         <div class="column is-2" *ngFor="let session of sessions">
-          <a class="button is-fullwidth" [ngClass]="session.hasEnded ? '' : 'is-primary'" [routerLink]="['sessions', session.id]">{{session.id}}</a>
+          <a class="button is-fullwidth" [ngClass]="session.hasEnded ? '' : 'is-primary'"
+             [routerLink]="['sessions', session.id]">{{session.id}}</a>
         </div>
         <div class="column is-2" *ngIf="currentUser">
           <a class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung</a>

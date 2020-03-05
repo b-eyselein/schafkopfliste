@@ -6,4 +6,6 @@ pub mod player_routes;
 
 pub mod rule_set_routes;
 
-pub mod user_routes;
+mod user_routes;
+
+pub use user_routes::exported_routes as user_routes;

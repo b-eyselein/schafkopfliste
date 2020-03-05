@@ -1,3 +1,5 @@
+use crate::my_routes::routes_helpers::on_error;
+use rocket::response::status::BadRequest;
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json::Json;
 
@@ -23,10 +25,10 @@ fn route_create_group(
     _my_jwt: MyJwt,
     conn: DbConn,
     group_name_json: Json<CreatableGroup>,
-) -> Result<Json<Group>, String> {
-    let new_group = insert_group(&conn.0, group_name_json.0)?;
-
-    Ok(Json(new_group))
+) -> Result<Json<Group>, BadRequest<String>> {
+    insert_group(&conn.0, group_name_json.0)
+        .map_err(|err| on_error("Could not create group", err))
+        .map(Json)
 }
 
 #[get("/groupsWithPlayerCount")]
@@ -38,15 +40,21 @@ fn route_groups_with_player_count(conn: DbConn) -> Json<Vec<GroupWithPlayerCount
 fn route_group_with_players_by_id(
     conn: DbConn,
     group_id: i32,
-) -> Json<Option<GroupWithPlayersAndRuleSet>> {
-    Json(select_group_with_players_and_rule_set_by_id(
-        &conn.0, &group_id,
-    ))
+) -> Result<Json<GroupWithPlayersAndRuleSet>, BadRequest<String>> {
+    select_group_with_players_and_rule_set_by_id(&conn.0, &group_id)
+        .map_err(|err| on_error("", err))
+        .map(Json)
 }
 
 #[get("/<group_id>")]
-fn route_group_by_id(_my_jwt: MyJwt, conn: DbConn, group_id: i32) -> Json<Option<Group>> {
-    Json(select_group_by_id(&conn.0, &group_id))
+fn route_group_by_id(
+    _my_jwt: MyJwt,
+    conn: DbConn,
+    group_id: i32,
+) -> Result<Json<Group>, BadRequest<String>> {
+    select_group_by_id(&conn.0, &group_id)
+        .map_err(|err| on_error("Could not find such a group", err))
+        .map(Json)
 }
 
 #[put(
@@ -74,7 +82,7 @@ fn route_get_group_with_players_and_membership(
     conn: DbConn,
     group_id: i32,
 ) -> Json<Option<GroupWithPlayerMembership>> {
-    Json(select_players_and_group_membership(&conn.0, &group_id))
+    Json(select_players_and_group_membership(&conn.0, &group_id).ok())
 }
 
 pub fn exported_routes() -> Vec<Route> {

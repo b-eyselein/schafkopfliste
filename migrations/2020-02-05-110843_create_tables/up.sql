@@ -56,7 +56,7 @@ create table if not exists player_in_groups (
     group_id     integer not null references groups (id) on update cascade on delete cascade,
     player_id    integer not null references players (id) on update cascade on delete cascade,
 
-    saldo        integer not null default 0,
+    balance      integer not null default 0,
     game_count   integer not null default 0,
     put_count    integer not null default 0,
     played_games integer not null default 0,

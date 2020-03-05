@@ -96,12 +96,28 @@ impl Game {
 #[serde(rename_all = "camelCase")]
 pub struct PricedGame {
     game: Game,
-    price: i32,
+    pub price: i32,
 }
 
 impl PricedGame {
     pub fn new(game: Game, price: i32) -> PricedGame {
         PricedGame { game, price }
+    }
+
+    pub fn player_has_acted(&self, player_id: &i32) -> bool {
+        &self.game.acting_player_id == player_id
+    }
+
+    pub fn player_has_won(&self, player_id: &i32) -> bool {
+        self.game.players_having_won_ids.contains(player_id)
+    }
+
+    pub fn player_has_put(&self, player_id: &i32) -> bool {
+        self.game.players_having_put_ids.contains(player_id)
+    }
+
+    pub fn is_solo(&self) -> bool {
+        self.game.game_type != GameType::Ruf
     }
 }
 

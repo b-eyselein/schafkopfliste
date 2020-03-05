@@ -8,12 +8,13 @@ import {
   Game,
   Group,
   GroupWithPlayerMembership,
+  GroupWithPlayersAndRuleSet,
   Player,
   PricedGame,
   RuleSet,
   Session
 } from '../_interfaces/interfaces';
-import {GroupWithPlayerCount, GroupWithPlayersAndRuleSet} from '../_interfaces/group';
+import {GroupWithPlayerCount} from '../_interfaces/group';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 

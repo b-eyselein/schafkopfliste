@@ -56,7 +56,7 @@ fn main() {
     rocket::ignite()
         .mount("/", routes![route_index])
         .mount("/app", StaticFiles::from("static"))
-        .mount("/api/users", my_routes::user_routes::exported_routes())
+        .mount("/api/users", my_routes::user_routes())
         .mount(
             "/api/ruleSets",
             my_routes::rule_set_routes::exported_routes(),

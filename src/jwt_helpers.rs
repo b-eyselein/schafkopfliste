@@ -1,4 +1,4 @@
-use jsonwebtoken::{decode, encode, Header, Validation};
+use jsonwebtoken::{decode, encode, errors::Error as JwtError, Header, Validation};
 use regex::Regex;
 use rocket::http::Status;
 use rocket::request::FromRequest;
@@ -25,11 +25,12 @@ pub struct MyJwt {
     pub claims: Claims,
 }
 
-pub fn generate_token(username: String) -> Result<UserWithToken, String> {
-    let claims = Claims::new(username.clone());
-
-    let token = encode(&Header::default(), &claims, SECRET.as_ref())
-        .map_err(|_| -> String { "Could not generate token!".into() })?;
+pub fn generate_token(username: String) -> Result<UserWithToken, JwtError> {
+    let token = encode(
+        &Header::default(),
+        &Claims::new(username.clone()),
+        SECRET.as_ref(),
+    )?;
 
     Ok(UserWithToken::new(username, token))
 }

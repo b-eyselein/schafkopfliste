@@ -1,4 +1,4 @@
-use diesel::{self, prelude::*, PgConnection};
+use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -34,23 +34,16 @@ pub fn select_groups(conn: &PgConnection) -> Vec<Group> {
     groups::table.load(conn).unwrap_or(Vec::new())
 }
 
-pub fn select_group_by_id(conn: &PgConnection, group_id: &i32) -> Option<Group> {
-    groups::table.find(group_id).first(conn).ok()
+pub fn select_group_by_id(conn: &PgConnection, group_id: &i32) -> Result<Group, DbError> {
+    groups::table.find(group_id).first(conn)
 }
 
-pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, String> {
+pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, DbError> {
     use crate::schema::groups::dsl::*;
 
-    let new_group_id_try = diesel::insert_into(groups)
+    diesel::insert_into(groups)
         .values(&cg)
         .returning(id)
-        .get_result(conn);
-
-    match new_group_id_try {
-        Err(_) => Err(format!(
-            "Error while inserting group with name {} into db",
-            cg.name
-        )),
-        Ok(new_group_id) => Ok(Group::new(new_group_id, cg.name)),
-    }
+        .get_result(conn)
+        .map(|new_group_id| Group::new(new_group_id, cg.name))
 }

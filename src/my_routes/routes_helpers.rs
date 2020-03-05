@@ -1,12 +1,7 @@
-use diesel::result::Error as DbError;
-use rocket_contrib::json::{Json, JsonError};
+use rocket::response::status::BadRequest;
 
-pub fn on_db_error(base_error_msg: &str, err: DbError) -> Json<String> {
-    println!("{}: {:?}", base_error_msg, err);
-    Json(base_error_msg.into())
-}
+pub fn on_error<E: std::fmt::Debug>(base_error_msg: &str, err: E) -> BadRequest<String> {
+    eprintln!("{}: {:?}", base_error_msg, err);
 
-pub fn on_json_error(base_error_msg: &str, err: JsonError) -> Json<String> {
-    println!("{}: {:?}", base_error_msg, err);
-    Json(base_error_msg.into())
+    BadRequest(Some(base_error_msg.into()))
 }

@@ -1,13 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {GroupWithPlayersAndRuleSet} from '../_interfaces/group';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
-import {CreatableSession, Player, RuleSet, Session} from '../_interfaces/interfaces';
+import {CreatableSession, GroupWithPlayersAndRuleSet, Player, RuleSet, Session} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
 
   group: GroupWithPlayersAndRuleSet;
+
+  players: Player[];
 
   submitted = false;
 
@@ -35,6 +36,8 @@ export class NewSessionComponent implements OnInit {
         .subscribe((g) => {
           this.group = g;
 
+          this.players = this.group.players.map((p) => p.player);
+
           const today = new Date();
 
           this.creatableSession = {
@@ -56,7 +59,7 @@ export class NewSessionComponent implements OnInit {
   updateDealer(dealerId: number | undefined): void {
     this.creatableSession.firstPlayerId = dealerId;
 
-    this.playersForPreHand = this.group.players
+    this.playersForPreHand = this.players
       .filter((p) => p.id !== this.creatableSession.firstPlayerId);
   }
 
@@ -65,7 +68,7 @@ export class NewSessionComponent implements OnInit {
 
     const selectedPlayerIds = [this.creatableSession.firstPlayerId, this.creatableSession.secondPlayerId];
 
-    this.playersForMiddleHand = this.group.players
+    this.playersForMiddleHand = this.players
       .filter((p) => !selectedPlayerIds.includes(p.id));
   }
 
@@ -78,7 +81,7 @@ export class NewSessionComponent implements OnInit {
       this.creatableSession.thirdPlayerId
     ];
 
-    this.playersForRearHand = this.group.players
+    this.playersForRearHand = this.players
       .filter((p) => !selectedPlayerIds.includes(p.id));
   }
 
