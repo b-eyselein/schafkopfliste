@@ -28,6 +28,7 @@
                 <th># Leger</th>
                 <th># Anzahl (gespielt)</th>
                 <th># Siege</th>
+                <th>% Siege</th>
               </tr>
             </thead>
             <tbody>
@@ -38,6 +39,7 @@
                 <td>{{player.sessionResult.putCount}}</td>
                 <td>{{player.sessionResult.playedGames}}</td>
                 <td>{{player.sessionResult.winCount}}</td>
+                <td>{{(player.sessionResult.winCount / player.sessionResult.gameCount) | percent}}</td>
               </tr>
             </tbody>
           </table>
