@@ -1,4 +1,4 @@
-use diesel::{self, prelude::*, PgConnection};
+use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -43,20 +43,13 @@ pub fn get_players(conn: &PgConnection) -> Vec<Player> {
 pub fn insert_player(
     conn: &PgConnection,
     creatable_player: CreatablePlayer,
-) -> Result<Player, String> {
+) -> Result<Player, DbError> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)
         .values(&creatable_player)
         .returning(id)
         .get_result(conn)
-        .map_err(|err| {
-            println!("could not insert player into db: {}", err);
-            format!(
-                "Error inserting player with abbreviation {} into db",
-                &creatable_player.abbreviation
-            )
-        })
         .map(|new_player_id| {
             Player::new(
                 new_player_id,

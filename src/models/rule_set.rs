@@ -1,4 +1,4 @@
-use diesel::{self, prelude::*, PgConnection};
+use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -64,6 +64,6 @@ pub fn get_rule_sets(conn: &PgConnection) -> Vec<RuleSet> {
     rule_sets::table.load::<RuleSet>(conn).unwrap_or(Vec::new())
 }
 
-pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> Option<RuleSet> {
-    rule_sets::table.find(id).first(conn).ok()
+pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> Result<RuleSet, DbError> {
+    rule_sets::table.find(id).first(conn)
 }

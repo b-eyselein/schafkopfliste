@@ -38,4 +38,9 @@ export class SessionComponent implements OnInit {
   updateGame($event: Game) {
     this.game = {...$event};
   }
+
+  endSession(): void {
+    this.apiService.endSession(this.session.group.id, this.session.id)
+      .subscribe((ended) => this.session.hasEnded = ended);
+  }
 }

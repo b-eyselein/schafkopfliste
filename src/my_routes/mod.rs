@@ -1,3 +1,5 @@
+mod routes_helpers;
+
 pub mod all_group_routes;
 
 pub mod player_routes;

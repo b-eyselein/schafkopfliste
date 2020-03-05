@@ -13,7 +13,7 @@ pub fn write_all_ts_types() {
         crate::models::game::PricedGame::ts_type(),
         crate::models::session::CreatableSession::ts_type(),
         crate::models::session::Session::ts_type(),
-        crate::models::session::CompleteSession::ts_type(),
+        crate::models::complete_session::CompleteSession::ts_type(),
         crate::models::group::CreatableGroup::ts_type(),
         crate::models::group::Group::ts_type(),
         crate::models::player_in_group::GroupWithPlayerMembership::ts_type(),

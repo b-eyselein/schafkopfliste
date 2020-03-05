@@ -1,5 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CompleteGameType, getAllowedGameTypes, getSuitsForGameType, HEARTS, RUF, Suit, SUITS} from '../../_interfaces/game_types';
+import {
+  CompleteGameType,
+  getAllowedGameTypes,
+  getSuitsForGameType,
+  HEARTS,
+  RUF,
+  Suit,
+  SUITS
+} from '../../_interfaces/game_types';
 import {CompleteSession, Game, KontraType, Player, SchneiderSchwarz} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 
@@ -20,6 +28,7 @@ export class NewGameComponent implements OnInit {
   @Input() session: CompleteSession;
 
   @Output() gameChanged = new EventEmitter<Game>();
+  @Output() endSession = new EventEmitter<void>();
 
   players: Player[];
 
@@ -191,11 +200,12 @@ export class NewGameComponent implements OnInit {
   saveGame() {
     this.submitted = true;
 
-    if (!this.game.actingPlayerId || !this.playedGameType || (this.playedGameType.needsSuit && !this.game.suit)) {
-      return;
-    }
-
-    if (this.game.playersHavingWonIds.length === 0) {
+    if (
+      !this.game.actingPlayerId
+      || !this.playedGameType
+      || (this.playedGameType.needsSuit && !this.game.suit)
+      || this.game.playersHavingWonIds.length === 0
+    ) {
       return;
     }
 
@@ -213,6 +223,5 @@ export class NewGameComponent implements OnInit {
         this.resetData();
       });
   }
-
 
 }

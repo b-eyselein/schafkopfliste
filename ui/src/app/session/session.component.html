@@ -5,9 +5,10 @@
     <h1 class="title is-3 has-text-centered">Gruppe {{session.group.name}}, Sitzung {{session.id}}</h1>
 
     <div class="columns is-multiline">
-      <div class="column is-two-fifths-widescreen is-full-desktop" *ngIf="currentUser">
+      <div class="column is-two-fifths-widescreen is-full-desktop" *ngIf="currentUser && !session.hasEnded">
         <div class="box">
-          <skl-new-game [session]="session" (gameChanged)="updateGame($event)"></skl-new-game>
+          <skl-new-game [session]="session" (gameChanged)="updateGame($event)"
+                        (endSession)="endSession()"></skl-new-game>
         </div>
       </div>
 

@@ -37,7 +37,7 @@
 
       <div class="columns is-multiline">
         <div class="column is-2" *ngFor="let session of sessions">
-          <a class="button is-fullwidth" [routerLink]="['sessions', session.id]">{{session.id}}</a>
+          <a class="button is-fullwidth" [ngClass]="session.hasEnded ? '' : 'is-primary'" [routerLink]="['sessions', session.id]">{{session.id}}</a>
         </div>
         <div class="column is-2" *ngIf="currentUser">
           <a class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung</a>

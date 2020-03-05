@@ -31,6 +31,7 @@ table! {
     player_in_groups (group_id, player_id) {
         group_id -> Int4,
         player_id -> Int4,
+        saldo_for_group -> Int4,
     }
 }
 

@@ -21,16 +21,14 @@
         </td>
       </tr>
       <tr>
-        <th>Gelegt</th>
-        <td *ngFor="let player of players">{{sessionResults.get(player.id).putCount}}</td>
-      </tr>
-      <tr>
-        <th>Gespielt</th>
-        <td *ngFor="let player of players">{{sessionResults.get(player.id).playedGames}}</td>
-      </tr>
-      <tr>
-        <th>Gewonnen</th>
-        <td *ngFor="let player of players">{{sessionResults.get(player.id).wonGames}}</td>
+        <th># Leger / Spiele / Gewonnen</th>
+        <td *ngFor="let player of players">
+          {{sessionResults.get(player.id).putCount}}
+          /
+          {{sessionResults.get(player.id).playedGames}}
+          /
+          {{sessionResults.get(player.id).wonGames}}
+        </td>
       </tr>
     </tbody>
   </table>

@@ -20,13 +20,15 @@ table! {
 pub struct PlayerInGroup {
     group_id: i32,
     player_id: i32,
+    saldo_for_group: i32,
 }
 
 impl PlayerInGroup {
-    pub fn new(group_id: i32, player_id: i32) -> PlayerInGroup {
+    pub fn new(group_id: i32, player_id: i32, saldo_for_group: i32) -> PlayerInGroup {
         PlayerInGroup {
             group_id,
             player_id,
+            saldo_for_group,
         }
     }
 }
@@ -104,7 +106,7 @@ pub fn select_group_with_players_and_rule_set_by_id(
     select_group_by_id(conn, the_group_id).map(|g| {
         let default_rule_set = g
             .default_rule_set_id
-            .and_then(|id| select_rule_set_by_id(conn, &id));
+            .and_then(|id| select_rule_set_by_id(conn, &id).ok());
 
         GroupWithPlayersAndRuleSet::new(
             g.id,
@@ -117,7 +119,7 @@ pub fn select_group_with_players_and_rule_set_by_id(
 
 pub fn add_player_to_group(conn: &PgConnection, group_id: i32, player_id: i32) -> bool {
     let inserted_count = diesel::insert_into(player_in_groups::table)
-        .values(PlayerInGroup::new(group_id, player_id))
+        .values(PlayerInGroup::new(group_id, player_id, 0))
         .execute(conn);
 
     match inserted_count {

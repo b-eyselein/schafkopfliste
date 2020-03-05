@@ -1,24 +1,29 @@
 use rocket::{get, put, routes, Route};
-use rocket_contrib::json::Json;
+use rocket_contrib::json::{Json, JsonError};
 
-use crate::jwt_helpers::MyJwtToken;
+use crate::jwt_helpers::MyJwt;
 use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
+use crate::my_routes::routes_helpers::{on_db_error, on_json_error};
 use crate::DbConn;
 
 #[get("/")]
-fn route_players(_my_jwt: MyJwtToken, conn: DbConn) -> Json<Vec<Player>> {
+fn route_players(_my_jwt: MyJwt, conn: DbConn) -> Json<Vec<Player>> {
     Json(get_players(&conn.0))
 }
 
-#[put("/", format = "application/json", data = "<player_json>")]
+#[put("/", format = "application/json", data = "<player_json_try>")]
 fn route_create_player(
-    _my_jwt: MyJwtToken,
+    _my_jwt: MyJwt,
     conn: DbConn,
-    player_json: Json<CreatablePlayer>,
-) -> Result<Json<Player>, String> {
-    let new_player = insert_player(&conn.0, player_json.0)?;
-
-    Ok(Json(new_player))
+    player_json_try: Result<Json<CreatablePlayer>, JsonError>,
+) -> Result<Json<Player>, Json<String>> {
+    player_json_try
+        .map_err(|err| on_json_error("Could not read data from json", err))
+        .and_then(|player_json| {
+            insert_player(&conn.0, player_json.0)
+                .map_err(|err| on_db_error("Could not insert player into db", err))
+                .map(Json)
+        })
 }
 
 pub fn exported_routes() -> Vec<Route> {

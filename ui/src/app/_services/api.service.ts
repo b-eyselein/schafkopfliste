@@ -119,10 +119,16 @@ export class ApiService {
     return this.httpClient.put<boolean>(url, playerId, ApiService.putHttpOptions);
   }
 
-  createGame(groupId: number, sessionSerialNumber: number, game: Game): Observable<PricedGame> {
-    const url = `${this.baseUrl}/groups/${groupId}/sessions/${sessionSerialNumber}/games`;
+  createGame(groupId: number, sessionId: number, game: Game): Observable<PricedGame> {
+    const url = `${this.baseUrl}/groups/${groupId}/sessions/${sessionId}/games`;
 
     return this.httpClient.put<PricedGame>(url, game, ApiService.putHttpOptions);
+  }
+
+  endSession(groupId: number, sessionId: number): Observable<boolean> {
+    const url = `${this.baseUrl}/groups/${groupId}/sessions/${sessionId}`;
+
+    return this.httpClient.put<boolean>(url, {}, ApiService.putHttpOptions);
   }
 
 }

@@ -20,7 +20,7 @@ lazy_static! {
     };
 }
 
-pub struct MyJwtToken {
+pub struct MyJwt {
     pub header: Header,
     pub claims: Claims,
 }
@@ -41,7 +41,7 @@ pub enum MyJwtTokenError {
     Invalid,
 }
 
-fn decode_token(auth_header: &str) -> RequestOutcome<MyJwtToken, MyJwtTokenError> {
+fn decode_token(auth_header: &str) -> RequestOutcome<MyJwt, MyJwtTokenError> {
     match BEARER_REGEX
         .captures(auth_header)
         .and_then(|token| token.get(1))
@@ -50,7 +50,7 @@ fn decode_token(auth_header: &str) -> RequestOutcome<MyJwtToken, MyJwtTokenError
         Some(token_match) => {
             match decode::<Claims>(&token_match.as_str(), SECRET.as_ref(), &VALIDATION) {
                 Err(_) => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Invalid)),
-                Ok(claim) => Outcome::Success(MyJwtToken {
+                Ok(claim) => Outcome::Success(MyJwt {
                     header: claim.header,
                     claims: claim.claims,
                 }),
@@ -59,7 +59,7 @@ fn decode_token(auth_header: &str) -> RequestOutcome<MyJwtToken, MyJwtTokenError
     }
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for MyJwtToken {
+impl<'a, 'r> FromRequest<'a, 'r> for MyJwt {
     type Error = MyJwtTokenError;
 
     fn from_request(request: &'a Request<'r>) -> RequestOutcome<Self, MyJwtTokenError> {
