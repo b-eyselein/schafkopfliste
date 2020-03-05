@@ -31,7 +31,11 @@ table! {
     player_in_groups (group_id, player_id) {
         group_id -> Int4,
         player_id -> Int4,
-        saldo_for_group -> Int4,
+        saldo -> Int4,
+        game_count -> Int4,
+        put_count -> Int4,
+        played_games -> Int4,
+        win_count -> Int4,
     }
 }
 
@@ -69,6 +73,11 @@ table! {
     sessions (id, group_id) {
         id -> Int4,
         group_id -> Int4,
+        date_year -> Int4,
+        date_month -> Int4,
+        date_day_of_month -> Int4,
+        time_hours -> Int4,
+        time_minutes -> Int4,
         has_ended -> Bool,
         first_player_id -> Int4,
         second_player_id -> Int4,
@@ -76,11 +85,6 @@ table! {
         fourth_player_id -> Int4,
         rule_set_id -> Int4,
         creator_username -> Varchar,
-        date_year -> Int4,
-        date_month -> Int4,
-        date_day_of_month -> Int4,
-        time_hours -> Int4,
-        time_minutes -> Int4,
     }
 }
 

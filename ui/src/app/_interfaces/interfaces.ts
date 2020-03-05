@@ -6,14 +6,9 @@ export interface Player {
   name: string;
 }
 
-export interface UserWithToken {
+export interface CreatableGroup {
+  defaultRuleSetId: number | undefined;
   name: string;
-  token: string;
-}
-
-export interface PricedGame {
-  game: Game;
-  price: number;
 }
 
 export interface CompleteSession {
@@ -33,44 +28,21 @@ export interface CompleteSession {
   timeMinutes: number;
 }
 
-export interface CreatableGroup {
-  defaultRuleSetId: number | undefined;
-  name: string;
-}
+export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
-export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
+export type BavarianSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
-export interface Group {
-  defaultRuleSetId: number | undefined;
-  id: number;
-  name: string;
-}
-
-export interface GroupWithPlayerMembership {
-  group: Group;
-  playerMemberships: PlayerAndMembership[];
-}
-
-export interface CreatablePlayer {
-  abbreviation: string;
-  name: string;
-}
-
-export interface RuleSet {
-  basePrice: number;
-  bettelAllowed: boolean;
-  countLaufende: CountLaufende;
-  farbGeierAllowed: boolean;
-  farbWenzAllowed: boolean;
-  geierAllowed: boolean;
-  hochzeitAllowed: boolean;
-  id: number;
-  laufendePrice: number;
-  maxLaufendeIncl: number;
-  minLaufendeIncl: number;
-  name: string;
-  ramschAllowed: boolean;
-  soloPrice: number;
+export interface CreatableSession {
+  dateDayOfMonth: number;
+  dateMonth: number;
+  dateYear: number;
+  firstPlayerId: number;
+  fourthPlayerId: number;
+  ruleSetId: number;
+  secondPlayerId: number;
+  thirdPlayerId: number;
+  timeHours: number;
+  timeMinutes: number;
 }
 
 export interface Session {
@@ -90,35 +62,52 @@ export interface Session {
   timeMinutes: number;
 }
 
-export type BavarianSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
+export interface PlayerAndMembership {
+  isMember: boolean;
+  player: Player;
+}
+
+export type GameType = 'Ruf' | 'Wenz' | 'Farbsolo' | 'Geier' | 'Hochzeit' | 'Bettel' | 'Ramsch' | 'Farbwenz' | 'Farbgeier';
+
+export interface GroupWithPlayerMembership {
+  group: Group;
+  playerMemberships: PlayerAndMembership[];
+}
+
+export interface CreatablePlayer {
+  abbreviation: string;
+  name: string;
+}
+
+export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
 
 export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
-
-export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
 export interface Credentials {
   password: string;
   username: string;
 }
 
-export type GameType = 'Ruf' | 'Wenz' | 'Farbsolo' | 'Geier' | 'Hochzeit' | 'Bettel' | 'Ramsch' | 'Farbwenz' | 'Farbgeier';
-
-export interface CreatableSession {
-  dateDayOfMonth: number;
-  dateMonth: number;
-  dateYear: number;
-  firstPlayerId: number;
-  fourthPlayerId: number;
-  ruleSetId: number;
-  secondPlayerId: number;
-  thirdPlayerId: number;
-  timeHours: number;
-  timeMinutes: number;
+export interface RuleSet {
+  basePrice: number;
+  bettelAllowed: boolean;
+  countLaufende: CountLaufende;
+  farbGeierAllowed: boolean;
+  farbWenzAllowed: boolean;
+  geierAllowed: boolean;
+  hochzeitAllowed: boolean;
+  id: number;
+  laufendePrice: number;
+  maxLaufendeIncl: number;
+  minLaufendeIncl: number;
+  name: string;
+  ramschAllowed: boolean;
+  soloPrice: number;
 }
 
-export interface PlayerAndMembership {
-  isMember: boolean;
-  player: Player;
+export interface PricedGame {
+  game: Game;
+  price: number;
 }
 
 export interface Game {
@@ -135,4 +124,15 @@ export interface Game {
   sessionId: number;
   suit: BavarianSuit | undefined;
   tout: boolean;
+}
+
+export interface Group {
+  defaultRuleSetId: number | undefined;
+  id: number;
+  name: string;
+}
+
+export interface UserWithToken {
+  name: string;
+  token: string;
 }

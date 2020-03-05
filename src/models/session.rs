@@ -38,6 +38,12 @@ pub struct Session {
     pub id: i32,
     pub group_id: i32,
 
+    pub date_year: i32,
+    pub date_month: i32,
+    pub date_day_of_month: i32,
+    pub time_hours: i32,
+    pub time_minutes: i32,
+
     pub has_ended: bool,
 
     pub first_player_id: i32,
@@ -47,12 +53,6 @@ pub struct Session {
     pub rule_set_id: i32,
 
     pub creator_username: String,
-
-    pub date_year: i32,
-    pub date_month: i32,
-    pub date_day_of_month: i32,
-    pub time_hours: i32,
-    pub time_minutes: i32,
 }
 
 impl Session {
@@ -98,10 +98,12 @@ impl Session {
     }
 }
 
-pub fn select_sessions_for_group(conn: &PgConnection, group_id: &i32) -> Vec<Session> {
-    sessions::table
-        .filter(sessions::group_id.eq(group_id))
-        .order_by(sessions::id)
+pub fn select_sessions_for_group(conn: &PgConnection, the_group_id: &i32) -> Vec<Session> {
+    use crate::schema::sessions::dsl::*;
+
+    sessions
+        .filter(group_id.eq(the_group_id))
+        .order_by(id)
         .load(conn)
         .unwrap_or(Vec::new())
 }

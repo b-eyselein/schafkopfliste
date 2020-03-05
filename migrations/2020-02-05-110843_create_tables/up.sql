@@ -3,7 +3,7 @@
 -- @formatter:off
 create type game_type as enum (
     'ruf', 'wenz', 'farbsolo', 'geier', 'hochzeit', 'bettel', 'ramsch', 'farbwenz', 'farbgeier'
-    );
+);
 -- @formatter:on
 
 create type bavarian_suit as enum ('acorns', 'leaves', 'hearts', 'bells');
@@ -53,8 +53,14 @@ create table groups (
 );
 
 create table if not exists player_in_groups (
-    group_id  integer not null references groups (id) on update cascade on delete cascade,
-    player_id integer not null references players (id) on update cascade on delete cascade,
+    group_id     integer not null references groups (id) on update cascade on delete cascade,
+    player_id    integer not null references players (id) on update cascade on delete cascade,
+
+    saldo        integer not null default 0,
+    game_count   integer not null default 0,
+    put_count    integer not null default 0,
+    played_games integer not null default 0,
+    win_count    integer not null default 0,
 
     primary key (group_id, player_id)
 );
@@ -62,11 +68,11 @@ create table if not exists player_in_groups (
 create table if not exists sessions (
     id                integer      not null,
     group_id          integer      not null references groups (id) on update cascade on delete cascade,
-    date_year         integer      not null check (2000 < date_year and date_year < 3000),
-    date_month        integer      not null check (1 < date_month and date_month < 12),
-    date_day_of_month integer      not null check (1 < date_day_of_month and date_day_of_month < 31),
-    time_hours        integer      not null check (0 < time_hours and time_hours < 23),
-    time_minutes      integer      not null check (0 < time_minutes and time_minutes < 59),
+    date_year         integer      not null check (2000 <= date_year and date_year <= 3000),
+    date_month        integer      not null check (1 <= date_month and date_month <= 12),
+    date_day_of_month integer      not null check (1 <= date_day_of_month and date_day_of_month <= 31),
+    time_hours        integer      not null check (0 <= time_hours and time_hours <= 23),
+    time_minutes      integer      not null check (0 <= time_minutes and time_minutes <= 59),
     has_ended         bool         not null default false,
     first_player_id   integer      not null references players (id) on update cascade on delete cascade,
     second_player_id  integer      not null references players (id) on update cascade on delete cascade,
@@ -95,7 +101,6 @@ create table if not exists games (
     players_having_put_ids integer[] not null default '{}',
     kontra                 kontra_type        default null,
     players_having_won_ids integer[] not null default '{}',
-    price                  integer   not null,
 
     primary key (id, session_id, group_id),
     foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
@@ -106,37 +111,3 @@ select g.id, g.name, g.default_rule_set_id, count(player_id) as player_count
 from groups g
          left join player_in_groups pig on g.id = pig.group_id
 group by g.id;
-
--- Inserts
-
-insert into rule_sets (id, name, count_laufende)
-values (1, 'Standard', 'always'),
-       (2, 'LS 6 Info Uni Wü', 'only_losers');
-
-insert into users (username, password_hash, player_id)
-values ('default', '$2b$12$7fdsVDDPlhVmAy.ilsmyTeE7E.e2YtwI7IkQ5MGaDVsE5wDm58vGq', null);
-
-insert into groups (id, name, default_rule_set_id)
-values (1, 'LS 6 Info Uni Wue', 2);
-
-insert into players (abbreviation, name)
-values ('BE', 'Björn Eyselein'),
-       ('AG', 'Alexander Gehrke'),
-       ('JK', 'Jonathan Krebs'),
-       ('MK', 'Markus Krug'),
-       ('CW', 'Christoph Wick'),
-       ('AHe', 'Amar Hekalo'),
-       ('AHa', 'Alexander Hartelt'),
-       ('MI', 'Marianus Ifland'),
-       ('CR', 'Christian Reul');
-
-insert into player_in_groups (group_id, player_id)
-values (1, 1000),
-       (1, 1001),
-       (1, 1002),
-       (1, 1003),
-       (1, 1004),
-       (1, 1005),
-       (1, 1006),
-       (1, 1007),
-       (1, 1008);
