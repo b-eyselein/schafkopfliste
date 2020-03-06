@@ -1,71 +1,73 @@
-<div class="container">
+<div class="container is-fluid">
 
   <ng-container *ngIf="group">
     <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;</h1>
 
-    <hr>
+    <div class="columns is-multiline">
+      <div class="column is-three-fifths-desktop is-full-tablet">
+        <h2 class="subtitle is-3 has-text-centered">Mitglieder</h2>
 
-    <section *ngIf="group.defaultRuleSet">
-      <h2 class="subtitle is-3">Standardregeln</h2>
-
-      <a class="button is-link is-fullwidth" routerLink="/ruleSets">{{group.defaultRuleSet.name}}</a>
-
-      <hr>
-    </section>
-
-    <section>
-      <h2 class="subtitle is-3">Mitglieder</h2>
-
-      <div class="columns is-multiline">
-        <ng-container *ngIf="group.players.length > 0; else noPlayersFoundBlock">
-
-          <table class="table is-fullwidth">
+        <div class="table-container" *ngIf="group.players.length > 0; else noPlayersFoundBlock">
+          <table class="table is-striped is-bordered is-fullwidth">
             <thead>
               <tr>
-                <th></th>
-                <th>Saldo</th>
-                <th># Spiele (ges.)</th>
-                <th># Leger</th>
-                <th># Anzahl (gespielt)</th>
-                <th># Siege</th>
-                <th>% Siege</th>
+                <th class="has-text-centered">Spieler</th>
+                <th class="has-text-centered">Saldo</th>
+                <th class="has-text-centered"># Spiele <br> (gesamt)</th>
+                <th class="has-text-centered">Saldo / Spiele</th>
+                <th class="has-text-centered"># Leger</th>
+                <th class="has-text-centered"># Anzahl <br> (gespielt)</th>
+                <th class="has-text-centered"># Siege</th>
+                <th class="has-text-centered">% Siege</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let player of group.players">
-                <td>{{player.player.abbreviation}} - {{player.player.name}}</td>
-                <td>{{player.sessionResult.balance}}</td>
-                <td>{{player.sessionResult.gameCount}}</td>
-                <td>{{player.sessionResult.putCount}}</td>
-                <td>{{player.sessionResult.playedGames}}</td>
-                <td>{{player.sessionResult.winCount}}</td>
-                <td>{{(player.sessionResult.winCount / player.sessionResult.gameCount) | percent}}</td>
+              <tr *ngFor="let player of getPlayersOrderedByBalance()">
+                <td class="has-text-centered">{{player.player.name}}</td>
+                <td class="has-text-centered"
+                    [ngClass]="player.sessionResult.balance < 0 ? 'has-text-danger' :'has-text-success'">
+                  {{player.sessionResult.balance}}
+                </td>
+                <td class="has-text-centered">{{player.sessionResult.gameCount}}</td>
+                <td
+                  class="has-text-centered">{{player.sessionResult.balance / player.sessionResult.gameCount | number:'1.2-2'}}</td>
+                <td class="has-text-centered">{{player.sessionResult.putCount}}</td>
+                <td class="has-text-centered">{{player.sessionResult.playedGames}}</td>
+                <td class="has-text-centered">{{player.sessionResult.winCount}}</td>
+                <td class="has-text-centered">
+                  {{(player.sessionResult.winCount / player.sessionResult.gameCount) | percent}}
+                </td>
               </tr>
             </tbody>
           </table>
-        </ng-container>
-        <div class="column is-3" *ngIf="currentUser">
+        </div>
+
+        <div class="buttons" *ngIf="currentUser">
           <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
         </div>
       </div>
-    </section>
 
-    <hr>
+      <div class="column">
+        <h2 class="subtitle is-3 has-text-centered">Sitzungen</h2>
 
-    <ng-container *ngIf="sessions">
-
-      <h2 class="subtitle is-3">Sitzungen</h2>
-
-      <div class="columns is-multiline">
-        <div class="column is-2" *ngFor="let session of sessions">
-          <a class="button is-fullwidth" [ngClass]="session.hasEnded ? '' : 'is-primary'"
-             [routerLink]="['sessions', session.id]">{{session.id}}</a>
-        </div>
-        <div class="column is-2" *ngIf="currentUser">
-          <a class="button is-link is-fullwidth" routerLink="./newSession">Neue Sitzung</a>
+        <div class="columns is-multiline">
+          <ng-container *ngIf="sessions">
+            <div class="column is-one-fifth-desktop" *ngFor="let session of sessions">
+              <a class="button is-fullwidth"
+                 [ngClass]="session.hasEnded ? '' : 'is-primary'"
+                 [routerLink]="['sessions', session.id]">
+                {{session.id}}
+              </a>
+            </div>
+          </ng-container>
+          <div class="column is-one-fifth-desktop" *ngIf="currentUser">
+            <a class="button is-link is-fullwidth" routerLink="./newSession">+</a>
+          </div>
         </div>
       </div>
-    </ng-container>
+
+    </div>
+
   </ng-container>
 
 </div>

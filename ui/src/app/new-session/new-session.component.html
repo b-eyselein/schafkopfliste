@@ -84,9 +84,9 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateDealer(p.id)" title="{{p.name}}"
-                    [ngClass]="{'is-link': creatableSession.firstPlayerId === p.id}">
-              {{p.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateDealer(p.player.id)" title="{{p.player.name}}"
+                    [ngClass]="{'is-link': creatableSession.firstPlayerId === p.player.id}">
+              {{p.player.abbreviation}}
             </button>
           </div>
         </div>
@@ -102,10 +102,10 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updatePreHand(p.id)" title="{{p.name}}"
-                    [ngClass]="{'is-link': creatableSession.secondPlayerId === p.id}"
-                    [disabled]="!playersForPreHand.includes(p)">
-              {{p.abbreviation}}
+            <button class="button is-fullwidth" (click)="updatePreHand(p.player.id)" title="{{p.player.name}}"
+                    [ngClass]="{'is-link': creatableSession.secondPlayerId === p.player.id}"
+                    [disabled]="!playersForPreHand.includes(p.player)">
+              {{p.player.abbreviation}}
             </button>
           </div>
         </div>
@@ -121,10 +121,10 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateMiddleHand(p.id)" title="{{p.name}}"
-                    [ngClass]="{'is-link': creatableSession.thirdPlayerId === p.id}"
-                    [disabled]="!playersForMiddleHand.includes(p)">
-              {{p.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateMiddleHand(p.player.id)" title="{{p.player.name}}"
+                    [ngClass]="{'is-link': creatableSession.thirdPlayerId === p.player.id}"
+                    [disabled]="!playersForMiddleHand.includes(p.player)">
+              {{p.player.abbreviation}}
             </button>
           </div>
         </div>
@@ -140,10 +140,10 @@
 
         <div class="columns">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateRearHand(p.id)" title="{{p.name}}"
-                    [ngClass]="{'is-link': creatableSession.fourthPlayerId === p.id}"
-                    [disabled]="!playersForRearHand.includes(p)">
-              {{p.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateRearHand(p.player.id)" title="{{p.player.name}}"
+                    [ngClass]="{'is-link': creatableSession.fourthPlayerId === p.player.id}"
+                    [disabled]="!playersForRearHand.includes(p.player)">
+              {{p.player.abbreviation}}
             </button>
           </div>
         </div>

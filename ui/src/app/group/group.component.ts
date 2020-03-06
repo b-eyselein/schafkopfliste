@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {GroupWithPlayersAndRuleSet, Session, UserWithToken} from '../_interfaces/interfaces';
+import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, Session, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({templateUrl: './group.component.html'})
@@ -16,6 +16,10 @@ export class GroupComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private apiService: ApiService) {
+  }
+
+  getPlayersOrderedByBalance(): PlayerWithGroupResult[] {
+    return this.group.players.sort((a, b) => b.sessionResult.balance - a.sessionResult.balance);
   }
 
   ngOnInit() {

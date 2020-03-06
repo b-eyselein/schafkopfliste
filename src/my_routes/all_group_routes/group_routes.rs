@@ -1,7 +1,6 @@
-use crate::my_routes::routes_helpers::on_error;
 use rocket::response::status::BadRequest;
 use rocket::{get, put, routes, Route};
-use rocket_contrib::json::Json;
+use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
 use crate::models::group::{
@@ -9,10 +8,11 @@ use crate::models::group::{
 };
 use crate::models::player::Player;
 use crate::models::player_in_group::{
-    add_player_to_group, select_group_with_players_and_rule_set_by_id,
-    select_groups_with_player_count, select_players_and_group_membership, select_players_in_group,
+    select_group_with_players_and_rule_set_by_id, select_groups_with_player_count,
+    select_players_and_group_membership, select_players_in_group, toggle_group_membership,
     GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
 };
+use crate::my_routes::routes_helpers::on_error;
 use crate::DbConn;
 
 #[get("/")]
@@ -60,15 +60,19 @@ fn route_group_by_id(
 #[put(
     "/<group_id>/players",
     format = "application/json",
-    data = "<player_id>"
+    data = "<data_try>"
 )]
 fn route_add_player_to_group(
     _my_jwt: MyJwt,
     conn: DbConn,
     group_id: i32,
-    player_id: Json<i32>,
-) -> Json<bool> {
-    Json(add_player_to_group(&conn.0, group_id, player_id.0))
+    data_try: Result<Json<(i32, bool)>, JsonError>,
+) -> Result<Json<bool>, BadRequest<String>> {
+    let data = data_try.map_err(|err| on_error("Could not read data from json", err))?;
+
+    toggle_group_membership(&conn.0, group_id, (&data.0).0, (&data.0).1)
+        .map_err(|err| on_error("Could not update group membership", err))
+        .map(Json)
 }
 
 #[get("/<group_id>/players")]

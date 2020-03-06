@@ -114,10 +114,10 @@ export class ApiService {
       }));
   }
 
-  addPlayerToGroup(groupId: number, playerId: number): Observable<boolean> {
+  toggleGroupMembershipForPlayer(groupId: number, playerId: number, newState: boolean): Observable<boolean> {
     const url = `${this.baseUrl}/groups/${groupId}/players`;
 
-    return this.httpClient.put<boolean>(url, playerId, ApiService.putHttpOptions);
+    return this.httpClient.put<boolean>(url, [playerId, newState], ApiService.putHttpOptions);
   }
 
   createGame(groupId: number, sessionId: number, game: Game): Observable<PricedGame> {

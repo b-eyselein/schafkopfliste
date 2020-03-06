@@ -7,7 +7,6 @@ import {CreatePlayerComponent} from './_forms/create-player/create-player.compon
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {CreateGroupComponent} from './_forms/create-group/create-group.component';
-import {AddPlayerToGroupComponent} from './_forms/add-player-to-group/add-player-to-group.component';
 import {GamesTableComponent} from './games-table/games-table.component';
 import {RuleSetComponent} from './rule-set/rule-set.component';
 import {NewGameComponent} from './_forms/new-game/new-game.component';
@@ -19,7 +18,6 @@ import {PlayerAbbreviationsComponent} from './_components/player-abbreviations/p
     ...routingComponents,
     CreatePlayerComponent,
     CreateGroupComponent,
-    AddPlayerToGroupComponent,
     GamesTableComponent,
     RuleSetComponent,
     NewGameComponent,

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
-import {GroupWithPlayerMembership, Player} from '../_interfaces/interfaces';
+import {GroupWithPlayerMembership, PlayerAndMembership} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './players-in-group.component.html'})
 export class PlayersInGroupComponent implements OnInit {
@@ -20,8 +20,8 @@ export class PlayersInGroupComponent implements OnInit {
     });
   }
 
-  addPlayerToGroup(p: { player: Player, isMember: boolean }): void {
-    this.apiService.addPlayerToGroup(this.groupWithPlayerMembership.group.id, p.player.id)
+  toggleGroupMembership(p: PlayerAndMembership): void {
+    this.apiService.toggleGroupMembershipForPlayer(this.groupWithPlayerMembership.group.id, p.player.id, !p.isMember)
       .subscribe((isMember) => p.isMember = isMember);
   }
 

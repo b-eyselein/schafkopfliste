@@ -7,8 +7,9 @@
     <div class="columns is-multiline" *ngIf="groupWithPlayerMembership.playerMemberships">
 
       <div class="column is-2" *ngFor="let player of groupWithPlayerMembership.playerMemberships">
-        <button class="button is-fullwidth" [ngClass]="player.isMember ? 'is-link': ''"
-                (click)="addPlayerToGroup(player)">
+        <button class="button is-fullwidth"
+                [class.is-link]="player.isMember"
+                (click)="toggleGroupMembership(player)">
           {{player.player.name}}
         </button>
       </div>

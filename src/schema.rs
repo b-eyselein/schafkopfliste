@@ -36,6 +36,7 @@ table! {
         put_count -> Int4,
         played_games -> Int4,
         win_count -> Int4,
+        is_active -> Bool,
     }
 }
 

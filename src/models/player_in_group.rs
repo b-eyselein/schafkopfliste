@@ -26,10 +26,11 @@ pub struct PlayerInGroup {
     put_count: i32,
     played_games: i32,
     win_count: i32,
+    is_active: bool,
 }
 
 impl PlayerInGroup {
-    pub fn new(group_id: i32, player_id: i32) -> PlayerInGroup {
+    pub fn new(group_id: i32, player_id: i32, is_active: bool) -> PlayerInGroup {
         PlayerInGroup {
             group_id,
             player_id,
@@ -38,6 +39,7 @@ impl PlayerInGroup {
             put_count: 0,
             played_games: 0,
             win_count: 0,
+            is_active,
         }
     }
 }
@@ -93,6 +95,7 @@ pub fn select_players_in_group(conn: &PgConnection, the_group_id: &i32) -> Vec<P
 
     player_in_groups
         .filter(group_id.eq(the_group_id))
+        .filter(is_active.eq(true))
         .inner_join(players)
         .select((id, abbreviation, name))
         .load::<Player>(conn)
@@ -141,15 +144,21 @@ pub fn select_group_with_players_and_rule_set_by_id(
     })
 }
 
-pub fn add_player_to_group(conn: &PgConnection, group_id: i32, player_id: i32) -> bool {
-    let inserted_count = diesel::insert_into(player_in_groups::table)
-        .values(PlayerInGroup::new(group_id, player_id))
-        .execute(conn);
+pub fn toggle_group_membership(
+    conn: &PgConnection,
+    the_group_id: i32,
+    the_player_id: i32,
+    new_state: bool,
+) -> Result<bool, DbError> {
+    use crate::schema::player_in_groups::dsl::*;
 
-    match inserted_count {
-        Ok(1) => true,
-        _ => false,
-    }
+    diesel::insert_into(player_in_groups)
+        .values(PlayerInGroup::new(the_group_id, the_player_id, new_state))
+        .on_conflict((player_id, group_id))
+        .do_update()
+        .set(is_active.eq(new_state))
+        .returning(is_active)
+        .get_result(conn)
 }
 
 #[allow(dead_code)]
@@ -157,12 +166,12 @@ pub fn select_groups_for_player(
     conn: &PgConnection,
     the_player_id: &i32,
 ) -> Vec<(PlayerInGroup, Group)> {
-    use crate::schema::groups::dsl::*;
+    use crate::schema::groups;
     use crate::schema::player_in_groups::dsl::*;
 
     player_in_groups
         .filter(player_id.eq(the_player_id))
-        .inner_join(groups)
+        .inner_join(groups::table)
         .load::<(PlayerInGroup, Group)>(conn)
         .unwrap_or(Vec::new())
 }
@@ -171,11 +180,14 @@ pub fn select_players_and_group_membership(
     conn: &PgConnection,
     the_group_id: &i32,
 ) -> Result<GroupWithPlayerMembership, DbError> {
+    use crate::schema::player_in_groups::dsl::*;
+
     let group = select_group_by_id(&conn, &the_group_id)?;
 
-    let player_ids_in_group: Vec<i32> = player_in_groups::table
-        .filter(player_in_groups::group_id.eq(the_group_id))
-        .select(player_in_groups::player_id)
+    let player_ids_in_group: Vec<i32> = player_in_groups
+        .filter(group_id.eq(the_group_id))
+        .filter(is_active.eq(true))
+        .select(player_id)
         .load(conn)
         .unwrap_or(Vec::new());
 
