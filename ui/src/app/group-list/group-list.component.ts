@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
-import {Group, UserWithToken} from '../_interfaces/interfaces';
-import {GroupWithPlayerCount} from '../_interfaces/group';
+import {Group, GroupWithPlayerCount, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({templateUrl: './group-list.component.html'})

@@ -47,3 +47,7 @@ pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, Db
         .get_result(conn)
         .map(|new_group_id| Group::new(new_group_id, cg.name))
 }
+
+pub fn exported_ts_types() -> Vec<TsType> {
+    vec![CreatableGroup::ts_type(), Group::ts_type()]
+}

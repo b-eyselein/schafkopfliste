@@ -44,7 +44,7 @@ impl PlayerInGroup {
     }
 }
 
-#[derive(Debug, Serialize, Queryable)]
+#[derive(Debug, Serialize, Queryable, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayerCount {
     id: i32,
@@ -225,4 +225,12 @@ pub fn update_player_group_result(
             win_count.eq(win_count + &res.win_count),
         ))
         .get_result(conn)
+}
+
+pub fn exported_ts_types() -> Vec<TsType> {
+    vec![
+        GroupWithPlayerCount::ts_type(),
+        GroupWithPlayerMembership::ts_type(),
+        GroupWithPlayersAndRuleSet::ts_type(),
+    ]
 }

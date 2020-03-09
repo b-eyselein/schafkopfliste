@@ -151,3 +151,7 @@ pub fn update_end_session(
         .returning(has_ended)
         .get_result(conn)
 }
+
+pub fn exported_ts_types() -> Vec<TsType> {
+    vec![CreatableSession::ts_type(), Session::ts_type()]
+}

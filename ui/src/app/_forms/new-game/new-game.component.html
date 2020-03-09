@@ -1,24 +1,8 @@
 <div class="columns">
-  <div class="column is-one-fifth-desktop">
-    <label class="has-text-weight-bold">Datum/Zeit:</label>
-  </div>
-  <div class="column">
-    <button class="button is-fullwidth is-static">
-      {{session.dateDayOfMonth | number:'2.0-0'}}.{{session.dateMonth | number:'2.0-0'}}.{{session.dateYear}}
-    </button>
-  </div>
-  <div class="column">
-    <button class="button is-fullwidth is-static">
-      {{session.timeHours | number:'2.0-0'}}:{{session.timeMinutes | number:'2.0-0'}}
-    </button>
-  </div>
-</div>
-
-<div class="columns">
   <div class="column is-one-fifth has-text-centered">
-    <label for="currentGameIndex" class="label">Spielnummer:</label>
+    <label for="currentGameIndex" class="label">Nummer, Geber:</label>
   </div>
-  <div class="column">
+  <div class="column is-two-fifths">
     <div class="field has-addons">
       <!--
       <p class="control">
@@ -40,12 +24,6 @@
             (click)="game.isDoubled = !game.isDoubled">
       {{game.isDoubled ? '&#10004;' : '&#10008; nicht'}} 2x ({{remainingDoubledGames}})
     </button>
-  </div>
-</div>
-
-<div class="columns">
-  <div class="column is-one-fifth has-text-centered">
-    <label class="label">Geber:</label>
   </div>
   <div class="column">
     <button class="button is-fullwidth is-static">{{getDealer().name}}</button>
@@ -114,11 +92,11 @@
       <span class="icon is-small">
         <img src="assets/bay_{{suit.name | lowercase}}.png" alt="{{suit.name}}">
       </span>
-      &nbsp;
-      <span>{{suit.name}}</span>
     </button>
   </div>
 </div>
+
+<skl-circle-buffer label="Kontra/Re" [values]="KontraValues"></skl-circle-buffer>
 
 <div class="columns">
   <div class="column has-text-centered">

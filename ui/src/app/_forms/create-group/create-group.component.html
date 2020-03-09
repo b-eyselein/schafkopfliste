@@ -1,16 +1,15 @@
 <h1 class="subtitle is-3 has-text-centered">Neue Gruppe anlegen</h1>
 
-<form (ngSubmit)="createGroup()" [formGroup]="groupForm">
-
-  <div class="field">
-    <label class="label" for="name">Gruppenname:</label>
-    <div class="control">
-      <input type="text" id="name" formControlName="name" class="input" autofocus>
-    </div>
+<div class="field has-addons">
+  <div class="control">
+    <label class="button is-static" for="name">
+      Neue Gruppe mit Namen
+    </label>
   </div>
-
-  <div class="buttons">
-    <button class="button is-link is-fullwidth">Gruppe anlegen</button>
+  <div class="control is-expanded">
+    <input type="text" id="name" class="input" [(ngModel)]="groupName" placeholder="Name der Gruppe" autofocus>
   </div>
-
-</form>
+  <div class="control">
+    <button class="button is-link" (click)="createGroup()">anlegen</button>
+  </div>
+</div>

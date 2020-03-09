@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {ApiService} from '../../_services/api.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CreatableGroup, Group} from '../../_interfaces/interfaces';
 
 @Component({
@@ -9,28 +8,25 @@ import {CreatableGroup, Group} from '../../_interfaces/interfaces';
 })
 export class CreateGroupComponent {
 
-  groupForm: FormGroup;
+  groupName = '';
 
   @Output() groupCreated = new EventEmitter<Group>();
 
-  constructor(private fb: FormBuilder, private apiService: ApiService) {
-    this.groupForm = this.fb.group({
-      name: ['', Validators.required]
-    });
+  constructor(private apiService: ApiService) {
   }
 
   createGroup(): void {
-    if (this.groupForm.invalid) {
+    if (!this.groupName || this.groupName.length === 0) {
       alert('Gruppennamen ist nicht valide!');
       return;
     }
 
-    const group: CreatableGroup = {name: this.groupForm.controls.name.value, defaultRuleSetId: undefined};
+    const group: CreatableGroup = {name: this.groupName, defaultRuleSetId: undefined};
 
     this.apiService.createGroup(group)
       .subscribe((result) => {
         if (group) {
-          this.groupForm.reset();
+          this.groupName = '';
           this.groupCreated.emit(result);
         }
       });

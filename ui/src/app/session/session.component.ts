@@ -43,4 +43,16 @@ export class SessionComponent implements OnInit {
     this.apiService.endSession(this.session.group.id, this.session.id)
       .subscribe((ended) => this.session.hasEnded = ended);
   }
+
+  renderDate(): string {
+    return this.session.dateDayOfMonth.toString().padStart(2, '0') + '.'
+      + this.session.dateMonth.toString().padStart(2, '0') + '.'
+      + this.session.dateYear.toString().padStart(4, '0');
+  }
+
+  renderTime(): string {
+    return this.session.timeHours.toString().padStart(2, '0') + ':'
+      + this.session.timeMinutes.toString().padStart(2, '0');
+  }
+
 }

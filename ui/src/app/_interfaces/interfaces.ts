@@ -73,6 +73,13 @@ export interface Group {
   name: string;
 }
 
+export interface GroupWithPlayerCount {
+  defaultRuleSetId: number | undefined;
+  id: number;
+  name: string;
+  playerCount: number;
+}
+
 export interface GroupWithPlayerMembership {
   group: Group;
   playerMemberships: PlayerAndMembership[];

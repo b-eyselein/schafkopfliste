@@ -1,0 +1,22 @@
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+    <label class="label">{{label}}:</label>
+  </div>
+  <div class="column">
+    <div class="field has-addons">
+      <div class="control">
+        <button class="button" (click)="priorValue()">&lt;</button>
+      </div>
+      <div class="control is-expanded">
+        <div class="select is-fullwidth">
+          <select [(ngModel)]="currentValue">
+            <option *ngFor="let v of values" [value]="v.value">{{v.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="control">
+        <button class="button" (click)="nextValue()">&gt;</button>
+      </div>
+    </div>
+  </div>
+</div>

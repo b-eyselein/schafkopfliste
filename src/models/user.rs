@@ -46,3 +46,7 @@ pub fn user_by_username(conn: &PgConnection, name: &String) -> Result<User, DbEr
 
     users.filter(username.eq(&name)).first::<User>(conn)
 }
+
+pub fn exported_ts_types() -> Vec<TsType> {
+    vec![Credentials::ts_type(), UserWithToken::ts_type()]
+}

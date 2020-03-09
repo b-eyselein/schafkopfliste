@@ -58,3 +58,7 @@ pub fn insert_player(
             )
         })
 }
+
+pub fn exported_ts_types() -> Vec<TsType> {
+    vec![CreatablePlayer::ts_type(), Player::ts_type()]
+}

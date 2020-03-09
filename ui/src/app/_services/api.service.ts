@@ -7,6 +7,7 @@ import {
   CreatableSession,
   Game,
   Group,
+  GroupWithPlayerCount,
   GroupWithPlayerMembership,
   GroupWithPlayersAndRuleSet,
   Player,
@@ -14,7 +15,6 @@ import {
   RuleSet,
   Session
 } from '../_interfaces/interfaces';
-import {GroupWithPlayerCount} from '../_interfaces/group';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 

@@ -1,39 +1,33 @@
-<div class="container is-fluid">
+<div class="container">
 
   <h1 class="title is-3 has-text-centered">Gruppen</h1>
 
-  <div class="columns">
-    <div class="column is-one-fifth-desktop" *ngIf="currentUser">
-      <div class="box">
-        <skl-create-group (groupCreated)="onGroupCreated($event)"></skl-create-group>
-      </div>
-    </div>
-    <div class="column">
+  <ng-container *ngIf="groups; else loadingGroupsBlock">
 
-      <div class="columns is-multiline" *ngIf="groups; else loadingGroupsBlock">
-
-        <ng-container *ngIf="groups.length > 0; else noGroupsFoundBlock">
-
-          <div class="column is-one-quarter-desktop" *ngFor="let group of groups">
-            <div class="card">
-              <header class="card-header">
-                <p class="card-header-title">{{group.name}}</p>
-              </header>
-              <div class="card-content">
-                <p>{{(group.playerCount !== undefined) ? group.playerCount : '?'}} Spieler</p>
-              </div>
-              <footer class="card-footer">
-                <a class="card-footer-item" [routerLink]="[group.id]">Zur Gruppe</a>
-              </footer>
-            </div>
+    <div class="columns is-multiline" *ngIf="groups.length > 0; else noGroupsFoundBlock">
+      <div class="column is-one-quarter-desktop is-half" *ngFor="let group of groups">
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">{{group.name}}</p>
+          </header>
+          <div class="card-content">
+            <p>{{(group.playerCount !== undefined) ? group.playerCount : '?'}} Spieler</p>
           </div>
-
-        </ng-container>
-
+          <footer class="card-footer">
+            <a class="card-footer-item" [routerLink]="[group.id]">Zur Gruppe</a>
+          </footer>
+        </div>
       </div>
-
     </div>
+
+  </ng-container>
+
+  <hr>
+
+  <div class="box">
+    <skl-create-group (groupCreated)="onGroupCreated($event)"></skl-create-group>
   </div>
+
 </div>
 
 <ng-template #loadingGroupsBlock>

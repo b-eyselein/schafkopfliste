@@ -13,17 +13,13 @@
   <div id="navbarBasicExample" class="navbar-menu" [class.is-active]="navbarToggled">
     <div class="navbar-start">
       <a class="navbar-item" routerLink="/groups">Gruppen</a>
-      <a class="navbar-item" routerLink="/players">Spieler</a>
+      <a class="navbar-item" routerLink="/players" *ngIf="currentUser">Spieler</a>
       <a class="navbar-item" routerLink="/ruleSets">Regelsätze</a>
     </div>
 
     <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <button class="button is-light" (click)="logout()" *ngIf="currentUser">Logout</button>
-          <a class="button is-light" routerLink="/loginForm" *ngIf="!currentUser">Login</a>
-        </div>
-      </div>
+      <a class="navbar-item" routerLink="/loginForm" *ngIf="!currentUser">Login</a>
+      <a class="navbar-item" (click)="logout()" *ngIf="currentUser">Logout</a>
     </div>
 
   </div>
