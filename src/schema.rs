@@ -23,7 +23,7 @@ table! {
     groups (id) {
         id -> Int4,
         name -> Varchar,
-        default_rule_set_id -> Nullable<Int4>,
+        rule_set_id -> Int4,
     }
 }
 
@@ -45,6 +45,7 @@ table! {
         id -> Int4,
         abbreviation -> Varchar,
         name -> Varchar,
+        picture_name -> Nullable<Varchar>,
     }
 }
 
@@ -84,7 +85,6 @@ table! {
         second_player_id -> Int4,
         third_player_id -> Int4,
         fourth_player_id -> Int4,
-        rule_set_id -> Int4,
         creator_username -> Varchar,
     }
 }
@@ -93,16 +93,16 @@ table! {
     users (username) {
         username -> Varchar,
         password_hash -> Varchar,
+        is_admin -> Bool,
         player_id -> Nullable<Int4>,
     }
 }
 
 joinable!(games -> players (acting_player_id));
-joinable!(groups -> rule_sets (default_rule_set_id));
+joinable!(groups -> rule_sets (rule_set_id));
 joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));
 joinable!(sessions -> groups (group_id));
-joinable!(sessions -> rule_sets (rule_set_id));
 joinable!(sessions -> users (creator_username));
 joinable!(users -> players (player_id));
 

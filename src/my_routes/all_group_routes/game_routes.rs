@@ -1,14 +1,15 @@
-use rocket::response::status::BadRequest;
 use rocket::{put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
 use crate::models::game::{Game, PricedGame};
 use crate::models::game_dao::insert_game;
+use crate::models::group_dao::select_group_by_id;
 use crate::models::rule_set::select_rule_set_by_id;
-use crate::models::session::select_session_by_id;
-use crate::my_routes::routes_helpers::on_error;
+use crate::models::session_dao::select_session_has_ended;
 use crate::DbConn;
+
+use super::super::routes_helpers::{on_error, MyJsonResponse};
 
 #[put(
     "/<group_id>/sessions/<session_id>/games",
@@ -21,17 +22,23 @@ fn route_create_game(
     group_id: i32,
     session_id: i32,
     game_json_try: Result<Json<Game>, JsonError>,
-) -> Result<Json<PricedGame>, BadRequest<String>> {
+) -> MyJsonResponse<PricedGame> {
     let game_json = game_json_try.map_err(|err| on_error("Could not read game from json!", err))?;
 
-    let session = select_session_by_id(&conn.0, &group_id, &session_id)
-        .map_err(|err| on_error("No session with found!", err))?;
+    let group = select_group_by_id(&conn.0, &group_id)
+        .map_err(|err| on_error("Could not read group from db", err))?;
 
-    let rule_set = select_rule_set_by_id(&conn.0, session.rule_set_id())
+    let session_has_ended = select_session_has_ended(&conn.0, &group_id, &session_id)
+        .map_err(|err| on_error("could not select session from db", err))?;
+
+    let rule_set = select_rule_set_by_id(&conn.0, &group.rule_set_id)
         .map_err(|err| on_error("No ruleset for session found!", err))?;
 
-    if session.has_ended {
-        Err(BadRequest(Some("Session has already ended!".into())))
+    if session_has_ended {
+        Err(on_error(
+            "Session has already ended!",
+            "User tried to add a game to a ended session!",
+        ))
     } else {
         insert_game(&conn.0, &game_json.0)
             .map_err(|err| on_error("Error while inserting game into db", err))

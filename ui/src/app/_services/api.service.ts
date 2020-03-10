@@ -12,7 +12,9 @@ import {
   GroupWithPlayersAndRuleSet,
   Player,
   PricedGame,
+  RegisterValues,
   RuleSet,
+  SerializableUser,
   Session
 } from '../_interfaces/interfaces';
 import {Observable, of} from 'rxjs';
@@ -33,6 +35,17 @@ export class ApiService {
 
   constructor(private httpClient: HttpClient) {
   }
+
+  // Registration
+
+  putRegistration(registerValues: RegisterValues): Observable<SerializableUser | undefined> {
+    const url = `${this.baseUrl}/users/registration`;
+
+    return this.httpClient.put<any>(url, registerValues, ApiService.putHttpOptions)
+      .pipe(catchError(() => of(undefined)));
+  }
+
+  // Groups, Sessions, Games, ...
 
   getPlayerPicture(playerId): Observable<string | undefined> {
     const url = `assets/player_${playerId}.png`;
@@ -131,5 +144,18 @@ export class ApiService {
 
     return this.httpClient.put<boolean>(url, {}, ApiService.putHttpOptions);
   }
+
+  // Admin stuff
+
+  getRecalculatedStatistics(groupId: number): Observable<any | undefined> {
+    const url = `${this.baseUrl}/groups/${groupId}/recalculatedStatistics`;
+
+    return this.httpClient.get<any>(url)
+      .pipe(catchError((err) => {
+        console.error(err.message);
+        return of(undefined);
+      }));
+  }
+
 
 }

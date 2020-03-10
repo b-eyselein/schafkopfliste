@@ -1,10 +1,9 @@
-use rocket::response::status::BadRequest;
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
+use super::routes_helpers::{on_error, MyJsonResponse};
 use crate::jwt_helpers::MyJwt;
 use crate::models::player::{get_players, insert_player, CreatablePlayer, Player};
-use crate::my_routes::routes_helpers::on_error;
 use crate::DbConn;
 
 #[get("/")]
@@ -17,7 +16,7 @@ fn route_create_player(
     _my_jwt: MyJwt,
     conn: DbConn,
     player_json_try: Result<Json<CreatablePlayer>, JsonError>,
-) -> Result<Json<Player>, BadRequest<String>> {
+) -> MyJsonResponse<Player> {
     player_json_try
         .map_err(|err| on_error("Could not read data from json", err))
         .and_then(|player_json| {

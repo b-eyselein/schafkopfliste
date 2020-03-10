@@ -37,4 +37,10 @@ export class GroupComponent implements OnInit {
     });
   }
 
+  recalculateStatistics() {
+    this.apiService.getRecalculatedStatistics(this.group.id)
+      .subscribe((result) => {
+        console.info(JSON.stringify(result, null,2));
+      });
+  }
 }

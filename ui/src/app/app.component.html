@@ -18,8 +18,11 @@
     </div>
 
     <div class="navbar-end">
-      <a class="navbar-item" routerLink="/loginForm" *ngIf="!currentUser">Login</a>
-      <a class="navbar-item" (click)="logout()" *ngIf="currentUser">Logout</a>
+      <ng-container *ngIf="!currentUser">
+        <a class="navbar-item" routerLink="/registerForm">Registrieren</a>
+        <a class="navbar-item" routerLink="/loginForm">Login</a>
+      </ng-container>
+      <a class="navbar-item" (click)="logout()" *ngIf="currentUser">Logout {{currentUser.user.username}}</a>
     </div>
 
   </div>

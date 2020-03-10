@@ -5,17 +5,21 @@ use serde_tsi::prelude::*;
 use crate::schema::players;
 
 #[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
+#[serde(rename_all = "camelCase")]
 #[table_name = "players"]
 pub struct CreatablePlayer {
     pub abbreviation: String,
     pub name: String,
+    pub picture_name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptType)]
+#[serde(rename_all = "camelCase")]
 pub struct Player {
     pub id: i32,
     pub abbreviation: String,
     pub name: String,
+    pub picture_name: Option<String>,
 }
 
 impl Player {
@@ -24,6 +28,7 @@ impl Player {
             id,
             abbreviation,
             name,
+            picture_name: None,
         }
     }
 }

@@ -1,0 +1,46 @@
+<div class="container">
+  <h1 class="title is-3 has-text-centered">Neuen Account registrieren</h1>
+
+  <form (ngSubmit)="register()">
+    <div class="field">
+      <label class="label" for="username">Nutzername:</label>
+      <div class="control">
+        <input type="text" class="input" id="username" [(ngModel)]="username" name="username" placeholder="Nutzername"
+               autofocus>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password" class="label">Passwort:</label>
+      <div class="control">
+        <input type="password" class="input" id="password" [(ngModel)]="password" name="password"
+               placeholder="Passwort">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="passwordRepeat" class="label">Passwort wiederholen:</label>
+      <div class="control">
+        <input type="password" class="input" id="passwordRepeat" [(ngModel)]="passwordRepeat"
+               name="passwordRepeat" placeholder="Passwort wiederholen">
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="buttons">
+      <button class="button is-link is-fullwidth" [class.is-loading]="submitted">Registrieren</button>
+    </div>
+  </form>
+
+  <ng-container *ngIf="registeredUser">
+    <hr>
+
+    <div class="notification is-primary is-fullwidth">
+      Nutzer {{registeredUser.username}} wurde erfolgreich registriert.
+    </div>
+
+  </ng-container>
+
+
+</div>

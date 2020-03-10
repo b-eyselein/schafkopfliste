@@ -35,7 +35,8 @@ create table if not exists rule_sets (
 create table if not exists players (
     id           serial primary key not null,
     abbreviation varchar(5) unique  not null,
-    name         varchar(100)       not null
+    name         varchar(100)       not null,
+    picture_name varchar(255)
 );
 
 alter sequence players_id_seq restart with 1000;
@@ -43,13 +44,14 @@ alter sequence players_id_seq restart with 1000;
 create table if not exists users (
     username      varchar(100) primary key not null,
     password_hash varchar(100)             not null,
+    is_admin      bool                     not null default false,
     player_id     integer                  references players (id) on update cascade on delete set null
 );
 
 create table groups (
-    id                  serial primary key  not null,
-    name                varchar(100) unique not null,
-    default_rule_set_id integer             references rule_sets on update cascade on delete set null
+    id          serial primary key  not null,
+    name        varchar(100) unique not null,
+    rule_set_id integer             not null references rule_sets (id) on update cascade on delete set null
 );
 
 create table if not exists player_in_groups (
@@ -62,23 +64,28 @@ create table if not exists player_in_groups (
     played_games integer not null default 0,
     win_count    integer not null default 0,
 
+    is_active    bool    not null default true,
+
     primary key (group_id, player_id)
 );
 
 create table if not exists sessions (
     id                integer      not null,
     group_id          integer      not null references groups (id) on update cascade on delete cascade,
+
     date_year         integer      not null check (2000 <= date_year and date_year <= 3000),
     date_month        integer      not null check (1 <= date_month and date_month <= 12),
     date_day_of_month integer      not null check (1 <= date_day_of_month and date_day_of_month <= 31),
     time_hours        integer      not null check (0 <= time_hours and time_hours <= 23),
     time_minutes      integer      not null check (0 <= time_minutes and time_minutes <= 59),
+
     has_ended         bool         not null default false,
+
     first_player_id   integer      not null references players (id) on update cascade on delete cascade,
     second_player_id  integer      not null references players (id) on update cascade on delete cascade,
     third_player_id   integer      not null references players (id) on update cascade on delete cascade,
     fourth_player_id  integer      not null references players (id) on update cascade on delete cascade,
-    rule_set_id       integer      not null references rule_sets (id) on update cascade on delete cascade,
+
     creator_username  varchar(100) not null references users (username) on update cascade on delete cascade,
 
     primary key (id, group_id)
@@ -107,7 +114,7 @@ create table if not exists games (
 );
 
 create or replace view groups_with_player_count as
-select g.id, g.name, g.default_rule_set_id, count(player_id) as player_count
+select g.id, g.name, g.rule_set_id, count(player_id) as player_count
 from groups g
          left join player_in_groups pig on g.id = pig.group_id
 group by g.id;

@@ -48,7 +48,8 @@ export class CreatePlayerComponent {
 
     const player: CreatablePlayer = {
       abbreviation: this.f.abbreviation.value,
-      name: this.firstNameValue + ' ' + this.lastNameValue
+      name: this.firstNameValue + ' ' + this.lastNameValue,
+      pictureName: undefined
     };
 
     this.apiService.createPlayer(player)

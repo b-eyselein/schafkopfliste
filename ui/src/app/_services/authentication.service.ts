@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Credentials, UserWithToken} from '../_interfaces/interfaces';
@@ -38,6 +37,8 @@ export class AuthenticationService {
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+
+    // noinspection JSIgnoredPromiseFromCall
     this.router.navigate(['/loginForm']);
   }
 }

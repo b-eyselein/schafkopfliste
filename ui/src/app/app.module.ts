@@ -12,6 +12,7 @@ import {RuleSetComponent} from './rule-set/rule-set.component';
 import {NewGameComponent} from './_forms/new-game/new-game.component';
 import {PlayerAbbreviationsComponent} from './_components/player-abbreviations/player-abbreviations.component';
 import { CircleBufferComponent } from './_components/circle-buffer/circle-buffer.component';
+import { RegisterFormComponent } from './_forms/register-form/register-form.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { CircleBufferComponent } from './_components/circle-buffer/circle-buffer
     NewGameComponent,
     PlayerAbbreviationsComponent,
     CircleBufferComponent,
+    RegisterFormComponent,
   ],
   imports: [
     BrowserModule,

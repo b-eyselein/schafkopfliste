@@ -1,5 +1,13 @@
 
 
+export interface AccumulatedResult {
+  balance: number;
+  gameCount: number;
+  playedGames: number;
+  putCount: number;
+  winCount: number;
+}
+
 export type BavarianSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
 export interface CompleteSession {
@@ -22,13 +30,14 @@ export interface CompleteSession {
 export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
 
 export interface CreatableGroup {
-  defaultRuleSetId: number | undefined;
   name: string;
+  ruleSetId: number;
 }
 
 export interface CreatablePlayer {
   abbreviation: string;
   name: string;
+  pictureName: string | undefined;
 }
 
 export interface CreatableSession {
@@ -37,7 +46,6 @@ export interface CreatableSession {
   dateYear: number;
   firstPlayerId: number;
   fourthPlayerId: number;
-  ruleSetId: number;
   secondPlayerId: number;
   thirdPlayerId: number;
   timeHours: number;
@@ -68,16 +76,16 @@ export interface Game {
 export type GameType = 'Ruf' | 'Wenz' | 'Farbsolo' | 'Geier' | 'Hochzeit' | 'Bettel' | 'Ramsch' | 'Farbwenz' | 'Farbgeier';
 
 export interface Group {
-  defaultRuleSetId: number | undefined;
   id: number;
   name: string;
+  ruleSetId: number;
 }
 
 export interface GroupWithPlayerCount {
-  defaultRuleSetId: number | undefined;
   id: number;
   name: string;
   playerCount: number;
+  ruleSetId: number;
 }
 
 export interface GroupWithPlayerMembership {
@@ -86,10 +94,10 @@ export interface GroupWithPlayerMembership {
 }
 
 export interface GroupWithPlayersAndRuleSet {
-  defaultRuleSet: RuleSet | undefined;
   id: number;
   name: string;
   players: PlayerWithGroupResult[];
+  ruleSet: RuleSet;
 }
 
 export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
@@ -98,6 +106,7 @@ export interface Player {
   abbreviation: string;
   id: number;
   name: string;
+  pictureName: string | undefined;
 }
 
 export interface PlayerAndMembership {
@@ -107,12 +116,18 @@ export interface PlayerAndMembership {
 
 export interface PlayerWithGroupResult {
   player: Player;
-  sessionResult: SessionResult;
+  sessionResult: AccumulatedResult;
 }
 
 export interface PricedGame {
   game: Game;
   price: number;
+}
+
+export interface RegisterValues {
+  password: string;
+  passwordRepeat: string;
+  username: string;
 }
 
 export interface RuleSet {
@@ -134,6 +149,12 @@ export interface RuleSet {
 
 export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
+export interface SerializableUser {
+  isAdmin: boolean;
+  playerId: number | undefined;
+  username: string;
+}
+
 export interface Session {
   creatorUsername: string;
   dateDayOfMonth: number;
@@ -144,22 +165,13 @@ export interface Session {
   groupId: number;
   hasEnded: boolean;
   id: number;
-  ruleSetId: number;
   secondPlayerId: number;
   thirdPlayerId: number;
   timeHours: number;
   timeMinutes: number;
 }
 
-export interface SessionResult {
-  balance: number;
-  gameCount: number;
-  playedGames: number;
-  putCount: number;
-  winCount: number;
-}
-
 export interface UserWithToken {
-  name: string;
   token: string;
+  user: SerializableUser;
 }

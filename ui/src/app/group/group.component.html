@@ -44,6 +44,9 @@
 
         <div class="buttons" *ngIf="currentUser">
           <a class="button is-link is-fullwidth has-text-centered" routerLink="./players">+</a>
+          <button class="button is-danger is-fullwidth has-text-centered" (click)="recalculateStatistics()"
+                  *ngIf="currentUser.user.isAdmin">Statistiken neu berechnen
+          </button>
         </div>
       </div>
 

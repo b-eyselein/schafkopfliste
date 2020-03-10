@@ -9,6 +9,7 @@ import {CreatableGroup, Group} from '../../_interfaces/interfaces';
 export class CreateGroupComponent {
 
   groupName = '';
+  ruleSetId = 1;
 
   @Output() groupCreated = new EventEmitter<Group>();
 
@@ -21,7 +22,7 @@ export class CreateGroupComponent {
       return;
     }
 
-    const group: CreatableGroup = {name: this.groupName, defaultRuleSetId: undefined};
+    const group: CreatableGroup = {name: this.groupName, ruleSetId: this.ruleSetId};
 
     this.apiService.createGroup(group)
       .subscribe((result) => {

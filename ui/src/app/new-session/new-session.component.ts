@@ -46,7 +46,6 @@ export class NewSessionComponent implements OnInit {
             dateDayOfMonth: today.getDate(),
             timeHours: today.getHours(),
             timeMinutes: today.getMinutes(),
-            ruleSetId: this.group.defaultRuleSet?.id,
             firstPlayerId: undefined,
             secondPlayerId: undefined,
             thirdPlayerId: undefined,
@@ -92,7 +91,7 @@ export class NewSessionComponent implements OnInit {
   createSession(): void {
     this.submitted = true;
 
-    if (!this.creatableSession.ruleSetId ||
+    if (
       !this.creatableSession.firstPlayerId ||
       !this.creatableSession.secondPlayerId ||
       !this.creatableSession.thirdPlayerId ||

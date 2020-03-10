@@ -8,14 +8,7 @@ use super::rule_set::{CountLaufende, RuleSet};
 use super::session::Session;
 
 #[derive(
-    Debug,
-    Serialize,
-    Deserialize,
-    Identifiable,
-    Queryable,
-    Insertable,
-    Associations,
-    HasTypescriptType,
+    Serialize, Deserialize, Identifiable, Queryable, Insertable, Associations, HasTypescriptType,
 )]
 #[belongs_to(Session)]
 #[serde(rename_all = "camelCase")]
@@ -36,7 +29,6 @@ pub struct Game {
     pub players_having_put_ids: Vec<i32>,
     pub kontra: Option<KontraType>,
     pub players_having_won_ids: Vec<i32>,
-    //    price: i32,
 }
 
 impl Game {
@@ -92,7 +84,7 @@ impl Game {
     }
 }
 
-#[derive(Debug, Serialize, HasTypescriptType)]
+#[derive(Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct PricedGame {
     game: Game,

@@ -11,10 +11,12 @@ import {RuleSetListComponent} from './rule-set-list/rule-set-list.component';
 import {NewSessionComponent} from './new-session/new-session.component';
 import {PlayersInGroupComponent} from './players-in-group/players-in-group.component';
 import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
+import {RegisterFormComponent} from './_forms/register-form/register-form.component';
 
 
 export const routingComponents = [
   IndexComponent,
+  RegisterFormComponent,
   LoginFormComponent,
   RuleSetListComponent,
   PlayerListComponent,
@@ -23,13 +25,15 @@ export const routingComponents = [
   PlayersInGroupComponent,
   NewSessionComponent,
   SessionComponent,
-
   UploadSpreadsheetComponent
 ];
 
 const routes: Routes = [
   {path: '', component: IndexComponent},
+
+  {path: 'registerForm', component: RegisterFormComponent},
   {path: 'loginForm', component: LoginFormComponent},
+
   {path: 'ruleSets', component: RuleSetListComponent},
   {path: 'players', component: PlayerListComponent, canActivate: [AuthGuard]},
   {path: 'groups', component: GroupListComponent},

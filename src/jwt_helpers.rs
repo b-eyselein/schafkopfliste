@@ -7,7 +7,7 @@ use rocket::{Outcome, Request};
 
 use lazy_static::lazy_static;
 
-use crate::models::user::{Claims, UserWithToken};
+use crate::models::user::{Claims, SerializableUser, UserWithToken};
 
 const SECRET: &str = "my_secret_key";
 const HEADER_NAME: &str = "Authorization";
@@ -25,14 +25,14 @@ pub struct MyJwt {
     pub claims: Claims,
 }
 
-pub fn generate_token(username: String) -> Result<UserWithToken, JwtError> {
+pub fn generate_token(user: SerializableUser) -> Result<UserWithToken, JwtError> {
     let token = encode(
         &Header::default(),
-        &Claims::new(username.clone()),
+        &Claims::new(user.clone()),
         SECRET.as_ref(),
     )?;
 
-    Ok(UserWithToken::new(username, token))
+    Ok(UserWithToken::new(user, token))
 }
 
 #[derive(Debug)]
