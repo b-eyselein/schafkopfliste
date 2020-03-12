@@ -1,4 +1,4 @@
-use super::group::{CreatableGroup, Group};
+use crate::models::group::{CreatableGroup, Group};
 use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 
 pub fn select_groups(conn: &PgConnection) -> Result<Vec<Group>, DbError> {

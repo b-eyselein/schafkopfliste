@@ -1,10 +1,5 @@
 -- This file should undo anything in `up.sql`
 
--- drop table if exists allowed_game_type_in_sessions;
-
-drop view if exists groups_with_player_count;
-
-
 drop table if exists games;
 
 drop table if exists session_results;

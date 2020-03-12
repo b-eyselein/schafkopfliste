@@ -4,12 +4,13 @@ use rocket::http::Status;
 use rocket::request::FromRequest;
 use rocket::request::Outcome as RequestOutcome;
 use rocket::{Outcome, Request};
+use serde::{Deserialize, Serialize};
 
 use lazy_static::lazy_static;
 
-use crate::models::user::{Claims, SerializableUser, UserWithToken};
+use crate::models::user::{SerializableUser, UserWithToken};
 
-const SECRET: &str = "my_secret_key";
+const SECRET: &str = "klasidzf0a89s7dtzfv087sdtfv08d8s7v";
 const HEADER_NAME: &str = "Authorization";
 
 lazy_static! {
@@ -18,6 +19,17 @@ lazy_static! {
         validate_exp: false,
         ..Default::default()
     };
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Claims {
+    pub user: SerializableUser,
+}
+
+impl Claims {
+    pub fn new(user: SerializableUser) -> Claims {
+        Claims { user }
+    }
 }
 
 pub struct MyJwt {

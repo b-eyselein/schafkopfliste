@@ -1,4 +1,3 @@
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -31,33 +30,6 @@ impl Player {
             picture_name: None,
         }
     }
-}
-
-pub fn select_players(conn: &PgConnection) -> Result<Vec<Player>, DbError> {
-    players::table.load(conn)
-}
-
-pub fn select_player_by_id(conn: &PgConnection, id: &i32) -> Result<Player, DbError> {
-    players::table.filter(players::id.eq(id)).first(conn)
-}
-
-pub fn insert_player(
-    conn: &PgConnection,
-    creatable_player: CreatablePlayer,
-) -> Result<Player, DbError> {
-    use crate::schema::players::dsl::*;
-
-    diesel::insert_into(players)
-        .values(&creatable_player)
-        .returning(id)
-        .get_result(conn)
-        .map(|new_player_id| {
-            Player::new(
-                new_player_id,
-                creatable_player.abbreviation,
-                creatable_player.name,
-            )
-        })
 }
 
 pub fn exported_ts_types() -> Vec<TsType> {

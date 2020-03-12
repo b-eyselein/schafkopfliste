@@ -128,10 +128,3 @@ create table if not exists games (
     primary key (id, session_id, group_id),
     foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
 );
-
-
-create or replace view groups_with_player_count as
-select g.id, g.name, g.rule_set_id, count(player_id) as player_count
-from groups g
-         left join player_in_groups pig on g.id = pig.group_id
-group by g.id;

@@ -7,7 +7,7 @@ use crate::jwt_helpers::MyJwt;
 use crate::models::complete_session::{
     analyze_games_for_player, select_complete_session_by_id, CompleteSession,
 };
-use crate::models::player_in_group_dao::update_player_group_result;
+
 use crate::models::session::{CreatableSession, Session};
 use crate::DbConn;
 
@@ -15,7 +15,7 @@ use super::super::routes_helpers::{on_error, MyJsonResponse};
 
 #[get("/<group_id>/sessions")]
 fn route_get_sessions(conn: DbConn, group_id: i32) -> MyJsonResponse<Vec<Session>> {
-    use crate::models::session_dao::select_sessions_for_group;
+    use crate::daos::session_dao::select_sessions_for_group;
 
     select_sessions_for_group(&conn.0, &group_id)
         .map_err(|err| on_error("Could not read sessions from db", err))
@@ -24,7 +24,7 @@ fn route_get_sessions(conn: DbConn, group_id: i32) -> MyJsonResponse<Vec<Session
 
 #[get("/<group_id>/sessions/<session_id>")]
 fn route_get_session(conn: DbConn, group_id: i32, session_id: i32) -> MyJsonResponse<Session> {
-    use crate::models::session_dao::select_session_by_id;
+    use crate::daos::session_dao::select_session_by_id;
 
     select_session_by_id(&conn.0, &group_id, &session_id)
         .map_err(|err| on_error("Could not read session from db", err))
@@ -55,7 +55,7 @@ fn route_create_session(
     group_id: i32,
     creatable_session_json: Result<Json<CreatableSession>, JsonError>,
 ) -> MyJsonResponse<Session> {
-    use crate::models::session_dao::insert_session;
+    use crate::daos::session_dao::insert_session;
 
     creatable_session_json
         .map_err(|err| on_error("Error while reading json", err))
@@ -78,7 +78,8 @@ fn route_end_session(
     group_id: i32,
     session_id: i32,
 ) -> MyJsonResponse<bool> {
-    use crate::models::session_dao::update_end_session;
+    use crate::daos::player_in_group_dao::update_player_group_result;
+    use crate::daos::session_dao::update_end_session;
     use diesel::Connection;
 
     let conn = db_conn.0;

@@ -15,6 +15,7 @@ use rocket_cors::{Cors, CorsOptions};
 
 use ts_type_writer::write_all_ts_types;
 
+mod daos;
 mod jwt_helpers;
 mod models;
 mod my_routes;

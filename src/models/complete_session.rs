@@ -2,13 +2,15 @@ use diesel::{self, result::Error as DbError, PgConnection};
 use serde::Serialize;
 use serde_tsi::prelude::*;
 
+use crate::daos::group_dao::select_group_by_id;
+use crate::daos::player_dao::select_player_by_id;
+use crate::models::game::select_games_for_session;
+
 use super::accumulated_result::AccumulatedResult;
-use super::game::{select_games_for_session, PricedGame};
+use super::game::PricedGame;
 use super::group::Group;
-use super::group_dao::select_group_by_id;
-use super::player::{select_player_by_id, Player};
+use super::player::Player;
 use super::rule_set::{select_rule_set_by_id, RuleSet};
-use super::session_dao::select_session_by_id;
 use super::session_result::SessionResult;
 
 #[derive(Serialize, HasTypescriptType)]
@@ -98,6 +100,8 @@ pub fn select_complete_session_by_id(
     the_group_id: &i32,
     the_session_id: &i32,
 ) -> Result<CompleteSession, DbError> {
+    use crate::daos::session_dao::select_session_by_id;
+
     let session = select_session_by_id(conn, the_group_id, the_session_id)?;
 
     let group = select_group_by_id(conn, &session.group_id)?;

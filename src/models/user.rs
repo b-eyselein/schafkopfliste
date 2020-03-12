@@ -1,4 +1,3 @@
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -75,30 +74,6 @@ impl UserWithToken {
     pub fn new(user: SerializableUser, token: String) -> UserWithToken {
         UserWithToken { user, token }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Claims {
-    pub user: SerializableUser,
-}
-
-impl Claims {
-    pub fn new(user: SerializableUser) -> Claims {
-        Claims { user }
-    }
-}
-
-pub fn user_by_username(conn: &PgConnection, name: &String) -> Result<User, DbError> {
-    use crate::schema::users::dsl::*;
-
-    users.filter(username.eq(&name)).first::<User>(conn)
-}
-
-pub fn insert_user(conn: &PgConnection, user: User) -> Result<User, DbError> {
-    diesel::insert_into(users::table)
-        .values(&user)
-        .returning(users::all_columns)
-        .get_result::<User>(conn)
 }
 
 pub fn exported_ts_types() -> Vec<TsType> {

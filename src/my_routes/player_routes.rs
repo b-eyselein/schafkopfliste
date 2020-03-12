@@ -8,7 +8,7 @@ use crate::DbConn;
 
 #[get("/")]
 fn route_get_players(_my_jwt: MyJwt, conn: DbConn) -> MyJsonResponse<Vec<Player>> {
-    use crate::models::player::select_players;
+    use crate::daos::player_dao::select_players;
 
     select_players(&conn.0)
         .map_err(|err| on_error("could not read players from db", err))
@@ -21,7 +21,7 @@ fn route_create_player(
     conn: DbConn,
     player_json_try: Result<Json<CreatablePlayer>, JsonError>,
 ) -> MyJsonResponse<Player> {
-    use crate::models::player::insert_player;
+    use crate::daos::player_dao::insert_player;
 
     let player_json =
         player_json_try.map_err(|err| on_error("Could not read data from json", err))?;

@@ -1,12 +1,15 @@
+use diesel::sql_types::{BigInt, Integer, Varchar};
 use serde::Serialize;
 use serde_tsi::prelude::*;
+
+use crate::schema::player_in_groups;
 
 use super::accumulated_result::AccumulatedResult;
 use super::group::Group;
 use super::player::Player;
 use super::rule_set::RuleSet;
-use crate::schema::player_in_groups;
 
+/*
 table! {
     groups_with_player_count (id) {
         id -> Int4,
@@ -15,6 +18,7 @@ table! {
         player_count -> BigInt,
     }
 }
+*/
 
 #[derive(Queryable, Insertable)]
 pub struct PlayerInGroup {
@@ -43,12 +47,16 @@ impl PlayerInGroup {
     }
 }
 
-#[derive(Serialize, Queryable, HasTypescriptType)]
+#[derive(Serialize, QueryableByName, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayerCount {
+    #[sql_type = "Integer"]
     id: i32,
+    #[sql_type = "Varchar"]
     name: String,
+    #[sql_type = "Integer"]
     rule_set_id: i32,
+    #[sql_type = "BigInt"]
     player_count: i64,
 }
 

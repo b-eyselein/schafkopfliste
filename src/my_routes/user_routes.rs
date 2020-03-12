@@ -3,13 +3,12 @@ use rocket::response::status::BadRequest;
 use rocket::{put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
-use super::routes_helpers::{on_error, MyJsonResponse};
+use crate::daos::user_dao::{insert_user, user_by_username};
 use crate::jwt_helpers::generate_token;
-use crate::models::user::{
-    insert_user, user_by_username, Credentials, RegisterValues, SerializableUser, User,
-    UserWithToken,
-};
+use crate::models::user::{Credentials, RegisterValues, SerializableUser, User, UserWithToken};
 use crate::DbConn;
+
+use super::routes_helpers::{on_error, MyJsonResponse};
 
 #[put(
     "/authentication",

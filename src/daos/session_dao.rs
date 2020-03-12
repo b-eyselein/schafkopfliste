@@ -1,6 +1,6 @@
 use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 
-use super::session::{CreatableSession, Session};
+use crate::models::session::{CreatableSession, Session};
 
 pub fn select_sessions_for_group(
     conn: &PgConnection,

@@ -4,7 +4,6 @@ use rocket_contrib::json::{Json, JsonError};
 use crate::jwt_helpers::MyJwt;
 use crate::models::game::{upsert_game, Game, PricedGame};
 use crate::models::rule_set::select_rule_set_by_id;
-use crate::models::session_dao::select_session_has_ended;
 use crate::DbConn;
 
 use super::super::routes_helpers::{on_error, MyJsonResponse};
@@ -21,7 +20,8 @@ fn route_create_game(
     session_id: i32,
     game_json_try: Result<Json<Game>, JsonError>,
 ) -> MyJsonResponse<PricedGame> {
-    use crate::models::group_dao::select_group_by_id;
+    use crate::daos::group_dao::select_group_by_id;
+    use crate::daos::session_dao::select_session_has_ended;
 
     let game_json = game_json_try.map_err(|err| on_error("Could not read game from json!", err))?;
 

@@ -3,7 +3,6 @@ use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
 use crate::models::group::{CreatableGroup, Group};
-use crate::models::group_dao::{select_group_by_id, select_groups};
 use crate::models::player::Player;
 use crate::models::player_in_group::{
     GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
@@ -14,6 +13,8 @@ use super::super::routes_helpers::{on_error, MyJsonResponse};
 
 #[get("/")]
 fn route_groups(conn: DbConn) -> MyJsonResponse<Vec<Group>> {
+    use crate::daos::group_dao::select_groups;
+
     select_groups(&conn.0)
         .map_err(|err| on_error("Could not select groups from db", err))
         .map(Json)
@@ -25,7 +26,7 @@ fn route_create_group(
     conn: DbConn,
     group_name_json: Json<CreatableGroup>,
 ) -> MyJsonResponse<Group> {
-    use crate::models::group_dao::insert_group;
+    use crate::daos::group_dao::insert_group;
 
     insert_group(&conn.0, group_name_json.0)
         .map_err(|err| on_error("Could not create group", err))
@@ -34,7 +35,7 @@ fn route_create_group(
 
 #[get("/groupsWithPlayerCount")]
 fn route_groups_with_player_count(conn: DbConn) -> MyJsonResponse<Vec<GroupWithPlayerCount>> {
-    use crate::models::player_in_group_dao::select_groups_with_player_count;
+    use crate::daos::player_in_group_dao::select_groups_with_player_count;
 
     select_groups_with_player_count(&conn.0)
         .map_err(|err| on_error("Could not read from db", err))
@@ -46,7 +47,7 @@ fn route_group_with_players_by_id(
     conn: DbConn,
     group_id: i32,
 ) -> MyJsonResponse<GroupWithPlayersAndRuleSet> {
-    use crate::models::player_in_group_dao::select_group_with_players_and_rule_set_by_id;
+    use crate::daos::player_in_group_dao::select_group_with_players_and_rule_set_by_id;
 
     select_group_with_players_and_rule_set_by_id(&conn.0, &group_id)
         .map_err(|err| on_error("", err))
@@ -55,6 +56,8 @@ fn route_group_with_players_by_id(
 
 #[get("/<group_id>")]
 fn route_group_by_id(_my_jwt: MyJwt, conn: DbConn, group_id: i32) -> MyJsonResponse<Group> {
+    use crate::daos::group_dao::select_group_by_id;
+
     select_group_by_id(&conn.0, &group_id)
         .map_err(|err| on_error("Could not find such a group", err))
         .map(Json)
@@ -71,7 +74,7 @@ fn route_add_player_to_group(
     group_id: i32,
     data_try: Result<Json<(i32, bool)>, JsonError>,
 ) -> MyJsonResponse<bool> {
-    use crate::models::player_in_group_dao::toggle_group_membership;
+    use crate::daos::player_in_group_dao::toggle_group_membership;
 
     let data = data_try.map_err(|err| on_error("Could not read data from json", err))?;
 
@@ -86,7 +89,7 @@ fn route_players_in_group(
     conn: DbConn,
     group_id: i32,
 ) -> MyJsonResponse<Vec<Player>> {
-    use crate::models::player_in_group_dao::select_players_in_group;
+    use crate::daos::player_in_group_dao::select_players_in_group;
 
     select_players_in_group(&conn.0, &group_id)
         .map_err(|err| on_error("could not read from db", err))
@@ -99,7 +102,7 @@ fn route_get_group_with_players_and_membership(
     conn: DbConn,
     group_id: i32,
 ) -> MyJsonResponse<GroupWithPlayerMembership> {
-    use crate::models::player_in_group_dao::select_players_and_group_membership;
+    use crate::daos::player_in_group_dao::select_players_and_group_membership;
 
     select_players_and_group_membership(&conn.0, &group_id)
         .map_err(|err| on_error("could not read from db", err))

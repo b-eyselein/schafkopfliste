@@ -1,20 +1,22 @@
-use diesel::{self, prelude::*, result::QueryResult, PgConnection};
+use diesel::{prelude::*, sql_query, PgConnection, QueryResult};
 
-use super::accumulated_result::AccumulatedResult;
-use super::group::Group;
-use super::group_dao::select_group_by_id;
-use super::player::{select_players, Player};
-use super::player_in_group::{
+use crate::models::accumulated_result::AccumulatedResult;
+use crate::models::group::Group;
+use crate::models::player::Player;
+use crate::models::player_in_group::{
     GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
     PlayerAndMembership, PlayerInGroup, PlayerWithGroupResult,
 };
 
+use super::group_dao::select_group_by_id;
+
 pub fn select_groups_with_player_count(
     conn: &PgConnection,
 ) -> QueryResult<Vec<GroupWithPlayerCount>> {
-    use crate::models::player_in_group::groups_with_player_count;
-
-    groups_with_player_count::table.load(conn)
+    sql_query(include_str!(
+        "../../complex_sql_queries/groups_with_player_count.sql"
+    ))
+    .load::<GroupWithPlayerCount>(conn)
 }
 
 pub fn select_players_in_group(
@@ -108,6 +110,7 @@ pub fn select_players_and_group_membership(
     conn: &PgConnection,
     the_group_id: &i32,
 ) -> QueryResult<GroupWithPlayerMembership> {
+    use super::player_dao::select_players;
     use crate::schema::player_in_groups::dsl::*;
 
     let group = select_group_by_id(&conn, &the_group_id)?;
