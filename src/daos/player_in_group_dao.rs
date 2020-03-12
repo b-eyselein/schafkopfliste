@@ -2,10 +2,11 @@ use diesel::{prelude::*, sql_query, PgConnection, QueryResult};
 
 use crate::models::accumulated_result::AccumulatedResult;
 use crate::models::group::Group;
+use crate::models::group_with_player_count::GroupWithPlayerCount;
 use crate::models::player::Player;
 use crate::models::player_in_group::{
-    GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
-    PlayerAndMembership, PlayerInGroup, PlayerWithGroupResult,
+    GroupWithPlayerMembership, GroupWithPlayersAndRuleSet, PlayerAndMembership, PlayerInGroup,
+    PlayerWithGroupResult,
 };
 
 use super::group_dao::select_group_by_id;
@@ -119,8 +120,7 @@ pub fn select_players_and_group_membership(
         .filter(group_id.eq(the_group_id))
         .filter(is_active.eq(true))
         .select(player_id)
-        .load(conn)
-        .unwrap_or(Vec::new());
+        .load(conn)?;
 
     let player_memberships = select_players(conn)?
         .into_iter()

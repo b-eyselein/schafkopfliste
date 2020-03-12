@@ -4,6 +4,8 @@ pub mod game;
 
 pub mod group;
 
+pub mod group_with_player_count;
+
 pub mod complete_session;
 
 pub mod player;

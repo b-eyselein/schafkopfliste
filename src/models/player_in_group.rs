@@ -1,4 +1,3 @@
-use diesel::sql_types::{BigInt, Integer, Varchar};
 use serde::Serialize;
 use serde_tsi::prelude::*;
 
@@ -8,17 +7,6 @@ use super::accumulated_result::AccumulatedResult;
 use super::group::Group;
 use super::player::Player;
 use super::rule_set::RuleSet;
-
-/*
-table! {
-    groups_with_player_count (id) {
-        id -> Int4,
-        name -> Varchar,
-        rule_set_id -> Int4,
-        player_count -> BigInt,
-    }
-}
-*/
 
 #[derive(Queryable, Insertable)]
 pub struct PlayerInGroup {
@@ -45,19 +33,6 @@ impl PlayerInGroup {
             is_active,
         }
     }
-}
-
-#[derive(Serialize, QueryableByName, HasTypescriptType)]
-#[serde(rename_all = "camelCase")]
-pub struct GroupWithPlayerCount {
-    #[sql_type = "Integer"]
-    id: i32,
-    #[sql_type = "Varchar"]
-    name: String,
-    #[sql_type = "Integer"]
-    rule_set_id: i32,
-    #[sql_type = "BigInt"]
-    player_count: i64,
 }
 
 #[derive(Serialize, HasTypescriptType)]
@@ -92,7 +67,6 @@ pub struct GroupWithPlayerMembership {
 
 pub fn exported_ts_types() -> Vec<TsType> {
     vec![
-        GroupWithPlayerCount::ts_type(),
         GroupWithPlayerMembership::ts_type(),
         GroupWithPlayersAndRuleSet::ts_type(),
     ]

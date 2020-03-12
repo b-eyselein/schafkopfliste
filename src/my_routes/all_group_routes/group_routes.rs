@@ -3,10 +3,9 @@ use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
 use crate::models::group::{CreatableGroup, Group};
+use crate::models::group_with_player_count::GroupWithPlayerCount;
 use crate::models::player::Player;
-use crate::models::player_in_group::{
-    GroupWithPlayerCount, GroupWithPlayerMembership, GroupWithPlayersAndRuleSet,
-};
+use crate::models::player_in_group::{GroupWithPlayerMembership, GroupWithPlayersAndRuleSet};
 use crate::DbConn;
 
 use super::super::routes_helpers::{on_error, MyJsonResponse};

@@ -1,3 +1,4 @@
+use crate::models;
 use serde_tsi::prelude::*;
 
 pub fn write_all_ts_types() {
@@ -6,15 +7,16 @@ pub fn write_all_ts_types() {
 
     let top_tier_types: Vec<TsType> = [
         vec![
-            crate::models::rule_set::RuleSet::ts_type(),
-            crate::models::game::PricedGame::ts_type(),
-            crate::models::complete_session::CompleteSession::ts_type(),
+            models::rule_set::RuleSet::ts_type(),
+            models::game::PricedGame::ts_type(),
+            models::group_with_player_count::GroupWithPlayerCount::ts_type(),
+            models::complete_session::CompleteSession::ts_type(),
         ],
-        crate::models::group::exported_ts_types(),
-        crate::models::player::exported_ts_types(),
-        crate::models::player_in_group::exported_ts_types(),
-        crate::models::session::exported_ts_types(),
-        crate::models::user::exported_ts_types(),
+        models::group::exported_ts_types(),
+        models::player::exported_ts_types(),
+        models::player_in_group::exported_ts_types(),
+        models::session::exported_ts_types(),
+        models::user::exported_ts_types(),
     ]
     .concat();
 
