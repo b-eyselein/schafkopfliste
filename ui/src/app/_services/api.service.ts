@@ -47,16 +47,6 @@ export class ApiService {
 
   // Groups, Sessions, Games, ...
 
-  getPlayerPicture(playerId): Observable<string | undefined> {
-    const url = `assets/player_${playerId}.png`;
-
-    return this.httpClient.get(url, {observe: 'response', responseType: 'blob'})
-      .pipe(
-        map(() => url),
-        catchError(() => of(undefined))
-      );
-  }
-
   getGroupsWithPlayerCount(): Observable<GroupWithPlayerCount[]> {
     const url = `${this.baseUrl}/groups/groupsWithPlayerCount`;
 

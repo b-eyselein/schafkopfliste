@@ -2,14 +2,16 @@ use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 
 use super::session::{CreatableSession, Session};
 
-pub fn select_sessions_for_group(conn: &PgConnection, the_group_id: &i32) -> Vec<Session> {
+pub fn select_sessions_for_group(
+    conn: &PgConnection,
+    the_group_id: &i32,
+) -> Result<Vec<Session>, DbError> {
     use crate::schema::sessions::dsl::*;
 
     sessions
         .filter(group_id.eq(the_group_id))
         .order_by(id)
         .load(conn)
-        .unwrap_or(Vec::new())
 }
 
 pub fn select_session_by_id(

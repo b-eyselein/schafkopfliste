@@ -1,17 +1,15 @@
-use std::collections::HashMap;
-
 use diesel::{self, result::Error as DbError, PgConnection};
 use serde::Serialize;
 use serde_tsi::prelude::*;
 
 use super::accumulated_result::AccumulatedResult;
-use super::game::PricedGame;
-use super::game_dao::select_games_for_session;
+use super::game::{select_games_for_session, PricedGame};
 use super::group::Group;
 use super::group_dao::select_group_by_id;
 use super::player::{select_player_by_id, Player};
 use super::rule_set::{select_rule_set_by_id, RuleSet};
 use super::session_dao::select_session_by_id;
+use super::session_result::SessionResult;
 
 #[derive(Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
@@ -35,6 +33,7 @@ pub struct CompleteSession {
     rule_set: RuleSet,
 
     played_games: Vec<PricedGame>,
+    session_results: Option<Vec<SessionResult>>,
 }
 
 impl CompleteSession {
@@ -52,7 +51,7 @@ impl CompleteSession {
     }
 }
 
-fn analyze_session_for_player(
+pub fn analyze_games_for_player(
     player_id: &i32,
     games: &Vec<PricedGame>,
 ) -> (i32, AccumulatedResult) {
@@ -94,34 +93,30 @@ fn analyze_session_for_player(
     (*player_id, session_result)
 }
 
-pub fn analyze_session(
-    players: Vec<&Player>,
-    games: &Vec<PricedGame>,
-) -> HashMap<i32, AccumulatedResult> {
-    players
-        .iter()
-        .map(|player| analyze_session_for_player(&player.id, games))
-        .collect::<HashMap<_, _>>()
-}
-
 pub fn select_complete_session_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
-    the_serial_number: &i32,
+    the_session_id: &i32,
 ) -> Result<CompleteSession, DbError> {
-    let session = select_session_by_id(conn, the_group_id, the_serial_number)?;
+    let session = select_session_by_id(conn, the_group_id, the_session_id)?;
 
     let group = select_group_by_id(conn, &session.group_id)?;
 
     let rule_set = select_rule_set_by_id(conn, &group.rule_set_id)?;
 
-    let games = select_games_for_session(conn, &session)
+    let played_games = select_games_for_session(conn, the_session_id, the_group_id)?
         .into_iter()
         .map(|game| {
             let price = &game.calculate_price(&rule_set);
             PricedGame::new(game, *price)
         })
         .collect();
+
+    let session_results = if session.has_ended {
+        Some(Vec::new())
+    } else {
+        None
+    };
 
     Ok(CompleteSession {
         id: session.id,
@@ -142,6 +137,7 @@ pub fn select_complete_session_by_id(
         third_player: select_player_by_id(conn, &session.third_player_id)?,
         fourth_player: select_player_by_id(conn, &session.fourth_player_id)?,
 
-        played_games: games,
+        played_games,
+        session_results,
     })
 }

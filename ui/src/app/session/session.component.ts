@@ -36,12 +36,15 @@ export class SessionComponent implements OnInit {
   }
 
   updateGame($event: Game) {
+    console.info($event);
     this.game = {...$event};
   }
 
   endSession(): void {
-    this.apiService.endSession(this.session.group.id, this.session.id)
-      .subscribe((ended) => this.session.hasEnded = ended);
+    if (confirm('Wollen Sie die Sitzung wirklich beenden?\nAchtung: Sie können danach keine weiteren Spiele mehr eintragen!')) {
+      this.apiService.endSession(this.session.group.id, this.session.id)
+        .subscribe((ended) => this.session.hasEnded = ended);
+    }
   }
 
   renderDate(): string {

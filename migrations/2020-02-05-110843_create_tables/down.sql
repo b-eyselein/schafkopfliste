@@ -4,7 +4,10 @@
 
 drop view if exists groups_with_player_count;
 
+
 drop table if exists games;
+
+drop table if exists session_results;
 
 drop table if exists sessions;
 
@@ -18,6 +21,8 @@ drop table if exists players;
 
 drop table if exists rule_sets;
 
+
+drop type if exists table_position;
 
 drop type if exists kontra_type;
 

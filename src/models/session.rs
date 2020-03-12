@@ -88,6 +88,13 @@ impl Session {
             creator_username,
         }
     }
+
+    pub fn player_has_partaken(&self, player_id: &i32) -> bool {
+        self.first_player_id == *player_id
+            || self.second_player_id == *player_id
+            || self.third_player_id == *player_id
+            || self.fourth_player_id == *player_id
+    }
 }
 
 pub fn exported_ts_types() -> Vec<TsType> {

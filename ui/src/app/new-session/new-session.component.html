@@ -61,24 +61,6 @@
     </div>
 
     <div class="field">
-      <label class="label">Regelsatz:</label>
-      <div class="control">
-
-        <div class="columns is-multiline">
-          <div class="column is-2" *ngFor="let rs of ruleSets">
-            <button class="button is-fullwidth" (click)="creatableSession.ruleSetId = rs.id" title="{{rs.name}}"
-                    [ngClass]="{'is-link': creatableSession.ruleSetId === rs.id}">
-              {{rs.name}}
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <hr>
-
-    <div class="field">
       <label class="label">1. Geber:</label>
       <div class="control">
 

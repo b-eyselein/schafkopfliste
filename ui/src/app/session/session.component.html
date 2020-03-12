@@ -2,13 +2,21 @@
 
   <ng-container *ngIf="session; else loadingSessionBlock">
 
-    <h1 class="title is-3 has-text-centered">Gruppe {{session.group.name}}, Sitzung {{session.id}}, am {{renderDate()}}, um {{renderTime()}}</h1>
+    <h1 class="title is-3 has-text-centered">
+      Gruppe {{session.group.name}},
+      Sitzung {{session.id}},
+      am {{renderDate()}},
+      um {{renderTime()}}
+    </h1>
 
     <div class="columns is-widescreen is-multiline">
-      <div class="column" *ngIf="currentUser && !session.hasEnded">
+      <div class="column is-two-fifths-widescreen" *ngIf="currentUser && !session.hasEnded">
         <div class="box">
-          <skl-new-game [session]="session" (gameChanged)="updateGame($event)"
-                        (endSession)="endSession()"></skl-new-game>
+          <skl-new-game
+            [session]="session"
+            (gameChanged)="updateGame($event)"
+            (endSession)="endSession()">
+          </skl-new-game>
         </div>
       </div>
 

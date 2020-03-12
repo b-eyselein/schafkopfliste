@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Bavarian_suit"]
 pub enum BavarianSuit {
     Acorns,
@@ -10,7 +10,7 @@ pub enum BavarianSuit {
     Bells,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Game_type"]
 pub enum GameType {
     Ruf,
@@ -24,14 +24,14 @@ pub enum GameType {
     Farbgeier,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Schneider_schwarz"]
 pub enum SchneiderSchwarz {
     Schneider,
     Schwarz,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Kontra_type"]
 pub enum KontraType {
     Kontra,
@@ -49,4 +49,13 @@ impl KontraType {
             KontraType::Resupra => 4,
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[DieselType = "Table_position"]
+pub enum TablePosition {
+    Dealer,
+    PreHand,
+    MiddleHand,
+    RearHand,
 }

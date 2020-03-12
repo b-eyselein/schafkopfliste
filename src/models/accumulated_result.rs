@@ -1,7 +1,7 @@
 use serde::Serialize;
 use serde_tsi::prelude::*;
 
-#[derive(Queryable, Serialize, HasTypescriptType)]
+#[derive(Debug, Queryable, Serialize, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
 pub struct AccumulatedResult {
     pub balance: i32,

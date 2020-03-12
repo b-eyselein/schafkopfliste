@@ -1,6 +1,6 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::game_enums::{Bavarian_suit, Game_type, Kontra_type, Schneider_schwarz};
+    use crate::models::game::game_enums::{Bavarian_suit, Game_type, Kontra_type, Schneider_schwarz};
 
     games (id, session_id, group_id) {
         id -> Int4,
@@ -72,6 +72,15 @@ table! {
 }
 
 table! {
+    session_results (player_id, session_id, group_id) {
+        player_id -> Int4,
+        session_id -> Int4,
+        group_id -> Int4,
+        result -> Int4,
+    }
+}
+
+table! {
     sessions (id, group_id) {
         id -> Int4,
         group_id -> Int4,
@@ -102,6 +111,7 @@ joinable!(games -> players (acting_player_id));
 joinable!(groups -> rule_sets (rule_set_id));
 joinable!(player_in_groups -> groups (group_id));
 joinable!(player_in_groups -> players (player_id));
+joinable!(session_results -> players (player_id));
 joinable!(sessions -> groups (group_id));
 joinable!(sessions -> users (creator_username));
 joinable!(users -> players (player_id));
@@ -112,6 +122,7 @@ allow_tables_to_appear_in_same_query!(
     player_in_groups,
     players,
     rule_sets,
+    session_results,
     sessions,
     users,
 );

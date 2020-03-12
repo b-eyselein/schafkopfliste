@@ -20,11 +20,6 @@ export class GamesTableComponent implements OnInit, OnChanges {
 
   sessionResults: Map<number, SessionResult>;
 
-  playerImages: Map<number, string> = new Map();
-
-  constructor(private apiService: ApiService) {
-  }
-
   ngOnInit(): void {
     this.players = [
       this.session.firstPlayer,
@@ -32,15 +27,6 @@ export class GamesTableComponent implements OnInit, OnChanges {
       this.session.thirdPlayer,
       this.session.fourthPlayer
     ];
-
-    this.players.forEach((p) => {
-      this.apiService.getPlayerPicture(p.id)
-        .subscribe((maybePictureUrl) => {
-          if (maybePictureUrl) {
-            this.playerImages.set(p.id, maybePictureUrl);
-          }
-        });
-    });
 
     this.updateSaldos();
   }

@@ -33,16 +33,12 @@ impl Player {
     }
 }
 
-pub fn select_players(conn: &PgConnection) -> Vec<Player> {
-    players::table.load(conn).unwrap_or(Vec::new())
+pub fn select_players(conn: &PgConnection) -> Result<Vec<Player>, DbError> {
+    players::table.load(conn)
 }
 
 pub fn select_player_by_id(conn: &PgConnection, id: &i32) -> Result<Player, DbError> {
     players::table.filter(players::id.eq(id)).first(conn)
-}
-
-pub fn get_players(conn: &PgConnection) -> Vec<Player> {
-    players::table.load::<Player>(conn).unwrap_or(Vec::new())
 }
 
 pub fn insert_player(

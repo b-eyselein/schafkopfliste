@@ -11,12 +11,9 @@ export interface CircleBufferSelectable<T> {
 })
 export class CircleBufferComponent<T> implements OnInit {
 
-  @Input() label: string;
   @Input() values: CircleBufferSelectable<T>[];
 
   @Output() newValue = new EventEmitter<T>();
-
-  allValues: (T | undefined)[];
 
   currentValue: T | undefined;
 
@@ -24,13 +21,12 @@ export class CircleBufferComponent<T> implements OnInit {
 
   ngOnInit(): void {
     this.currentIndex = 0;
-    this.updateValue();
+
+    this.currentValue = this.values[this.currentIndex].value;
   }
 
   private updateValue(): void {
-    console.info(this.currentIndex);
-
-    this.currentValue = this.allValues[this.currentIndex];
+    this.currentValue = this.values[this.currentIndex].value;
     this.newValue.emit(this.currentValue);
   }
 
@@ -42,7 +38,7 @@ export class CircleBufferComponent<T> implements OnInit {
   }
 
   nextValue(): void {
-    if (this.currentIndex < this.allValues.length - 1) {
+    if (this.currentIndex < this.values.length - 1) {
       this.currentIndex++;
       this.updateValue();
     }

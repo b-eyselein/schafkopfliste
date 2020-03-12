@@ -22,6 +22,7 @@ export interface CompleteSession {
   playedGames: PricedGame[];
   ruleSet: RuleSet;
   secondPlayer: Player;
+  sessionResults: SessionResult[] | undefined;
   thirdPlayer: Player;
   timeHours: number;
   timeMinutes: number;
@@ -169,6 +170,13 @@ export interface Session {
   thirdPlayerId: number;
   timeHours: number;
   timeMinutes: number;
+}
+
+export interface SessionResult {
+  groupId: number;
+  playerId: number;
+  result: number;
+  sessionId: number;
 }
 
 export interface UserWithToken {

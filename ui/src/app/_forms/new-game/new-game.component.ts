@@ -10,6 +10,7 @@ import {
 } from '../../_interfaces/game_types';
 import {CompleteSession, Game, KontraType, Player, SchneiderSchwarz} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
+import {CircleBufferSelectable} from '../../_components/circle-buffer/circle-buffer.component';
 
 @Component({
   selector: 'skl-new-game',
@@ -17,7 +18,14 @@ import {ApiService} from '../../_services/api.service';
 })
 export class NewGameComponent implements OnInit {
 
-  readonly KontraValues: KontraType[] = ['Kontra', 'Re', 'Supra', 'Resupra'];
+  readonly KontraValues: CircleBufferSelectable<KontraType>[] = [
+    {name: '--', value: undefined},
+    {name: 'Kontra', value: 'Kontra'},
+    {name: 'Re', value: 'Re'},
+    {name: 'Supra', value: 'Supra'},
+    {name: 'Resupra', value: 'Resupra'}
+  ];
+
   readonly SuitValues: Suit[] = SUITS;
 
   readonly SchneiderSchwarzValues: { abbreviation: string, value: SchneiderSchwarz }[] = [
@@ -31,6 +39,7 @@ export class NewGameComponent implements OnInit {
   @Output() endSession = new EventEmitter<void>();
 
   players: Player[];
+  bufferPlayers: CircleBufferSelectable<Player>[];
 
   game: Game;
 
@@ -54,6 +63,13 @@ export class NewGameComponent implements OnInit {
       this.session.secondPlayer,
       this.session.thirdPlayer,
       this.session.fourthPlayer
+    ];
+
+    this.bufferPlayers = [
+      {name: '--', value: undefined} as CircleBufferSelectable<Player>,
+      ...this.players.map((p) => {
+        return {name: p.name, value: p};
+      })
     ];
 
     this.allowedGameTypes = getAllowedGameTypes(this.session.ruleSet);
@@ -222,6 +238,11 @@ export class NewGameComponent implements OnInit {
         this.session.playedGames.push(g);
         this.resetData();
       });
+  }
+
+  updateKontra(kontra: KontraType | undefined): void {
+    this.game.kontra = kontra;
+    this.gameChanged.emit(this.game);
   }
 
 }

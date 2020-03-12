@@ -4,10 +4,10 @@
       <tr>
         <th></th>
         <th *ngFor="let player of players">
-          <span>{{player.name}}</span>
+          <span>{{player.abbreviation}}</span>
           &nbsp;
-          <span class="icon" *ngIf="playerImages.get(player.id)">
-            <img [src]="playerImages.get(player.id)" alt="{{player.abbreviation}}">
+          <span class="icon" *ngIf="player.pictureName">
+            <img src="assets/{{player.pictureName}}" alt="">
           </span>
         </th>
       </tr>

@@ -2,31 +2,21 @@
   <div class="column is-one-fifth has-text-centered">
     <label for="currentGameIndex" class="label">Nummer, Geber:</label>
   </div>
-  <div class="column is-two-fifths">
+  <div class="column is-one-fifths">
     <div class="field has-addons">
-      <!--
-      <p class="control">
-        <button class="button" (click)="priorGame()">-</button>
-      </p>
-      -->
       <p class="control is-expanded">
         <input type="number" class="input" id="currentGameIndex" [(ngModel)]="currentGameIndex">
       </p>
-      <!--
-      <p class="control">
-        <button class="button" (click)="nextGame()">+</button>
-      </p>
-      -->
     </div>
   </div>
-  <div class="column">
+  <div class="column is-two-fifths">
     <button class="button is-fullwidth" [ngClass]="{'is-link': game.isDoubled}"
             (click)="game.isDoubled = !game.isDoubled">
       {{game.isDoubled ? '&#10004;' : '&#10008; nicht'}} 2x ({{remainingDoubledGames}})
     </button>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{getDealer().name}}</button>
+    <button class="button is-fullwidth is-static">{{getDealer().abbreviation}}</button>
   </div>
 </div>
 
@@ -52,6 +42,15 @@
             [ngClass]="{'is-link': game.actingPlayerId === player.id}">
       {{player.abbreviation}}
     </button>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-one-fifth has-text-centered">
+    <label class="label">Spieler:</label>
+  </div>
+  <div class="column">
+    <skl-circle-buffer [values]="bufferPlayers" (newValue)="togglePlayer($event.id)"></skl-circle-buffer>
   </div>
 </div>
 
@@ -96,19 +95,16 @@
   </div>
 </div>
 
-<skl-circle-buffer label="Kontra/Re" [values]="KontraValues"></skl-circle-buffer>
 
 <div class="columns">
-  <div class="column has-text-centered">
+  <div class="column is-one-fifth has-text-centered">
     <label class="label">Kontra/Re:</label>
   </div>
-  <div class="column" *ngFor="let kv of KontraValues">
-    <button class="button is-fullwidth" (click)="toggleKontraValue(kv)"
-            [ngClass]="{'is-link': game.kontra === kv}">
-      {{kv}}
-    </button>
+  <div class="column">
+    <skl-circle-buffer [values]="KontraValues" (newValue)="updateKontra($event)"></skl-circle-buffer>
   </div>
 </div>
+
 
 <div class="columns">
   <div class="column has-text-centered">

@@ -17,12 +17,15 @@ pub enum CountLaufende {
 pub struct RuleSet {
     pub id: i32,
     pub name: String,
+
     base_price: i32,
     solo_price: i32,
+
     pub count_laufende: CountLaufende,
     pub min_laufende_incl: i32,
     pub max_laufende_incl: i32,
     pub laufende_price: i32,
+
     pub geier_allowed: bool,
     pub hochzeit_allowed: bool,
     pub bettel_allowed: bool,
