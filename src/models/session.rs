@@ -89,11 +89,17 @@ impl Session {
         }
     }
 
+    pub fn player_ids(&self) -> Vec<&i32> {
+        vec![
+            &self.first_player_id,
+            &self.second_player_id,
+            &self.third_player_id,
+            &self.fourth_player_id,
+        ]
+    }
+
     pub fn player_has_partaken(&self, player_id: &i32) -> bool {
-        self.first_player_id == *player_id
-            || self.second_player_id == *player_id
-            || self.third_player_id == *player_id
-            || self.fourth_player_id == *player_id
+        self.player_ids().contains(&player_id)
     }
 }
 

@@ -3,8 +3,8 @@ use serde_tsi::prelude::*;
 
 use crate::schema::games;
 
-use super::super::rule_set::{CountLaufende, RuleSet};
 use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
+use super::rule_set::{CountLaufende, RuleSet};
 
 #[derive(
     Clone,
@@ -37,10 +37,10 @@ pub struct Game {
 }
 
 impl Game {
-    fn base_price<'a>(&self, rule_set: &'a RuleSet) -> &'a i32 {
+    fn base_price(&self, rule_set: &RuleSet) -> i32 {
         match self.game_type {
-            GameType::Ruf => rule_set.get_base_price(),
-            _ => rule_set.get_solo_price(),
+            GameType::Ruf => rule_set.base_price,
+            _ => rule_set.solo_price,
         }
     }
 

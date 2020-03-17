@@ -2,6 +2,8 @@ pub mod accumulated_result;
 
 pub mod game;
 
+pub mod game_enums;
+
 pub mod group;
 
 pub mod group_with_player_count;

@@ -8,15 +8,19 @@ use super::group::Group;
 use super::player::Player;
 use super::rule_set::RuleSet;
 
-#[derive(Queryable, Insertable)]
+#[derive(Debug, Queryable)]
 pub struct PlayerInGroup {
     group_id: i32,
     player_id: i32,
+    /*
     balance: i32,
     game_count: i32,
     put_count: i32,
     played_games: i32,
     win_count: i32,
+    */
+    #[diesel(embed)]
+    group_result: AccumulatedResult,
     is_active: bool,
 }
 
@@ -25,12 +29,15 @@ impl PlayerInGroup {
         PlayerInGroup {
             group_id,
             player_id,
+            /*
             balance: 0,
             game_count: 0,
             put_count: 0,
             played_games: 0,
             win_count: 0,
+            */
             is_active,
+            group_result: AccumulatedResult::new(),
         }
     }
 }

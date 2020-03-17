@@ -11,21 +11,12 @@ export interface AccumulatedResult {
 export type BavarianSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
 export interface CompleteSession {
-  dateDayOfMonth: number;
-  dateMonth: number;
-  dateYear: number;
-  firstPlayer: Player;
-  fourthPlayer: Player;
   group: Group;
-  hasEnded: boolean;
-  id: number;
   playedGames: PricedGame[];
+  players: Player[];
   ruleSet: RuleSet;
-  secondPlayer: Player;
+  session: Session;
   sessionResults: SessionResult[] | undefined;
-  thirdPlayer: Player;
-  timeHours: number;
-  timeMinutes: number;
 }
 
 export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';

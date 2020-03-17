@@ -3,11 +3,9 @@ use std::collections::HashMap;
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
+use crate::daos::complete_session_dao::select_complete_session_by_id;
 use crate::jwt_helpers::MyJwt;
-use crate::models::complete_session::{
-    analyze_games_for_player, select_complete_session_by_id, CompleteSession,
-};
-
+use crate::models::complete_session::{analyze_games_for_player, CompleteSession};
 use crate::models::session::{CreatableSession, Session};
 use crate::DbConn;
 
@@ -37,8 +35,6 @@ fn route_get_session_with_players_and_rule_set(
     group_id: i32,
     session_id: i32,
 ) -> MyJsonResponse<CompleteSession> {
-    use crate::models::complete_session::select_complete_session_by_id;
-
     select_complete_session_by_id(&conn.0, &group_id, &session_id)
         .map_err(|err| on_error("Could not read session from db", err))
         .map(Json)
@@ -89,7 +85,7 @@ fn route_end_session(
             .map_err(|err| on_error("Could not read complete session from db", err))?;
 
     let session_analysis_result = complete_session
-        .players()
+        .players
         .iter()
         .map(|player| analyze_games_for_player(&player.id, complete_session.played_games()))
         .collect::<HashMap<_, _>>();

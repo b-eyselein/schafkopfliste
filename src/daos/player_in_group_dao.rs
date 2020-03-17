@@ -39,6 +39,7 @@ pub fn select_players_in_group_with_group_result(
     conn: &PgConnection,
     the_group_id: &i32,
 ) -> QueryResult<Vec<PlayerWithGroupResult>> {
+    /*
     use crate::schema::player_in_groups::dsl::*;
     use crate::schema::players::dsl::*;
 
@@ -58,13 +59,16 @@ pub fn select_players_in_group_with_group_result(
             session_result,
         })
         .collect())
+        */
+
+    todo!("implement!")
 }
 
 pub fn select_group_with_players_and_rule_set_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
 ) -> QueryResult<GroupWithPlayersAndRuleSet> {
-    use crate::models::rule_set::select_rule_set_by_id;
+    use crate::daos::rule_set_dao::select_rule_set_by_id;
 
     let group = select_group_by_id(conn, the_group_id)?;
 
@@ -82,8 +86,11 @@ pub fn toggle_group_membership(
     the_player_id: i32,
     new_state: bool,
 ) -> QueryResult<bool> {
-    use crate::schema::player_in_groups::dsl::*;
+    //    use crate::schema::player_in_groups::dsl::*;
 
+    todo!("implement...")
+
+    /*
     diesel::insert_into(player_in_groups)
         .values(PlayerInGroup::new(the_group_id, the_player_id, new_state))
         .on_conflict((player_id, group_id))
@@ -91,6 +98,7 @@ pub fn toggle_group_membership(
         .set(is_active.eq(new_state))
         .returning(is_active)
         .get_result(conn)
+        */
 }
 
 #[allow(dead_code)]

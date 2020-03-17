@@ -14,6 +14,12 @@ pub fn select_player_by_id(conn: &PgConnection, the_id: &i32) -> QueryResult<Pla
     players.filter(id.eq(the_id)).first(conn)
 }
 
+pub fn select_players_by_ids(conn: &PgConnection, ids: Vec<&i32>) -> QueryResult<Vec<Player>> {
+    use crate::schema::players::dsl::*;
+
+    players.filter(id.eq_any(ids)).load(conn)
+}
+
 pub fn insert_player(
     conn: &PgConnection,
     creatable_player: CreatablePlayer,

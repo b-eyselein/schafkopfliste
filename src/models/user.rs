@@ -1,3 +1,4 @@
+use juniper::GraphQLObject;
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -22,7 +23,7 @@ impl User {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, HasTypescriptType)]
+#[derive(Clone, Serialize, Deserialize, HasTypescriptType, GraphQLObject)]
 #[serde(rename_all = "camelCase")]
 pub struct SerializableUser {
     pub username: String,

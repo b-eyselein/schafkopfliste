@@ -1,4 +1,3 @@
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -18,8 +17,8 @@ pub struct RuleSet {
     pub id: i32,
     pub name: String,
 
-    base_price: i32,
-    solo_price: i32,
+    pub base_price: i32,
+    pub solo_price: i32,
 
     pub count_laufende: CountLaufende,
     pub min_laufende_incl: i32,
@@ -53,20 +52,4 @@ impl RuleSet {
             farb_geier_allowed: false,
         }
     }
-
-    pub fn get_base_price(&self) -> &i32 {
-        return &self.base_price;
-    }
-
-    pub fn get_solo_price(&self) -> &i32 {
-        return &self.solo_price;
-    }
-}
-
-pub fn get_rule_sets(conn: &PgConnection) -> Vec<RuleSet> {
-    rule_sets::table.load::<RuleSet>(conn).unwrap_or(Vec::new())
-}
-
-pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> Result<RuleSet, DbError> {
-    rule_sets::table.find(id).first(conn)
 }
