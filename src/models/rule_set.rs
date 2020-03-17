@@ -1,4 +1,4 @@
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
+use diesel::{self, prelude::*, PgConnection, QueryResult};
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -6,6 +6,7 @@ use crate::schema::rule_sets;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
 #[DieselType = "Count_laufende"]
+#[derive(juniper::GraphQLEnum)]
 pub enum CountLaufende {
     Always,
     OnlyLosers,
@@ -14,6 +15,7 @@ pub enum CountLaufende {
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, HasTypescriptType)]
 #[serde(rename_all = "camelCase")]
+#[derive(juniper::GraphQLObject)]
 pub struct RuleSet {
     pub id: i32,
     pub name: String,
@@ -63,10 +65,21 @@ impl RuleSet {
     }
 }
 
-pub fn get_rule_sets(conn: &PgConnection) -> Vec<RuleSet> {
-    rule_sets::table.load::<RuleSet>(conn).unwrap_or(Vec::new())
+pub fn select_rule_set_ids(conn: &PgConnection) -> QueryResult<Vec<i32>> {
+    use crate::schema::rule_sets::dsl::*;
+
+    rule_sets.select(id).load(conn)
 }
 
-pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> Result<RuleSet, DbError> {
-    rule_sets::table.find(id).first(conn)
+#[deprecated]
+pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
+    use crate::schema::rule_sets::dsl::*;
+
+    rule_sets.load(conn)
+}
+
+pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> QueryResult<RuleSet> {
+    use crate::schema::rule_sets::dsl::*;
+
+    rule_sets.find(id).first(conn)
 }

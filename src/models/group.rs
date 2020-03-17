@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
+use crate::graphql::GraphQLContext;
+use crate::models::rule_set::RuleSet;
 use crate::schema::groups;
+use juniper::FieldResult;
 
 #[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
 #[table_name = "groups"]
@@ -26,6 +29,21 @@ impl Group {
             name,
             rule_set_id,
         }
+    }
+}
+
+#[juniper::object(Context = GraphQLContext)]
+impl Group {
+    pub fn id(&self) -> &i32 {
+        &self.id
+    }
+
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
+        panic!()
     }
 }
 

@@ -8,19 +8,25 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-use rocket::{get, response::Redirect, routes};
+use juniper::RootNode;
+use juniper_rocket::{GraphQLRequest, GraphQLResponse};
+use rocket::{get, post, response::Redirect, routes, State};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
 
+use graphql::{GraphQLContext, Mutations, QueryRoot};
 use ts_type_writer::write_all_ts_types;
 
 mod daos;
+mod graphql;
 mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
 mod ts_type_writer;
+
+type Schema = RootNode<'static, QueryRoot, Mutations>;
 
 embed_migrations!();
 
@@ -41,6 +47,39 @@ fn route_index() -> Redirect {
     Redirect::to("/app/")
 }
 
+#[get("/graphiql")]
+fn route_get_graphiql() -> rocket::response::content::Html<String> {
+    juniper_rocket::graphiql_source("/graphql")
+}
+
+#[get("/graphql?<request>")]
+fn route_get_graphql_handler(
+    connection: DbConn,
+    request: GraphQLRequest,
+    schema: State<Schema>,
+) -> GraphQLResponse {
+    request.execute(
+        &schema,
+        &GraphQLContext {
+            connection: connection,
+        },
+    )
+}
+
+#[post("/graphql", data = "<request>")]
+fn route_post_graphql_handler(
+    connection: DbConn,
+    request: GraphQLRequest,
+    schema: State<Schema>,
+) -> GraphQLResponse {
+    request.execute(
+        &schema,
+        &GraphQLContext {
+            connection: connection,
+        },
+    )
+}
+
 fn main() {
     if cfg!(debug_assertions) {
         write_all_ts_types();
@@ -55,7 +94,15 @@ fn main() {
         .expect("Could not run migrations on database");
 
     rocket::ignite()
-        .mount("/", routes![route_index])
+        .mount(
+            "/",
+            routes![
+                route_index,
+                route_get_graphiql,
+                route_get_graphql_handler,
+                route_post_graphql_handler
+            ],
+        )
         .mount("/app", StaticFiles::from("static"))
         .mount("/api/users", my_routes::user_routes())
         .mount(
@@ -67,6 +114,7 @@ fn main() {
             "/api/groups",
             my_routes::all_group_routes::exported_routes(),
         )
+        .manage(Schema::new(QueryRoot {}, Mutations {}))
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();

@@ -1,19 +1,27 @@
-use crate::models::group::{CreatableGroup, Group};
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
+use diesel::{self, prelude::*, PgConnection, QueryResult};
 
-pub fn select_groups(conn: &PgConnection) -> Result<Vec<Group>, DbError> {
+use crate::models::group::{CreatableGroup, Group};
+
+pub fn select_group_ids(conn: &PgConnection) -> QueryResult<Vec<i32>> {
+    use crate::schema::groups::dsl::*;
+
+    groups.select(id).load(conn)
+}
+
+#[deprecated]
+pub fn select_groups(conn: &PgConnection) -> QueryResult<Vec<Group>> {
     use crate::schema::groups::dsl::*;
 
     groups.load(conn)
 }
 
-pub fn select_group_by_id(conn: &PgConnection, the_group_id: &i32) -> Result<Group, DbError> {
+pub fn select_group_by_id(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Group> {
     use crate::schema::groups::dsl::*;
 
     groups.find(the_group_id).first(conn)
 }
 
-pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> Result<Group, DbError> {
+pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> QueryResult<Group> {
     use crate::schema::groups::dsl::*;
 
     diesel::insert_into(groups)
