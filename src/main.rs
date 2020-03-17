@@ -58,12 +58,7 @@ fn route_get_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(
-        &schema,
-        &GraphQLContext {
-            connection: connection,
-        },
-    )
+    request.execute(&schema, &GraphQLContext { connection })
 }
 
 #[post("/graphql", data = "<request>")]
@@ -72,12 +67,9 @@ fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(
-        &schema,
-        &GraphQLContext {
-            connection: connection,
-        },
-    )
+    println!("Got query: {:?}", &request);
+
+    request.execute(&schema, &GraphQLContext { connection })
 }
 
 fn main() {

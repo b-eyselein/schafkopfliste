@@ -1,3 +1,4 @@
+use diesel::expression::dsl::count_star;
 use diesel::{prelude::*, sql_query, PgConnection, QueryResult};
 
 use crate::models::accumulated_result::AccumulatedResult;
@@ -10,6 +11,16 @@ use crate::models::player_in_group::{
 };
 
 use super::group_dao::select_group_by_id;
+
+pub fn select_player_count_for_group(conn: &PgConnection, the_group_id: i32) -> QueryResult<i32> {
+    use crate::schema::player_in_groups::dsl::*;
+
+    player_in_groups
+        .filter(group_id.eq(the_group_id))
+        .select(count_star())
+        .first(conn)
+        .map(|x: i64| x as i32)
+}
 
 pub fn select_groups_with_player_count(
     conn: &PgConnection,

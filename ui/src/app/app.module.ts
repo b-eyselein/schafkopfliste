@@ -13,6 +13,7 @@ import {NewGameComponent} from './_forms/new-game/new-game.component';
 import {PlayerAbbreviationsComponent} from './_components/player-abbreviations/player-abbreviations.component';
 import { CircleBufferComponent } from './_components/circle-buffer/circle-buffer.component';
 import { RegisterFormComponent } from './_forms/register-form/register-form.component';
+import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { RegisterFormComponent } from './_forms/register-form/register-form.comp
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    GraphQLModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}

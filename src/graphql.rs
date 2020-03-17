@@ -1,6 +1,6 @@
 use juniper::{FieldError, FieldResult};
 
-use crate::daos::group_dao::{select_group_by_id, select_group_ids};
+use crate::daos::group_dao::{select_group_by_id, select_group_ids, select_groups};
 use crate::models::group::Group;
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_set_ids, RuleSet};
 use crate::DbConn;
@@ -13,7 +13,7 @@ impl juniper::Context for GraphQLContext {}
 
 pub struct QueryRoot {}
 
-fn on_db_error(db_error: diesel::result::Error) -> FieldError {
+pub fn graphql_on_db_error(db_error: diesel::result::Error) -> FieldError {
     eprintln!("Error while querying db: {}", db_error);
     "Error while querying db".into()
 }
@@ -21,7 +21,7 @@ fn on_db_error(db_error: diesel::result::Error) -> FieldError {
 #[juniper::object(Context = GraphQLContext)]
 impl QueryRoot {
     pub fn rule_set_ids(context: &GraphQLContext) -> FieldResult<Vec<i32>> {
-        select_rule_set_ids(&context.connection.0).map_err(|err| on_db_error(err))
+        select_rule_set_ids(&context.connection.0).map_err(|err| graphql_on_db_error(err))
     }
 
     pub fn rule_set(id: i32, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
@@ -29,7 +29,11 @@ impl QueryRoot {
     }
 
     pub fn group_ids(context: &GraphQLContext) -> FieldResult<Vec<i32>> {
-        select_group_ids(&context.connection.0).map_err(|err| on_db_error(err))
+        select_group_ids(&context.connection.0).map_err(|err| graphql_on_db_error(err))
+    }
+
+    pub fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
+        select_groups(&context.connection.0).map_err(|err| graphql_on_db_error(err))
     }
 
     pub fn group(id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {

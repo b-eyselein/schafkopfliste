@@ -78,8 +78,8 @@ pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
     rule_sets.load(conn)
 }
 
-pub fn select_rule_set_by_id(conn: &PgConnection, id: &i32) -> QueryResult<RuleSet> {
+pub fn select_rule_set_by_id(conn: &PgConnection, rule_set_id: &i32) -> QueryResult<RuleSet> {
     use crate::schema::rule_sets::dsl::*;
 
-    rule_sets.find(id).first(conn)
+    rule_sets.find(rule_set_id).first(conn)
 }

@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
-use crate::graphql::GraphQLContext;
-use crate::models::rule_set::RuleSet;
+use crate::daos::player_in_group_dao::select_player_count_for_group;
+use crate::graphql::{graphql_on_db_error, GraphQLContext};
+use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::groups;
 use juniper::FieldResult;
 
@@ -42,8 +43,13 @@ impl Group {
         &self.name
     }
 
-    pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
-        panic!()
+    pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
+        FieldResult::Ok(select_rule_set_by_id(&context.connection.0, &self.rule_set_id).ok())
+    }
+
+    pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
+        select_player_count_for_group(&context.connection.0, self.id)
+            .map_err(|err| graphql_on_db_error(err))
     }
 }
 
