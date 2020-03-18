@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
-import {CreatableSession, GroupWithPlayersAndRuleSet, Player, RuleSet, Session} from '../_interfaces/interfaces';
+import {CreatableSession, GroupWithPlayersAndRuleSet, Player, Session} from '../_interfaces/interfaces';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
@@ -12,7 +12,6 @@ export class NewSessionComponent implements OnInit {
 
   submitted = false;
 
-  ruleSets: RuleSet[];
 
   playersForPreHand: Player[] = [];
   playersForMiddleHand: Player[] = [];
@@ -26,9 +25,6 @@ export class NewSessionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.getRuleSets()
-      .subscribe((rss) => this.ruleSets = rss);
-
     this.route.paramMap.subscribe((paramMap) => {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 

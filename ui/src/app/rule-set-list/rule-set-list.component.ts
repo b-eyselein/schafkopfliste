@@ -1,18 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../_services/api.service';
 import {RuleSet} from '../_interfaces/interfaces';
+import {RuleSetListGqlService} from './rule-set-list-gql.service';
 
 @Component({templateUrl: './rule-set-list.component.html'})
 export class RuleSetListComponent implements OnInit {
 
   ruleSets: RuleSet[];
 
-  constructor(private apiService: ApiService) {
+  constructor(private ruleSetListGqlService: RuleSetListGqlService) {
   }
 
   ngOnInit() {
-    this.apiService.getRuleSets()
-      .subscribe((ruleSets) => this.ruleSets = ruleSets);
+    this.ruleSetListGqlService
+      .watch()
+      .valueChanges
+      .subscribe(({data}) => this.ruleSets = data.ruleSets);
   }
 
 }

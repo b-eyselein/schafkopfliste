@@ -7,18 +7,16 @@ import {
   CreatableSession,
   Game,
   Group,
-  GroupWithPlayerCount,
   GroupWithPlayerMembership,
   GroupWithPlayersAndRuleSet,
   Player,
   PricedGame,
   RegisterValues,
-  RuleSet,
   SerializableUser,
   Session
 } from '../_interfaces/interfaces';
 import {Observable, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -47,12 +45,6 @@ export class ApiService {
 
   // Groups, Sessions, Games, ...
 
-  getGroupsWithPlayerCount(): Observable<GroupWithPlayerCount[]> {
-    const url = `${this.baseUrl}/groups/groupsWithPlayerCount`;
-
-    return this.httpClient.get<GroupWithPlayerCount[]>(url);
-  }
-
   getGroupWithPlayersAndRuleSet(groupId: number): Observable<GroupWithPlayersAndRuleSet | undefined> {
     const url = `${this.baseUrl}/groups/${groupId}/groupWithPlayersAndRuleSet`;
 
@@ -63,12 +55,6 @@ export class ApiService {
     const url = `${this.baseUrl}/groups/${groupId}/playersAndMembership`;
 
     return this.httpClient.get<GroupWithPlayerMembership>(url);
-  }
-
-  getRuleSets(): Observable<RuleSet[]> {
-    const url = `${this.baseUrl}/ruleSets`;
-
-    return this.httpClient.get<RuleSet[]>(url);
   }
 
   getPlayers(): Observable<Player[]> {

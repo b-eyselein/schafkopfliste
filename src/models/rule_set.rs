@@ -20,8 +20,8 @@ pub struct RuleSet {
     pub id: i32,
     pub name: String,
 
-    base_price: i32,
-    solo_price: i32,
+    pub base_price: i32,
+    pub solo_price: i32,
 
     pub count_laufende: CountLaufende,
     pub min_laufende_incl: i32,
