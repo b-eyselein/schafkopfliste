@@ -1,8 +1,10 @@
 use juniper::{FieldError, FieldResult};
 
 use crate::daos::group_dao::{select_group_by_id, select_groups};
+use crate::daos::session_dao::select_session_by_id;
 use crate::models::group::Group;
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
+use crate::models::session::Session;
 use crate::DbConn;
 
 pub struct GraphQLContext {
@@ -34,6 +36,14 @@ impl QueryRoot {
 
     pub fn group(id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {
         FieldResult::Ok(select_group_by_id(&context.connection.0, &id).ok())
+    }
+
+    pub fn session(
+        id: i32,
+        group_id: i32,
+        context: &GraphQLContext,
+    ) -> FieldResult<Option<Session>> {
+        FieldResult::Ok(select_session_by_id(&context.connection.0, &group_id, &id).ok())
     }
 }
 

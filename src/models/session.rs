@@ -1,6 +1,9 @@
+use juniper::FieldResult;
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
+use crate::graphql::{graphql_on_db_error, GraphQLContext};
+use crate::models::game::{select_games_for_session, Game};
 use crate::schema::sessions;
 
 use super::group::Group;
@@ -94,6 +97,25 @@ impl Session {
             || self.second_player_id == *player_id
             || self.third_player_id == *player_id
             || self.fourth_player_id == *player_id
+    }
+}
+
+#[juniper::object(context = GraphQLContext)]
+impl Session {
+    pub fn id(&self) -> &i32 {
+        &self.id
+    }
+
+    pub fn date(&self) -> String {
+        format!(
+            "{}.{}.{}",
+            self.date_day_of_month, self.date_month, self.date_year
+        )
+    }
+
+    pub fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
+        select_games_for_session(&context.connection.0, &self.id, &self.group_id)
+            .map_err(graphql_on_db_error)
     }
 }
 

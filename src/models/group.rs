@@ -1,11 +1,14 @@
+use juniper::FieldResult;
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
-use crate::daos::player_in_group_dao::select_player_count_for_group;
+use crate::daos::player_in_group_dao::{select_player_count_for_group, select_players_in_group};
+use crate::daos::session_dao::select_sessions_for_group;
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
+use crate::models::player::Player;
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
+use crate::models::session::Session;
 use crate::schema::groups;
-use juniper::FieldResult;
 
 #[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
 #[table_name = "groups"]
@@ -49,6 +52,16 @@ impl Group {
 
     pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
         select_player_count_for_group(&context.connection.0, self.id)
+            .map_err(|err| graphql_on_db_error(err))
+    }
+
+    pub fn members(&self, context: &GraphQLContext) -> FieldResult<Vec<Player>> {
+        select_players_in_group(&context.connection.0, &self.id)
+            .map_err(|err| graphql_on_db_error(err))
+    }
+
+    pub fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
+        select_sessions_for_group(&context.connection.0, &self.id)
             .map_err(|err| graphql_on_db_error(err))
     }
 }

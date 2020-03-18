@@ -3,6 +3,7 @@ import {ApiService} from '../_services/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, Session, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
+import {GroupGqlService} from './group-gql.service';
 
 @Component({templateUrl: './group.component.html'})
 export class GroupComponent implements OnInit {
@@ -15,7 +16,9 @@ export class GroupComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
-    private apiService: ApiService) {
+    private apiService: ApiService,
+    private groupGqlService: GroupGqlService
+  ) {
   }
 
   getPlayersOrderedByBalance(): PlayerWithGroupResult[] {
@@ -29,6 +32,11 @@ export class GroupComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap) => {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 
+      this.groupGqlService
+        .watch({id: groupId})
+        .valueChanges
+        .subscribe(({data}) => console.info(JSON.stringify(data, null, 2)));
+
       this.apiService.getGroupWithPlayersAndRuleSet(groupId)
         .subscribe((groupWithPlayers) => this.group = groupWithPlayers);
 
@@ -40,7 +48,7 @@ export class GroupComponent implements OnInit {
   recalculateStatistics() {
     this.apiService.getRecalculatedStatistics(this.group.id)
       .subscribe((result) => {
-        console.info(JSON.stringify(result, null,2));
+        console.info(JSON.stringify(result, null, 2));
       });
   }
 }

@@ -32,6 +32,25 @@ impl Player {
     }
 }
 
+#[juniper::object]
+impl Player {
+    pub fn id(&self) -> &i32 {
+        &self.id
+    }
+
+    pub fn abbreviation(&self) -> &String {
+        &self.abbreviation
+    }
+
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    pub fn picture_name(&self) -> &Option<String> {
+        &self.picture_name
+    }
+}
+
 pub fn exported_ts_types() -> Vec<TsType> {
     vec![CreatablePlayer::ts_type(), Player::ts_type()]
 }

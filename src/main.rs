@@ -70,11 +70,7 @@ fn route_post_graphql_handler(
     request.execute(&schema, &GraphQLContext { connection })
 }
 
-fn main() {
-    if cfg!(debug_assertions) {
-        write_all_ts_types();
-    }
-
+fn execute_migrations() {
     use diesel::prelude::*;
 
     let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
@@ -82,6 +78,14 @@ fn main() {
 
     embedded_migrations::run_with_output(&db_conn, &mut std::io::stdout())
         .expect("Could not run migrations on database");
+}
+
+fn main() {
+    if cfg!(debug_assertions) {
+        write_all_ts_types();
+    }
+
+    execute_migrations();
 
     rocket::ignite()
         .mount(

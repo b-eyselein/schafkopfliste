@@ -1,3 +1,4 @@
+use crate::graphql::GraphQLContext;
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -86,6 +87,13 @@ impl Game {
         let doubled_count = leger_count + contra_count;
 
         price_sum * doubled_mult * 2_i32.pow(doubled_count)
+    }
+}
+
+#[juniper::object(context = GraphQLContext)]
+impl Game {
+    pub fn id(&self) -> &i32 {
+        &self.id
     }
 }
 
