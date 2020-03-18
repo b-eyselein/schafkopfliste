@@ -65,13 +65,6 @@ impl RuleSet {
     }
 }
 
-pub fn select_rule_set_ids(conn: &PgConnection) -> QueryResult<Vec<i32>> {
-    use crate::schema::rule_sets::dsl::*;
-
-    rule_sets.select(id).load(conn)
-}
-
-#[deprecated]
 pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
     use crate::schema::rule_sets::dsl::*;
 

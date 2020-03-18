@@ -1,26 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Group, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {Apollo} from 'apollo-angular';
-import gql from 'graphql-tag';
+import {BasicGroup, GroupListGqlService} from './group-list-gql.service';
 
-interface BasicGroup {
-  id: number;
-  name: string;
-  playerCount: number;
-}
-
-interface QueryResult {
-  groups: BasicGroup[];
-}
-
-const groupWithPlayerCountQuery = gql`{
-  groups {
-    id
-    name
-    playerCount
-  }
-}`;
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {
@@ -30,17 +12,18 @@ export class GroupListComponent implements OnInit {
 
   constructor(
     private authenticationService: AuthenticationService,
-    private apollo: Apollo
+    private groupListGQL: GroupListGqlService,
   ) {
   }
 
   ngOnInit() {
-    this.apollo
-      .query<QueryResult>({query: groupWithPlayerCountQuery})
-      .subscribe(({data, loading}) => this.groups = data.groups);
-
     this.authenticationService.currentUser
       .subscribe((u) => this.currentUser = u);
+
+    this.groupListGQL
+      .watch()
+      .valueChanges
+      .subscribe(({data}) => this.groups = data.groups);
   }
 
   onGroupCreated(group: Group) {

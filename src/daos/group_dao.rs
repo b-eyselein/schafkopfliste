@@ -2,13 +2,6 @@ use diesel::{self, prelude::*, PgConnection, QueryResult};
 
 use crate::models::group::{CreatableGroup, Group};
 
-pub fn select_group_ids(conn: &PgConnection) -> QueryResult<Vec<i32>> {
-    use crate::schema::groups::dsl::*;
-
-    groups.select(id).load(conn)
-}
-
-#[deprecated]
 pub fn select_groups(conn: &PgConnection) -> QueryResult<Vec<Group>> {
     use crate::schema::groups::dsl::*;
 

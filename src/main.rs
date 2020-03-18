@@ -67,8 +67,6 @@ fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    println!("Got query: {:?}", &request);
-
     request.execute(&schema, &GraphQLContext { connection })
 }
 
