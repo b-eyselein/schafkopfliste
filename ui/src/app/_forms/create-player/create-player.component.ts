@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ApiService} from '../../_services/api.service';
-import {CreatablePlayer, Player} from '../../_interfaces/interfaces';
+import {Player, PlayerCreationGQL, PlayerCreationMutation} from '../../_services/apollo_services';
 
 @Component({
   selector: 'skl-create-player',
@@ -13,7 +12,7 @@ export class CreatePlayerComponent {
 
   @Output() playerCreated = new EventEmitter<Player>();
 
-  constructor(private fb: FormBuilder, private apiService: ApiService) {
+  constructor(private fb: FormBuilder,  private playerCreationGQL: PlayerCreationGQL) {
     this.playerForm = this.fb.group({
       abbreviation: ['', Validators.required],
       firstName: ['', Validators.required],
@@ -46,16 +45,15 @@ export class CreatePlayerComponent {
       return;
     }
 
-    const player: CreatablePlayer = {
-      abbreviation: this.f.abbreviation.value,
-      name: this.firstNameValue + ' ' + this.lastNameValue,
-      pictureName: undefined
-    };
+    const abbreviation = this.f.abbreviation.value;
+    const name = this.firstNameValue + ' ' + this.lastNameValue;
 
-    this.apiService.createPlayer(player)
-      .subscribe((result) => {
-        this.playerForm.reset();
-        this.playerCreated.emit(result);
+    this.playerCreationGQL
+      .mutate({name, abbreviation})
+      .subscribe(({data}: { data: PlayerCreationMutation }) => {
+        // tslint:disable-next-line:no-console
+        console.info(data);
+        this.playerCreated.emit(data.createPlayer as Player);
       });
   }
 

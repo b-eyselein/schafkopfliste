@@ -2,7 +2,7 @@
 
   <h1 class="title is-3 has-text-centered">Spieler</h1>
 
-  <ng-container *ngIf="players; else loadingPlayersBlock">
+  <ng-container *ngIf="playerListQuery; else loadingPlayersBlock">
 
     <div class="columns">
       <div class="column is-one-fifth-desktop">
@@ -12,7 +12,7 @@
       </div>
 
       <div class="column">
-        <table class="table is-fullwidth" *ngIf="players.length > 0; else noPlayersFoundBlock">
+        <table class="table is-fullwidth" *ngIf="playerListQuery.players.length > 0; else noPlayersFoundBlock">
           <thead>
           <tr>
             <th>ID</th>
@@ -21,7 +21,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let p of players">
+          <tr *ngFor="let p of playerListQuery.players">
             <td>{{p.id}}</td>
             <td>{{p.abbreviation}}</td>
             <td>{{p.name}}</td>

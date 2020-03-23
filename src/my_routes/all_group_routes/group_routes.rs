@@ -2,7 +2,7 @@ use rocket::{get, put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
 use crate::jwt_helpers::MyJwt;
-use crate::models::group::{CreatableGroup, Group};
+use crate::models::group::{Group, NewGroup};
 use crate::models::group_with_player_count::GroupWithPlayerCount;
 use crate::models::player::Player;
 use crate::models::player_in_group::{GroupWithPlayerMembership, GroupWithPlayersAndRuleSet};
@@ -23,7 +23,7 @@ fn route_groups(conn: DbConn) -> MyJsonResponse<Vec<Group>> {
 fn route_create_group(
     _my_jwt: MyJwt,
     conn: DbConn,
-    group_name_json: Json<CreatableGroup>,
+    group_name_json: Json<NewGroup>,
 ) -> MyJsonResponse<Group> {
     use crate::daos::group_dao::insert_group;
 

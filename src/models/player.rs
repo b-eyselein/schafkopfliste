@@ -3,10 +3,10 @@ use serde_tsi::prelude::*;
 
 use crate::schema::players;
 
-#[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
+#[derive(Debug, Deserialize, Insertable, HasTypescriptType, juniper::GraphQLInputObject)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "players"]
-pub struct CreatablePlayer {
+pub struct NewPlayer {
     pub abbreviation: String,
     pub name: String,
     pub picture_name: Option<String>,
@@ -52,5 +52,5 @@ impl Player {
 }
 
 pub fn exported_ts_types() -> Vec<TsType> {
-    vec![CreatablePlayer::ts_type(), Player::ts_type()]
+    vec![NewPlayer::ts_type(), Player::ts_type()]
 }

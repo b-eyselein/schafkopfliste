@@ -2,10 +2,10 @@
 
   <h1 class="title is-3 has-text-centered">Gruppen</h1>
 
-  <ng-container *ngIf="groups; else loadingGroupsBlock">
+  <ng-container *ngIf="groupListQuery; else loadingGroupsBlock">
 
-    <div class="columns is-multiline" *ngIf="groups.length > 0; else noGroupsFoundBlock">
-      <div class="column is-one-quarter-desktop is-half" *ngFor="let group of groups">
+    <div class="columns is-multiline" *ngIf="groupListQuery.groups.length > 0; else noGroupsFoundBlock">
+      <div class="column is-one-quarter-desktop is-half" *ngFor="let group of groupListQuery.groups">
         <div class="card">
           <header class="card-header">
             <p class="card-header-title">{{group.name}}</p>

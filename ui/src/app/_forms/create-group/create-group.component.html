@@ -1,15 +1,28 @@
 <h1 class="subtitle is-3 has-text-centered">Neue Gruppe anlegen</h1>
 
-<div class="field has-addons">
+<div class="field">
+  <label class="label" for="name">Name:</label>
   <div class="control">
-    <label class="button is-static" for="name">
-      Neue Gruppe mit Namen
-    </label>
-  </div>
-  <div class="control is-expanded">
     <input type="text" id="name" class="input" [(ngModel)]="groupName" placeholder="Name der Gruppe" autofocus>
   </div>
+</div>
+
+
+<div class="field">
+  <label class="label" for="ruleSetId">Regelsatz:</label>
   <div class="control">
-    <button class="button is-link" (click)="createGroup()">anlegen</button>
+    <div class="select">
+      <select *ngIf="ruleSetListQuery" id="ruleSetId" name="ruleSetId" class="input" [(ngModel)]="ruleSetId">
+        <option *ngFor="let ruleSet of ruleSetListQuery.ruleSets" [value]="ruleSet.id">
+          {{ruleSet.id}} -- {{ruleSet | json}}
+        </option>
+      </select>
+    </div>
   </div>
+</div>
+
+<br>
+
+<div class="buttons">
+  <button class="button is-link is-fullwidth" (click)="createGroup()">Gruppe anlegen</button>
 </div>

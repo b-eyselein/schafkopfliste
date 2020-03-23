@@ -1,11 +1,11 @@
 <div class="container">
   <h1 class="title is-3 has-text-centered">Regelsätze</h1>
 
-  <ng-container *ngIf="ruleSets; else loadingRuleSetsBlock">
+  <ng-container *ngIf="ruleSetListQuery; else loadingRuleSetsBlock">
 
-    <div class="columns is-multiline" *ngIf="ruleSets.length > 0; else noRuleSetsFoundBlock">
+    <div class="columns is-multiline" *ngIf="ruleSetListQuery.ruleSets.length > 0; else noRuleSetsFoundBlock">
 
-      <div class="column is-one-third-desktop" *ngFor="let ruleSet of ruleSets">
+      <div class="column is-one-third-desktop" *ngFor="let ruleSet of ruleSetListQuery.ruleSets">
         <div class="card">
           <header class="card-header">
             <p class="card-header-title">{{ruleSet.name}}</p>

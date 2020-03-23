@@ -30,17 +30,6 @@ export interface CompleteSession {
 
 export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
 
-export interface CreatableGroup {
-  name: string;
-  ruleSetId: number;
-}
-
-export interface CreatablePlayer {
-  abbreviation: string;
-  name: string;
-  pictureName: string | undefined;
-}
-
 export interface CreatableSession {
   dateDayOfMonth: number;
   dateMonth: number;
@@ -102,6 +91,17 @@ export interface GroupWithPlayersAndRuleSet {
 }
 
 export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
+
+export interface NewGroup {
+  name: string;
+  ruleSetId: number;
+}
+
+export interface NewPlayer {
+  abbreviation: string;
+  name: string;
+  pictureName: string | undefined;
+}
 
 export interface Player {
   abbreviation: string;

@@ -2,14 +2,12 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {
   CompleteSession,
-  CreatableGroup,
-  CreatablePlayer,
   CreatableSession,
   Game,
   Group,
   GroupWithPlayerMembership,
   GroupWithPlayersAndRuleSet,
-  Player,
+  NewGroup,
   PricedGame,
   RegisterValues,
   SerializableUser,
@@ -65,7 +63,7 @@ export class ApiService {
 
   // Creation
 
-  createGroup(group: CreatableGroup): Observable<Group | undefined> {
+  createGroup(group: NewGroup): Observable<Group | undefined> {
     const url = `${this.baseUrl}/groups`;
 
     return this.httpClient.put<Group>(url, group, ApiService.putHttpOptions)
@@ -73,12 +71,6 @@ export class ApiService {
         console.error('Error while creating group: ' + err.error);
         return of(undefined);
       }));
-  }
-
-  createPlayer(player: CreatablePlayer): Observable<Player> {
-    const url = `${this.baseUrl}/players`;
-
-    return this.httpClient.put<Player>(url, player, ApiService.putHttpOptions);
   }
 
   createSession(groupId: number, session: CreatableSession): Observable<Session | undefined> {

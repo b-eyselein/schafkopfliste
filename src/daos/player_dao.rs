@@ -1,6 +1,6 @@
 use diesel::{prelude::*, PgConnection, QueryResult};
 
-use crate::models::player::{CreatablePlayer, Player};
+use crate::models::player::{NewPlayer, Player};
 
 pub fn select_players(conn: &PgConnection) -> QueryResult<Vec<Player>> {
     use crate::schema::players::dsl::*;
@@ -14,10 +14,7 @@ pub fn select_player_by_id(conn: &PgConnection, the_id: &i32) -> QueryResult<Pla
     players.filter(id.eq(the_id)).first(conn)
 }
 
-pub fn insert_player(
-    conn: &PgConnection,
-    creatable_player: CreatablePlayer,
-) -> QueryResult<Player> {
+pub fn insert_player(conn: &PgConnection, creatable_player: NewPlayer) -> QueryResult<Player> {
     use crate::schema::players::dsl::*;
 
     diesel::insert_into(players)

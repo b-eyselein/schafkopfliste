@@ -1,22 +1,23 @@
 import {Component, OnInit} from '@angular/core';
-import {Player, PlayerListGqlService} from './player-list-gql.service';
+import {Player, PlayerListGQL, PlayerListQuery} from '../_services/apollo_services';
 
 @Component({templateUrl: './player-list.component.html'})
 export class PlayerListComponent implements OnInit {
 
-  players: Player[];
+  playerListQuery: PlayerListQuery;
 
-  constructor(private playerListGqlService: PlayerListGqlService) {
+  constructor(private playerListGQL: PlayerListGQL) {
   }
 
   ngOnInit() {
-    this.playerListGqlService
+    this.playerListGQL
       .watch()
       .valueChanges
-      .subscribe(({data}) => this.players = data.players);
+      .subscribe(({data}: {data: PlayerListQuery}) => this.playerListQuery = data);
   }
 
+
   onPlayerCreated(player: Player) {
-    this.players.push(player);
+    this.playerListQuery.players.push(player);
   }
 }

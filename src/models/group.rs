@@ -10,10 +10,10 @@ use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::models::session::Session;
 use crate::schema::groups;
 
-#[derive(Debug, Deserialize, Insertable, HasTypescriptType)]
+#[derive(Debug, Deserialize, Insertable, HasTypescriptType, juniper::GraphQLInputObject)]
 #[table_name = "groups"]
 #[serde(rename_all = "camelCase")]
-pub struct CreatableGroup {
+pub struct NewGroup {
     pub name: String,
     pub rule_set_id: i32,
 }
@@ -46,26 +46,27 @@ impl Group {
         &self.name
     }
 
+    pub fn rule_set_id(&self) -> &i32 {
+        &self.rule_set_id
+    }
+
     pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
         FieldResult::Ok(select_rule_set_by_id(&context.connection.0, &self.rule_set_id).ok())
     }
 
     pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        select_player_count_for_group(&context.connection.0, self.id)
-            .map_err(|err| graphql_on_db_error(err))
+        select_player_count_for_group(&context.connection.0, self.id).map_err(graphql_on_db_error)
     }
 
     pub fn members(&self, context: &GraphQLContext) -> FieldResult<Vec<Player>> {
-        select_players_in_group(&context.connection.0, &self.id)
-            .map_err(|err| graphql_on_db_error(err))
+        select_players_in_group(&context.connection.0, &self.id).map_err(graphql_on_db_error)
     }
 
     pub fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
-        select_sessions_for_group(&context.connection.0, &self.id)
-            .map_err(|err| graphql_on_db_error(err))
+        select_sessions_for_group(&context.connection.0, &self.id).map_err(graphql_on_db_error)
     }
 }
 
 pub fn exported_ts_types() -> Vec<TsType> {
-    vec![CreatableGroup::ts_type(), Group::ts_type()]
+    vec![NewGroup::ts_type(), Group::ts_type()]
 }

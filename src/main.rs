@@ -67,10 +67,12 @@ fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
+    println!("Got query: {:?}", request);
+
     request.execute(&schema, &GraphQLContext { connection })
 }
 
-fn execute_migrations() {
+fn execute_db_migrations() {
     use diesel::prelude::*;
 
     let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
@@ -85,7 +87,7 @@ fn main() {
         write_all_ts_types();
     }
 
-    execute_migrations();
+    execute_db_migrations();
 
     rocket::ignite()
         .mount(

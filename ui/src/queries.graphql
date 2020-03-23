@@ -1,0 +1,75 @@
+query Group($id: Int!) {
+  group(id: $id) {
+    id
+    name
+    members {
+      abbreviation
+      name
+    }
+    sessions {
+      id
+      hasEnded
+    }
+  }
+}
+
+query GroupList {
+  groups {
+    id
+    name
+    playerCount
+  }
+}
+
+query PlayerList {
+  players {
+    id
+    abbreviation
+    name
+  }
+}
+
+query RuleSetList {
+  ruleSets {
+    id
+    basePrice
+    soloPrice
+    countLaufende
+    farbGeierAllowed
+    farbWenzAllowed
+    geierAllowed
+    hochzeitAllowed
+    id
+    laufendePrice
+    maxLaufendeIncl
+    minLaufendeIncl
+    name
+    ramschAllowed
+    soloPrice
+  }
+}
+
+# Mutations
+
+mutation UserCreation($username: String!, $password: String!, $passwordRepeat: String!) {
+  createUser(newUser: {username: $username, password: $password, passwordRepeat: $passwordRepeat}) {
+    username
+  }
+}
+
+mutation PlayerCreation($name: String!, $abbreviation: String!) {
+  createPlayer(newPlayer: {name: $name, abbreviation: $abbreviation }) {
+    id
+    name
+    abbreviation
+    pictureName
+  }
+}
+
+mutation GroupCreation($name: String!, $ruleSetId: Int!) {
+  createGroup(newGroup: {name: $name, ruleSetId: $ruleSetId}) {
+    id
+    name
+    ruleSetId
+  }
+}

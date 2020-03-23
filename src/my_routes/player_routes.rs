@@ -3,7 +3,7 @@ use rocket_contrib::json::{Json, JsonError};
 
 use super::routes_helpers::{on_error, MyJsonResponse};
 use crate::jwt_helpers::MyJwt;
-use crate::models::player::{CreatablePlayer, Player};
+use crate::models::player::{NewPlayer, Player};
 use crate::DbConn;
 
 #[get("/")]
@@ -19,7 +19,7 @@ fn route_get_players(_my_jwt: MyJwt, conn: DbConn) -> MyJsonResponse<Vec<Player>
 fn route_create_player(
     _my_jwt: MyJwt,
     conn: DbConn,
-    player_json_try: Result<Json<CreatablePlayer>, JsonError>,
+    player_json_try: Result<Json<NewPlayer>, JsonError>,
 ) -> MyJsonResponse<Player> {
     use crate::daos::player_dao::insert_player;
 

@@ -1,6 +1,6 @@
 use diesel::{self, prelude::*, PgConnection, QueryResult};
 
-use crate::models::group::{CreatableGroup, Group};
+use crate::models::group::{Group, NewGroup};
 
 pub fn select_groups(conn: &PgConnection) -> QueryResult<Vec<Group>> {
     use crate::schema::groups::dsl::*;
@@ -14,7 +14,7 @@ pub fn select_group_by_id(conn: &PgConnection, the_group_id: &i32) -> QueryResul
     groups.find(the_group_id).first(conn)
 }
 
-pub fn insert_group(conn: &PgConnection, cg: CreatableGroup) -> QueryResult<Group> {
+pub fn insert_group(conn: &PgConnection, cg: NewGroup) -> QueryResult<Group> {
     use crate::schema::groups::dsl::*;
 
     diesel::insert_into(groups)

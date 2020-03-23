@@ -1,19 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {Group, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {BasicGroup, GroupListGqlService} from './group-list-gql.service';
+import {GroupListGQL, GroupListQuery} from '../_services/apollo_services';
 
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {
 
   currentUser: UserWithToken;
-  groups: BasicGroup[];
+  groupListQuery: GroupListQuery;
 
-  constructor(
-    private authenticationService: AuthenticationService,
-    private groupListGQL: GroupListGqlService,
-  ) {
+  constructor(private authenticationService: AuthenticationService, private groupListGQL: GroupListGQL) {
   }
 
   ngOnInit() {
@@ -23,11 +20,11 @@ export class GroupListComponent implements OnInit {
     this.groupListGQL
       .watch()
       .valueChanges
-      .subscribe(({data}) => this.groups = data.groups);
+      .subscribe(({data}) => this.groupListQuery = data);
   }
 
   onGroupCreated(group: Group) {
-    this.groups.push({
+    this.groupListQuery.groups.push({
       id: group.id,
       name: group.name,
       playerCount: 0

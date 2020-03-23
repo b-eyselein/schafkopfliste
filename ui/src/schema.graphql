@@ -1,5 +1,5 @@
 # source: http://localhost:8000/graphql
-# timestamp: Mon Mar 23 2020 08:49:03 GMT+0100 (Mitteleuropäische Normalzeit)
+# timestamp: Mon Mar 23 2020 12:00:24 GMT+0100 (Mitteleuropäische Normalzeit)
 
 schema {
   query: QueryRoot
@@ -19,6 +19,7 @@ type Game {
 type Group {
   id: Int!
   name: String!
+  ruleSetId: Int!
   ruleSet: RuleSet
   playerCount: Int!
   members: [Player!]!
@@ -26,7 +27,20 @@ type Group {
 }
 
 type Mutations {
-  createUser(User: NewUser!): User!
+  createUser(newUser: NewUser!): User!
+  createGroup(newGroup: NewGroup!): Group!
+  createPlayer(newPlayer: NewPlayer!): Player!
+}
+
+input NewGroup {
+  name: String!
+  ruleSetId: Int!
+}
+
+input NewPlayer {
+  abbreviation: String!
+  name: String!
+  pictureName: String
 }
 
 input NewUser {
