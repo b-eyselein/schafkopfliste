@@ -1,8 +1,10 @@
 use juniper::{FieldError, FieldResult};
 
 use crate::daos::group_dao::{select_group_by_id, select_groups};
+use crate::daos::player_dao::select_players;
 use crate::daos::session_dao::select_session_by_id;
 use crate::models::group::Group;
+use crate::models::player::Player;
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
 use crate::models::session::Session;
 use crate::models::user::{NewUser, User};
@@ -31,6 +33,10 @@ impl QueryRoot {
         FieldResult::Ok(select_rule_set_by_id(&context.connection.0, &id).ok())
     }
 
+    pub fn players(context: &GraphQLContext) -> FieldResult<Vec<Player>> {
+        select_players(&context.connection.0).map_err(|err| graphql_on_db_error(err))
+    }
+
     pub fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
         select_groups(&context.connection.0).map_err(|err| graphql_on_db_error(err))
     }
@@ -52,7 +58,7 @@ pub struct Mutations {}
 
 #[juniper::object(Context = GraphQLContext)]
 impl Mutations {
-    pub fn create_user(user: NewUser, context: &GraphQLContext) -> FieldResult<User> {
+    pub fn create_user(_user: NewUser, _context: &GraphQLContext) -> FieldResult<User> {
         Err("Not yet implemented!".into())
     }
 }

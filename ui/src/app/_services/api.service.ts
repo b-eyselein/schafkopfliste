@@ -57,18 +57,6 @@ export class ApiService {
     return this.httpClient.get<GroupWithPlayerMembership>(url);
   }
 
-  getPlayers(): Observable<Player[]> {
-    const url = `${this.baseUrl}/players`;
-
-    return this.httpClient.get<Player[]>(url);
-  }
-
-  getSessions(groupId: number): Observable<Session[]> {
-    const url = `${this.baseUrl}/groups/${groupId}/sessions`;
-
-    return this.httpClient.get<Session[]>(url);
-  }
-
   getCompleteSession(groupId: number, serialNumber: number): Observable<CompleteSession | undefined> {
     const url = `${this.baseUrl}/groups/${groupId}/sessions/${serialNumber}/sessionWithPlayersAndRuleSet`;
 

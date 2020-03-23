@@ -1,5 +1,5 @@
 # source: http://localhost:8000/graphql
-# timestamp: Mon Mar 23 2020 08:44:41 GMT+0100 (Mitteleuropäische Normalzeit)
+# timestamp: Mon Mar 23 2020 08:49:03 GMT+0100 (Mitteleuropäische Normalzeit)
 
 schema {
   query: QueryRoot
@@ -26,7 +26,7 @@ type Group {
 }
 
 type Mutations {
-  createUser(user: NewUser!): User!
+  createUser(User: NewUser!): User!
 }
 
 input NewUser {
@@ -45,6 +45,7 @@ type Player {
 type QueryRoot {
   ruleSets: [RuleSet!]!
   ruleSet(id: Int!): RuleSet
+  players: [Player!]!
   groups: [Group!]!
   group(id: Int!): Group
   session(id: Int!, groupId: Int!): Session

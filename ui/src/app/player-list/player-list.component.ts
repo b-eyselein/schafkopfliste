@@ -1,18 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../_services/api.service';
-import {Player} from '../_interfaces/interfaces';
+import {Player, PlayerListGqlService} from './player-list-gql.service';
 
 @Component({templateUrl: './player-list.component.html'})
 export class PlayerListComponent implements OnInit {
 
   players: Player[];
 
-  constructor(private apiService: ApiService) {
+  constructor(private playerListGqlService: PlayerListGqlService) {
   }
 
   ngOnInit() {
-    this.apiService.getPlayers()
-      .subscribe((players) => this.players = players);
+    this.playerListGqlService
+      .watch()
+      .valueChanges
+      .subscribe(({data}) => this.players = data.players);
   }
 
   onPlayerCreated(player: Player) {
