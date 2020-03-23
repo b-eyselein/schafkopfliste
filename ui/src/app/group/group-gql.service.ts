@@ -4,11 +4,18 @@ import gql from 'graphql-tag';
 
 export interface Session {
   id: number;
+  hasEnded: boolean;
+}
+
+export interface Group {
+  id: number;
+  name: string;
+  members: any[];
+  sessions: Session[];
 }
 
 export interface Response {
-  group: any;
-  sessions: Session[];
+  group: Group;
 }
 
 @Injectable({
@@ -26,6 +33,7 @@ export class GroupGqlService extends Query<Response> {
       }
       sessions {
         id
+        hasEnded
       }
     }
   }`;

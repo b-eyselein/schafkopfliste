@@ -1,0 +1,80 @@
+# source: http://localhost:8000/graphql
+# timestamp: Mon Mar 23 2020 08:44:41 GMT+0100 (Mitteleuropäische Normalzeit)
+
+schema {
+  query: QueryRoot
+  mutation: Mutations
+}
+
+enum CountLaufende {
+  ALWAYS
+  ONLY_LOSERS
+  NEVER
+}
+
+type Game {
+  id: Int!
+}
+
+type Group {
+  id: Int!
+  name: String!
+  ruleSet: RuleSet
+  playerCount: Int!
+  members: [Player!]!
+  sessions: [Session!]!
+}
+
+type Mutations {
+  createUser(user: NewUser!): User!
+}
+
+input NewUser {
+  username: String!
+  password: String!
+  passwordRepeat: String!
+}
+
+type Player {
+  id: Int!
+  abbreviation: String!
+  name: String!
+  pictureName: String
+}
+
+type QueryRoot {
+  ruleSets: [RuleSet!]!
+  ruleSet(id: Int!): RuleSet
+  groups: [Group!]!
+  group(id: Int!): Group
+  session(id: Int!, groupId: Int!): Session
+}
+
+type RuleSet {
+  id: Int!
+  name: String!
+  basePrice: Int!
+  soloPrice: Int!
+  countLaufende: CountLaufende!
+  minLaufendeIncl: Int!
+  maxLaufendeIncl: Int!
+  laufendePrice: Int!
+  geierAllowed: Boolean!
+  hochzeitAllowed: Boolean!
+  bettelAllowed: Boolean!
+  ramschAllowed: Boolean!
+  farbWenzAllowed: Boolean!
+  farbGeierAllowed: Boolean!
+}
+
+type Session {
+  id: Int!
+  hasEnded: Boolean!
+  date: String!
+  games: [Game!]!
+}
+
+type User {
+  username: String!
+  isAdmin: Boolean!
+}

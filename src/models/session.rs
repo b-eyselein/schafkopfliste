@@ -106,6 +106,10 @@ impl Session {
         &self.id
     }
 
+    pub fn has_ended(&self) -> &bool {
+        &self.has_ended
+    }
+
     pub fn date(&self) -> String {
         format!(
             "{}.{}.{}",

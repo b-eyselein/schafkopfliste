@@ -2,6 +2,14 @@ use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
 use crate::schema::users;
+use crate::GraphQLContext;
+
+#[derive(juniper::GraphQLInputObject)]
+pub struct NewUser {
+    pub username: String,
+    pub password: String,
+    pub password_repeat: String,
+}
 
 #[derive(Insertable, Queryable)]
 pub struct User {
@@ -19,6 +27,17 @@ impl User {
             is_admin: false,
             player_id: None,
         }
+    }
+}
+
+#[juniper::object(context = GraphQLContext)]
+impl User {
+    pub fn username(&self) -> &String {
+        &self.username
+    }
+
+    pub fn is_admin(&self) -> &bool {
+        &self.is_admin
     }
 }
 

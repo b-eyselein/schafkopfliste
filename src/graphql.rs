@@ -5,6 +5,7 @@ use crate::daos::session_dao::select_session_by_id;
 use crate::models::group::Group;
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
 use crate::models::session::Session;
+use crate::models::user::{NewUser, User};
 use crate::DbConn;
 
 pub struct GraphQLContext {
@@ -50,4 +51,8 @@ impl QueryRoot {
 pub struct Mutations {}
 
 #[juniper::object(Context = GraphQLContext)]
-impl Mutations {}
+impl Mutations {
+    pub fn create_user(user: NewUser, context: &GraphQLContext) -> FieldResult<User> {
+        Err("Not yet implemented!".into())
+    }
+}

@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, Session, UserWithToken} from '../_interfaces/interfaces';
+import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {GroupGqlService} from './group-gql.service';
+import {Group, GroupGqlService} from './group-gql.service';
 
 @Component({templateUrl: './group.component.html'})
 export class GroupComponent implements OnInit {
@@ -11,7 +11,7 @@ export class GroupComponent implements OnInit {
   currentUser: UserWithToken | undefined;
 
   group: GroupWithPlayersAndRuleSet;
-  sessions: Session[];
+  apolloGroup: Group;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -35,13 +35,10 @@ export class GroupComponent implements OnInit {
       this.groupGqlService
         .watch({id: groupId})
         .valueChanges
-        .subscribe(({data}) => console.info(JSON.stringify(data, null, 2)));
+        .subscribe(({data}) => this.apolloGroup = data.group);
 
       this.apiService.getGroupWithPlayersAndRuleSet(groupId)
         .subscribe((groupWithPlayers) => this.group = groupWithPlayers);
-
-      this.apiService.getSessions(groupId)
-        .subscribe((sessions) => this.sessions = sessions);
     });
   }
 

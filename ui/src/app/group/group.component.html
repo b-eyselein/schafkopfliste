@@ -1,7 +1,7 @@
 <div class="container is-fluid">
 
-  <ng-container *ngIf="group">
-    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;</h1>
+  <ng-container *ngIf="group && apolloGroup">
+    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{apolloGroup.name}}&quot;</h1>
 
     <div class="columns is-multiline">
       <div class="column is-three-fifths-desktop is-full-tablet">
@@ -54,8 +54,8 @@
         <h2 class="subtitle is-3 has-text-centered">Sitzungen</h2>
 
         <div class="columns is-multiline">
-          <ng-container *ngIf="sessions">
-            <div class="column is-one-fifth-desktop" *ngFor="let session of sessions">
+          <ng-container *ngIf="apolloGroup.sessions">
+            <div class="column is-one-fifth-desktop" *ngFor="let session of apolloGroup.sessions">
               <a class="button is-fullwidth"
                  [ngClass]="session.hasEnded ? '' : 'is-primary'"
                  [routerLink]="['sessions', session.id]">
