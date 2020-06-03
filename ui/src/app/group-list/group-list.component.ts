@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Group, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {GroupListGQL, GroupListQuery} from '../_services/apollo_services';
+import {GroupListGQL, GroupListQuery} from '../_services/apollo.service';
 
 
 @Component({templateUrl: './group-list.component.html'})

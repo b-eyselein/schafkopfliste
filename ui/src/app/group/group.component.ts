@@ -1,12 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {GroupGQL, GroupQuery} from '../_services/apollo_services';
+import {GroupGQL, GroupQuery} from '../_services/apollo.service';
+import {Subscription} from 'rxjs';
 
 @Component({templateUrl: './group.component.html'})
-export class GroupComponent implements OnInit {
+export class GroupComponent implements OnInit, OnDestroy {
+
+  private sub: Subscription;
 
   currentUser: UserWithToken | undefined;
 
@@ -29,7 +32,7 @@ export class GroupComponent implements OnInit {
     this.authenticationService.currentUser
       .subscribe((u) => this.currentUser = u);
 
-    this.route.paramMap.subscribe((paramMap) => {
+    this.sub = this.route.paramMap.subscribe((paramMap) => {
       const groupId = parseInt(paramMap.get('groupId'), 10);
 
       this.groupGqlService
@@ -40,6 +43,10 @@ export class GroupComponent implements OnInit {
       this.apiService.getGroupWithPlayersAndRuleSet(groupId)
         .subscribe((groupWithPlayers) => this.group = groupWithPlayers);
     });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
   recalculateStatistics() {

@@ -1,9 +1,15 @@
 schema: src/schema.graphql
-documents: src/queries.graphql
+
 generates:
-  ./src/app/_services/apollo_services.ts:
+  src/app/_interfaces/graphql-types.ts:
     plugins:
       - typescript
+
+  src/app/_services/apollo.service.ts:
+    documents: src/queries.graphql
+    preset: import-types
+    presetConfig:
+      typesPath: ../_interfaces/graphql-types
+    plugins:
       - typescript-operations
       - typescript-apollo-angular
-

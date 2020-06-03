@@ -42,6 +42,7 @@
     "@angular/compiler-cli": "^9.1.7",
     "@angular/language-service": "^9.1.7",
     "@graphql-codegen/cli": "^1.13.5",
+    "@graphql-codegen/import-types-preset": "^1.13.5",
     "@graphql-codegen/typescript-apollo-angular": "^1.13.5",
     "@graphql-codegen/typescript-operations": "^1.13.5",
     "@types/jasmine": "~3.3.8",

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Player, PlayerListGQL, PlayerListQuery} from '../_services/apollo_services';
+import {PlayerListGQL, PlayerListQuery} from '../_services/apollo.service';
+import {Player} from '../_interfaces/graphql-types';
 
 @Component({templateUrl: './player-list.component.html'})
 export class PlayerListComponent implements OnInit {
@@ -13,7 +14,7 @@ export class PlayerListComponent implements OnInit {
     this.playerListGQL
       .watch()
       .valueChanges
-      .subscribe(({data}: {data: PlayerListQuery}) => this.playerListQuery = data);
+      .subscribe(({data}: { data: PlayerListQuery }) => this.playerListQuery = data);
   }
 
 

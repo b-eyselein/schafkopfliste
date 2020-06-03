@@ -49,6 +49,18 @@ query RuleSetList {
   }
 }
 
+query Session($groupId: Int!, $sessionId: Int!) {
+  group(id: $groupId) {
+    session(sessionId: $sessionId) {
+      hasEnded
+      date
+      games {
+        id
+      }
+    }
+  }
+}
+
 # Mutations
 
 mutation UserCreation($username: String!, $password: String!, $passwordRepeat: String!) {

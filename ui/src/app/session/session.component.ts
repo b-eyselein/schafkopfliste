@@ -1,15 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CompleteSession, Game, UserWithToken} from '../_interfaces/interfaces';
 import {ApiService} from '../_services/api.service';
 import {AuthenticationService} from '../_services/authentication.service';
+import {Subscription} from 'rxjs';
+import {SessionGQL, SessionQuery} from '../_services/apollo.service';
 
 @Component({templateUrl: './session.component.html'})
-export class SessionComponent implements OnInit {
+export class SessionComponent implements OnInit, OnDestroy {
+
+  private sub: Subscription;
 
   readonly playerIndexes = [0, 1, 2, 3];
 
   currentUser: UserWithToken;
+
+
+  sessionQuery: SessionQuery;
 
   session: CompleteSession;
 
@@ -18,6 +25,7 @@ export class SessionComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
+    private sessionGQL: SessionGQL,
     private apiService: ApiService
   ) {
   }
@@ -26,17 +34,25 @@ export class SessionComponent implements OnInit {
     this.authenticationService.currentUser
       .subscribe((u) => this.currentUser = u);
 
-    this.route.paramMap.subscribe((paramMap) => {
+    this.sub = this.route.paramMap.subscribe((paramMap) => {
       const groupId: number = parseInt(paramMap.get('groupId'), 10);
       const serialNumber: number = parseInt(paramMap.get('serialNumber'), 10);
+
+      this.sessionGQL
+        .watch({groupId, sessionId: serialNumber})
+        .valueChanges
+        .subscribe(({data}) => this.sessionQuery = data);
 
       this.apiService.getCompleteSession(groupId, serialNumber)
         .subscribe((session) => this.session = session);
     });
   }
 
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
+
   updateGame($event: Game) {
-    console.info($event);
     this.game = {...$event};
   }
 

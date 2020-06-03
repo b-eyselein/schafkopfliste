@@ -1,161 +1,25 @@
+import * as Types from '../_interfaces/graphql-types';
+
 import gql from 'graphql-tag';
 import { Injectable } from '@angular/core';
 import * as Apollo from 'apollo-angular';
-export type Maybe<T> = T | null;
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-};
-
-
-
-export enum CountLaufende {
-  Always = 'ALWAYS',
-  OnlyLosers = 'ONLY_LOSERS',
-  Never = 'NEVER'
-}
-
-export type Game = {
-   __typename?: 'Game';
-  id: Scalars['Int'];
-};
-
-export type Group = {
-   __typename?: 'Group';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  ruleSetId: Scalars['Int'];
-  ruleSet?: Maybe<RuleSet>;
-  playerCount: Scalars['Int'];
-  members: Array<Player>;
-  sessions: Array<Session>;
-};
-
-export type Mutations = {
-   __typename?: 'Mutations';
-  createUser: User;
-  createGroup: Group;
-  createPlayer: Player;
-};
-
-
-export type MutationsCreateUserArgs = {
-  newUser: NewUser;
-};
-
-
-export type MutationsCreateGroupArgs = {
-  newGroup: NewGroup;
-};
-
-
-export type MutationsCreatePlayerArgs = {
-  newPlayer: NewPlayer;
-};
-
-export type NewGroup = {
-  name: Scalars['String'];
-  ruleSetId: Scalars['Int'];
-};
-
-export type NewPlayer = {
-  abbreviation: Scalars['String'];
-  name: Scalars['String'];
-  pictureName?: Maybe<Scalars['String']>;
-};
-
-export type NewUser = {
-  username: Scalars['String'];
-  password: Scalars['String'];
-  passwordRepeat: Scalars['String'];
-};
-
-export type Player = {
-   __typename?: 'Player';
-  id: Scalars['Int'];
-  abbreviation: Scalars['String'];
-  name: Scalars['String'];
-  pictureName?: Maybe<Scalars['String']>;
-};
-
-export type QueryRoot = {
-   __typename?: 'QueryRoot';
-  ruleSets: Array<RuleSet>;
-  ruleSet?: Maybe<RuleSet>;
-  players: Array<Player>;
-  groups: Array<Group>;
-  group?: Maybe<Group>;
-  session?: Maybe<Session>;
-};
-
-
-export type QueryRootRuleSetArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryRootGroupArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryRootSessionArgs = {
-  id: Scalars['Int'];
-  groupId: Scalars['Int'];
-};
-
-export type RuleSet = {
-   __typename?: 'RuleSet';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  basePrice: Scalars['Int'];
-  soloPrice: Scalars['Int'];
-  countLaufende: CountLaufende;
-  minLaufendeIncl: Scalars['Int'];
-  maxLaufendeIncl: Scalars['Int'];
-  laufendePrice: Scalars['Int'];
-  geierAllowed: Scalars['Boolean'];
-  hochzeitAllowed: Scalars['Boolean'];
-  bettelAllowed: Scalars['Boolean'];
-  ramschAllowed: Scalars['Boolean'];
-  farbWenzAllowed: Scalars['Boolean'];
-  farbGeierAllowed: Scalars['Boolean'];
-};
-
-export type Session = {
-   __typename?: 'Session';
-  id: Scalars['Int'];
-  hasEnded: Scalars['Boolean'];
-  date: Scalars['String'];
-  games: Array<Game>;
-};
-
-export type User = {
-   __typename?: 'User';
-  username: Scalars['String'];
-  isAdmin: Scalars['Boolean'];
-};
 
 export type GroupQueryVariables = {
-  id: Scalars['Int'];
+  id: Types.Scalars['Int'];
 };
 
 
 export type GroupQuery = (
   { __typename?: 'QueryRoot' }
-  & { group?: Maybe<(
+  & { group?: Types.Maybe<(
     { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name'>
+    & Pick<Types.Group, 'id' | 'name'>
     & { members: Array<(
       { __typename?: 'Player' }
-      & Pick<Player, 'abbreviation' | 'name'>
+      & Pick<Types.Player, 'abbreviation' | 'name'>
     )>, sessions: Array<(
       { __typename?: 'Session' }
-      & Pick<Session, 'id' | 'hasEnded'>
+      & Pick<Types.Session, 'id' | 'hasEnded'>
     )> }
   )> }
 );
@@ -167,7 +31,7 @@ export type GroupListQuery = (
   { __typename?: 'QueryRoot' }
   & { groups: Array<(
     { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name' | 'playerCount'>
+    & Pick<Types.Group, 'id' | 'name' | 'playerCount'>
   )> }
 );
 
@@ -178,7 +42,7 @@ export type PlayerListQuery = (
   { __typename?: 'QueryRoot' }
   & { players: Array<(
     { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'abbreviation' | 'name'>
+    & Pick<Types.Player, 'id' | 'abbreviation' | 'name'>
   )> }
 );
 
@@ -189,14 +53,35 @@ export type RuleSetListQuery = (
   { __typename?: 'QueryRoot' }
   & { ruleSets: Array<(
     { __typename?: 'RuleSet' }
-    & Pick<RuleSet, 'id' | 'basePrice' | 'soloPrice' | 'countLaufende' | 'farbGeierAllowed' | 'farbWenzAllowed' | 'geierAllowed' | 'hochzeitAllowed' | 'laufendePrice' | 'maxLaufendeIncl' | 'minLaufendeIncl' | 'name' | 'ramschAllowed'>
+    & Pick<Types.RuleSet, 'id' | 'basePrice' | 'soloPrice' | 'countLaufende' | 'farbGeierAllowed' | 'farbWenzAllowed' | 'geierAllowed' | 'hochzeitAllowed' | 'laufendePrice' | 'maxLaufendeIncl' | 'minLaufendeIncl' | 'name' | 'ramschAllowed'>
+  )> }
+);
+
+export type SessionQueryVariables = {
+  groupId: Types.Scalars['Int'];
+  sessionId: Types.Scalars['Int'];
+};
+
+
+export type SessionQuery = (
+  { __typename?: 'QueryRoot' }
+  & { group?: Types.Maybe<(
+    { __typename?: 'Group' }
+    & { session?: Types.Maybe<(
+      { __typename?: 'Session' }
+      & Pick<Types.Session, 'hasEnded' | 'date'>
+      & { games: Array<(
+        { __typename?: 'Game' }
+        & Pick<Types.Game, 'id'>
+      )> }
+    )> }
   )> }
 );
 
 export type UserCreationMutationVariables = {
-  username: Scalars['String'];
-  password: Scalars['String'];
-  passwordRepeat: Scalars['String'];
+  username: Types.Scalars['String'];
+  password: Types.Scalars['String'];
+  passwordRepeat: Types.Scalars['String'];
 };
 
 
@@ -204,13 +89,13 @@ export type UserCreationMutation = (
   { __typename?: 'Mutations' }
   & { createUser: (
     { __typename?: 'User' }
-    & Pick<User, 'username'>
+    & Pick<Types.User, 'username'>
   ) }
 );
 
 export type PlayerCreationMutationVariables = {
-  name: Scalars['String'];
-  abbreviation: Scalars['String'];
+  name: Types.Scalars['String'];
+  abbreviation: Types.Scalars['String'];
 };
 
 
@@ -218,13 +103,13 @@ export type PlayerCreationMutation = (
   { __typename?: 'Mutations' }
   & { createPlayer: (
     { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'name' | 'abbreviation' | 'pictureName'>
+    & Pick<Types.Player, 'id' | 'name' | 'abbreviation' | 'pictureName'>
   ) }
 );
 
 export type GroupCreationMutationVariables = {
-  name: Scalars['String'];
-  ruleSetId: Scalars['Int'];
+  name: Types.Scalars['String'];
+  ruleSetId: Types.Scalars['Int'];
 };
 
 
@@ -232,7 +117,7 @@ export type GroupCreationMutation = (
   { __typename?: 'Mutations' }
   & { createGroup: (
     { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name' | 'ruleSetId'>
+    & Pick<Types.Group, 'id' | 'name' | 'ruleSetId'>
   ) }
 );
 
@@ -321,6 +206,27 @@ export const RuleSetListDocument = gql`
   })
   export class RuleSetListGQL extends Apollo.Query<RuleSetListQuery, RuleSetListQueryVariables> {
     document = RuleSetListDocument;
+    
+  }
+export const SessionDocument = gql`
+    query Session($groupId: Int!, $sessionId: Int!) {
+  group(id: $groupId) {
+    session(sessionId: $sessionId) {
+      hasEnded
+      date
+      games {
+        id
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SessionGQL extends Apollo.Query<SessionQuery, SessionQueryVariables> {
+    document = SessionDocument;
     
   }
 export const UserCreationDocument = gql`

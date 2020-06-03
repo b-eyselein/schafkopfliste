@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Player, PlayerCreationGQL, PlayerCreationMutation} from '../../_services/apollo_services';
+import {PlayerCreationGQL, PlayerCreationMutation} from '../../_services/apollo.service';
+import {Player} from "../../_interfaces/graphql-types";
 
 @Component({
   selector: 'skl-create-player',
@@ -12,7 +13,7 @@ export class CreatePlayerComponent {
 
   @Output() playerCreated = new EventEmitter<Player>();
 
-  constructor(private fb: FormBuilder,  private playerCreationGQL: PlayerCreationGQL) {
+  constructor(private fb: FormBuilder, private playerCreationGQL: PlayerCreationGQL) {
     this.playerForm = this.fb.group({
       abbreviation: ['', Validators.required],
       firstName: ['', Validators.required],

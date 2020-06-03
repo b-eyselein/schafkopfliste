@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RuleSetListGQL, RuleSetListQuery} from '../_services/apollo_services';
+import {RuleSetListGQL, RuleSetListQuery} from '../_services/apollo.service';
 
 @Component({templateUrl: './rule-set-list.component.html'})
 export class RuleSetListComponent implements OnInit {

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
 use crate::daos::player_in_group_dao::{select_player_count_for_group, select_players_in_group};
-use crate::daos::session_dao::select_sessions_for_group;
+use crate::daos::session_dao::{select_session_by_id, select_sessions_for_group};
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
 use crate::models::player::Player;
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
@@ -64,6 +64,14 @@ impl Group {
 
     pub fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
         select_sessions_for_group(&context.connection.0, &self.id).map_err(graphql_on_db_error)
+    }
+
+    pub fn session(
+        &self,
+        session_id: i32,
+        context: &GraphQLContext,
+    ) -> FieldResult<Option<Session>> {
+        FieldResult::Ok(select_session_by_id(&context.connection.0, &self.id, &session_id).ok())
     }
 }
 

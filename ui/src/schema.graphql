@@ -1,5 +1,5 @@
 # source: http://localhost:8000/graphql
-# timestamp: Mon Mar 23 2020 12:00:24 GMT+0100 (Mitteleuropäische Normalzeit)
+# timestamp: Tue May 19 2020 10:28:05 GMT+0200 (Mitteleuropäische Sommerzeit)
 
 schema {
   query: QueryRoot
@@ -24,6 +24,7 @@ type Group {
   playerCount: Int!
   members: [Player!]!
   sessions: [Session!]!
+  session(sessionId: Int!): Session
 }
 
 type Mutations {

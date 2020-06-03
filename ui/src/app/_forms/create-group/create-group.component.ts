@@ -1,12 +1,12 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {ApiService} from '../../_services/api.service';
 import {
-  Group,
   GroupCreationGQL,
   GroupCreationMutation,
   RuleSetListGQL,
   RuleSetListQuery
-} from '../../_services/apollo_services';
+} from '../../_services/apollo.service';
+import {Group} from 'src/app/_interfaces/graphql-types';
 
 @Component({
   selector: 'skl-create-group',
