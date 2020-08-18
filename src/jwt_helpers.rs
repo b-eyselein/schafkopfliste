@@ -1,4 +1,6 @@
-use jsonwebtoken::{decode, encode, errors::Error as JwtError, Header, Validation};
+use jsonwebtoken::{
+    decode, encode, errors::Error as JwtError, DecodingKey, EncodingKey, Header, Validation,
+};
 use regex::Regex;
 use rocket::http::Status;
 use rocket::request::FromRequest;
@@ -41,7 +43,7 @@ pub fn generate_token(user: SerializableUser) -> Result<UserWithToken, JwtError>
     let token = encode(
         &Header::default(),
         &Claims::new(user.clone()),
-        SECRET.as_ref(),
+        &EncodingKey::from_secret(SECRET.as_ref()),
     )?;
 
     Ok(UserWithToken::new(user, token))
@@ -61,7 +63,11 @@ fn decode_token(auth_header: &str) -> RequestOutcome<MyJwt, MyJwtTokenError> {
     {
         None => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Invalid)),
         Some(token_match) => {
-            match decode::<Claims>(&token_match.as_str(), SECRET.as_ref(), &VALIDATION) {
+            match decode::<Claims>(
+                &token_match.as_str(),
+                &DecodingKey::from_secret(SECRET.as_ref()),
+                &VALIDATION,
+            ) {
                 Err(_) => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Invalid)),
                 Ok(claim) => Outcome::Success(MyJwt {
                     header: claim.header,
