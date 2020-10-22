@@ -8,8 +8,10 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
+use futures::executor::block_on;
 use juniper::RootNode;
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
+use mongodb::Client as MongoClient;
 use rocket::{get, post, response::Redirect, routes, State};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
@@ -18,6 +20,8 @@ use rocket_cors::{Cors, CorsOptions};
 use graphql::{GraphQLContext, Mutations, QueryRoot};
 use ts_type_writer::write_all_ts_types;
 
+use crate::mongo::init;
+
 mod daos;
 mod graphql;
 mod jwt_helpers;
@@ -25,6 +29,7 @@ mod models;
 mod my_routes;
 mod schema;
 mod ts_type_writer;
+mod mongo;
 
 type Schema = RootNode<'static, QueryRoot, Mutations>;
 
@@ -55,21 +60,22 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
 #[get("/graphql?<request>")]
 fn route_get_graphql_handler(
     connection: DbConn,
+    mongo_client: State<MongoClient>,
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(&schema, &GraphQLContext { connection })
+    request.execute(&schema, &GraphQLContext { connection, mongo_client: &mongo_client })
 }
 
 #[post("/graphql", data = "<request>")]
 fn route_post_graphql_handler(
     connection: DbConn,
+    mongo_client: State<MongoClient>,
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    println!("Got query: {:?}", request);
-
-    request.execute(&schema, &GraphQLContext { connection })
+    let x = mongo_client.inner();
+    request.execute(&schema, &GraphQLContext { connection, mongo_client: &mongo_client })
 }
 
 fn execute_db_migrations() {
@@ -88,6 +94,8 @@ fn main() {
     }
 
     execute_db_migrations();
+
+    let x = block_on(init());
 
     rocket::ignite()
         .mount(
@@ -111,6 +119,7 @@ fn main() {
             my_routes::all_group_routes::exported_routes(),
         )
         .manage(Schema::new(QueryRoot {}, Mutations {}))
+        .manage(x)
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();

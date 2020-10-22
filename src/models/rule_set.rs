@@ -1,4 +1,5 @@
-use diesel::{self, prelude::*, PgConnection, QueryResult};
+use diesel::{self, PgConnection, prelude::*, QueryResult};
+use mongodb::Database as MongoDatabase;
 use serde::{Deserialize, Serialize};
 use serde_tsi::prelude::*;
 
@@ -63,6 +64,10 @@ impl RuleSet {
     pub fn get_solo_price(&self) -> &i32 {
         return &self.solo_price;
     }
+}
+
+pub fn select_all_rule_sets(db: &MongoDatabase) {
+    let x = db.collection("rule_sets");
 }
 
 pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {

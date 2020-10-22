@@ -1,0 +1,34 @@
+version: "3.3"
+
+volumes:
+  mongo_data_volume: { }
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=1234
+    volumes:
+      - type: bind
+        source: ./db_init.sql
+        target: /docker-entrypoint-initdb.d/db_init.sql
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    ports:
+      - 27617:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: skl
+    volumes:
+      - type: bind
+        source: ./mongo_init.js
+        target: /docker-entrypoint-initdb.d/mongo_init.js
+      - type: volume
+        source: mongo_data_volume
+        target: /data/db

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {ApiService} from '../../_services/api.service';
 import {
   Group,
@@ -7,12 +7,15 @@ import {
   RuleSetListGQL,
   RuleSetListQuery
 } from '../../_services/apollo_services';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'skl-create-group',
   templateUrl: './create-group.component.html'
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit, OnDestroy {
+
+  private sub: Subscription;
 
   ruleSetListQuery: RuleSetListQuery;
 
@@ -29,10 +32,14 @@ export class CreateGroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ruleSetListGQL
+    this.sub = this.ruleSetListGQL
       .watch()
       .valueChanges
       .subscribe(({data}: { data: RuleSetListQuery }) => this.ruleSetListQuery = data);
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
   createGroup(): void {

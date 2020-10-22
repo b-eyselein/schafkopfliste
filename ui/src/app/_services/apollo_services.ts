@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 import { Injectable } from '@angular/core';
 import * as Apollo from 'apollo-angular';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -20,12 +21,12 @@ export enum CountLaufende {
 }
 
 export type Game = {
-   __typename?: 'Game';
+  __typename?: 'Game';
   id: Scalars['Int'];
 };
 
 export type Group = {
-   __typename?: 'Group';
+  __typename?: 'Group';
   id: Scalars['Int'];
   name: Scalars['String'];
   ruleSetId: Scalars['Int'];
@@ -36,7 +37,7 @@ export type Group = {
 };
 
 export type Mutations = {
-   __typename?: 'Mutations';
+  __typename?: 'Mutations';
   createUser: User;
   createGroup: Group;
   createPlayer: Player;
@@ -75,7 +76,7 @@ export type NewUser = {
 };
 
 export type Player = {
-   __typename?: 'Player';
+  __typename?: 'Player';
   id: Scalars['Int'];
   abbreviation: Scalars['String'];
   name: Scalars['String'];
@@ -83,7 +84,7 @@ export type Player = {
 };
 
 export type QueryRoot = {
-   __typename?: 'QueryRoot';
+  __typename?: 'QueryRoot';
   ruleSets: Array<RuleSet>;
   ruleSet?: Maybe<RuleSet>;
   players: Array<Player>;
@@ -109,7 +110,7 @@ export type QueryRootSessionArgs = {
 };
 
 export type RuleSet = {
-   __typename?: 'RuleSet';
+  __typename?: 'RuleSet';
   id: Scalars['Int'];
   name: Scalars['String'];
   basePrice: Scalars['Int'];
@@ -127,7 +128,7 @@ export type RuleSet = {
 };
 
 export type Session = {
-   __typename?: 'Session';
+  __typename?: 'Session';
   id: Scalars['Int'];
   hasEnded: Scalars['Boolean'];
   date: Scalars['String'];
@@ -135,14 +136,14 @@ export type Session = {
 };
 
 export type User = {
-   __typename?: 'User';
+  __typename?: 'User';
   username: Scalars['String'];
   isAdmin: Scalars['Boolean'];
 };
 
-export type GroupQueryVariables = {
+export type GroupQueryVariables = Exact<{
   id: Scalars['Int'];
-};
+}>;
 
 
 export type GroupQuery = (
@@ -160,7 +161,7 @@ export type GroupQuery = (
   )> }
 );
 
-export type GroupListQueryVariables = {};
+export type GroupListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GroupListQuery = (
@@ -171,7 +172,7 @@ export type GroupListQuery = (
   )> }
 );
 
-export type PlayerListQueryVariables = {};
+export type PlayerListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PlayerListQuery = (
@@ -182,7 +183,7 @@ export type PlayerListQuery = (
   )> }
 );
 
-export type RuleSetListQueryVariables = {};
+export type RuleSetListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RuleSetListQuery = (
@@ -193,11 +194,11 @@ export type RuleSetListQuery = (
   )> }
 );
 
-export type UserCreationMutationVariables = {
+export type UserCreationMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
   passwordRepeat: Scalars['String'];
-};
+}>;
 
 
 export type UserCreationMutation = (
@@ -208,10 +209,10 @@ export type UserCreationMutation = (
   ) }
 );
 
-export type PlayerCreationMutationVariables = {
+export type PlayerCreationMutationVariables = Exact<{
   name: Scalars['String'];
   abbreviation: Scalars['String'];
-};
+}>;
 
 
 export type PlayerCreationMutation = (
@@ -222,10 +223,10 @@ export type PlayerCreationMutation = (
   ) }
 );
 
-export type GroupCreationMutationVariables = {
+export type GroupCreationMutationVariables = Exact<{
   name: Scalars['String'];
   ruleSetId: Scalars['Int'];
-};
+}>;
 
 
 export type GroupCreationMutation = (

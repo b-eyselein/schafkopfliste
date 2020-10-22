@@ -1,5 +1,5 @@
 # source: http://localhost:8000/graphql
-# timestamp: Mon Mar 23 2020 12:00:24 GMT+0100 (Mitteleuropäische Normalzeit)
+# timestamp: Thu Sep 24 2020 14:21:11 GMT+0200 (Mitteleuropäische Sommerzeit)
 
 schema {
   query: QueryRoot

@@ -1,20 +1,22 @@
 use juniper::{FieldError, FieldResult};
+use mongodb::Client as MongoClient;
 
 use crate::daos::group_dao::{insert_group, select_group_by_id, select_groups};
 use crate::daos::player_dao::{insert_player, select_players};
 use crate::daos::session_dao::select_session_by_id;
+use crate::DbConn;
 use crate::models::group::{Group, NewGroup};
 use crate::models::player::{NewPlayer, Player};
-use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
+use crate::models::rule_set::{RuleSet, select_rule_set_by_id, select_rule_sets};
 use crate::models::session::Session;
 use crate::models::user::{NewUser, User};
-use crate::DbConn;
 
-pub struct GraphQLContext {
+pub struct GraphQLContext<'a> {
     pub connection: DbConn,
+    pub mongo_client: &'a MongoClient,
 }
 
-impl juniper::Context for GraphQLContext {}
+impl juniper::Context for GraphQLContext<'_> {}
 
 pub struct QueryRoot {}
 
@@ -23,7 +25,7 @@ pub fn graphql_on_db_error(db_error: diesel::result::Error) -> FieldError {
     "Error while querying db".into()
 }
 
-#[juniper::object(Context = GraphQLContext)]
+#[juniper::object(Context = GraphQLContext<'a>)]
 impl QueryRoot {
     pub fn rule_sets(context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
         select_rule_sets(&context.connection.0).map_err(graphql_on_db_error)
@@ -56,7 +58,7 @@ impl QueryRoot {
 
 pub struct Mutations {}
 
-#[juniper::object(Context = GraphQLContext)]
+#[juniper::object(Context = GraphQLContext<'a>)]
 impl Mutations {
     pub fn create_user(new_user: NewUser, _context: &GraphQLContext) -> FieldResult<User> {
         Err("Not yet implemented!".into())

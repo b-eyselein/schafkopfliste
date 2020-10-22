@@ -1,21 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {Group, UserWithToken} from '../_interfaces/interfaces';
-import {AuthenticationService} from '../_services/authentication.service';
+import {Group} from '../_interfaces/interfaces';
+// import {AuthenticationService} from '../_services/authentication.service';
 import {GroupListGQL, GroupListQuery} from '../_services/apollo_services';
 
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {
 
-  currentUser: UserWithToken;
   groupListQuery: GroupListQuery;
 
-  constructor(private authenticationService: AuthenticationService, private groupListGQL: GroupListGQL) {
+  constructor(/* private authenticationService: AuthenticationService, */private groupListGQL: GroupListGQL) {
   }
 
   ngOnInit() {
-    this.authenticationService.currentUser
-      .subscribe((u) => this.currentUser = u);
+    // const jwt = this.authenticationService.currentUserValue.token;
 
     this.groupListGQL
       .watch()

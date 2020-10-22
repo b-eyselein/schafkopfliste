@@ -30,7 +30,7 @@ impl User {
     }
 }
 
-#[juniper::object(context = GraphQLContext)]
+#[juniper::object(context = GraphQLContext<'a>)]
 impl User {
     pub fn username(&self) -> &String {
         &self.username
