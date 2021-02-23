@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PlayerAbbreviationsComponent } from './player-abbreviations.component';
 
@@ -6,7 +6,7 @@ describe('PlayerAbbreviationsComponent', () => {
   let component: PlayerAbbreviationsComponent;
   let fixture: ComponentFixture<PlayerAbbreviationsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PlayerAbbreviationsComponent ]
     })

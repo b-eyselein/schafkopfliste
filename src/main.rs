@@ -32,10 +32,7 @@ embed_migrations!();
 pub struct DbConn(PgConnection);
 
 fn make_cors() -> Cors {
-    let cors_opts = CorsOptions {
-        allow_credentials: true,
-        ..Default::default()
-    };
+    let cors_opts = CorsOptions { allow_credentials: true, ..Default::default() };
 
     cors_opts.to_cors().expect("Error while building cors!")
 }

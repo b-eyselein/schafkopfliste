@@ -1,0 +1,14 @@
+version: "3.3"
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - type: bind
+        source: ./db_init.sql
+        target: /docker-entrypoint-initdb.d/db_init.sql
+    environment:
+      - POSTGRES_PASSWORD=1234

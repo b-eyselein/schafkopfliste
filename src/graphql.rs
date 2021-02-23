@@ -9,7 +9,7 @@ use crate::models::group::{Group, NewGroup};
 use crate::models::player::{NewPlayer, Player};
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
 use crate::models::session::Session;
-use crate::models::user::{NewUser, User};
+use crate::models::user::{RegisterUserInput, User};
 use crate::DbConn;
 
 pub struct GraphQLContext {
@@ -79,7 +79,7 @@ pub struct Mutations;
 
 #[graphql_object(Context = GraphQLContext)]
 impl Mutations {
-    pub fn create_user(new_user: NewUser, _context: &GraphQLContext) -> FieldResult<User> {
+    pub fn create_user(register_user_input: RegisterUserInput, _context: &GraphQLContext) -> FieldResult<User> {
         Err("Not yet implemented!".into())
     }
 

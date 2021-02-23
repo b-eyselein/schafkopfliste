@@ -5,7 +5,7 @@ use crate::schema::users;
 use crate::GraphQLContext;
 
 #[derive(juniper::GraphQLInputObject)]
-pub struct NewUser {
+pub struct RegisterUserInput {
     pub username: String,
     pub password: String,
     pub password_repeat: String,
