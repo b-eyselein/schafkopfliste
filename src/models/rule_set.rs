@@ -1,10 +1,9 @@
 use diesel::{self, prelude::*, PgConnection, QueryResult};
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::schema::rule_sets;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum, HasTypescriptType)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, DbEnum)]
 #[DieselType = "Count_laufende"]
 #[derive(juniper::GraphQLEnum)]
 pub enum CountLaufende {
@@ -13,7 +12,7 @@ pub enum CountLaufende {
     Never,
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, HasTypescriptType)]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[serde(rename_all = "camelCase")]
 #[derive(juniper::GraphQLObject)]
 pub struct RuleSet {
@@ -71,8 +70,11 @@ pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
     rule_sets.load(conn)
 }
 
-pub fn select_rule_set_by_id(conn: &PgConnection, rule_set_id: &i32) -> QueryResult<RuleSet> {
+pub fn select_rule_set_by_id(
+    conn: &PgConnection,
+    rule_set_id: &i32,
+) -> QueryResult<Option<RuleSet>> {
     use crate::schema::rule_sets::dsl::*;
 
-    rule_sets.find(rule_set_id).first(conn)
+    rule_sets.find(rule_set_id).first(conn).optional()
 }

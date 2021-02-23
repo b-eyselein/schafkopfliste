@@ -1,11 +1,11 @@
-use diesel::{self, prelude::*, result::Error as DbError, PgConnection};
+use diesel::{prelude::*, PgConnection, QueryResult};
 
 use crate::models::session::{CreatableSession, Session};
 
 pub fn select_sessions_for_group(
     conn: &PgConnection,
     the_group_id: &i32,
-) -> Result<Vec<Session>, DbError> {
+) -> QueryResult<Vec<Session>> {
     use crate::schema::sessions::dsl::*;
 
     sessions
@@ -18,17 +18,17 @@ pub fn select_session_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
     the_id: &i32,
-) -> Result<Session, DbError> {
+) -> QueryResult<Option<Session>> {
     use crate::schema::sessions::dsl::*;
 
-    sessions.find((the_id, the_group_id)).first(conn)
+    sessions.find((the_id, the_group_id)).first(conn).optional()
 }
 
 pub fn select_session_has_ended(
     conn: &PgConnection,
     the_group_id: &i32,
     the_id: &i32,
-) -> Result<bool, DbError> {
+) -> QueryResult<bool> {
     use crate::schema::sessions::dsl::*;
 
     sessions
@@ -37,7 +37,7 @@ pub fn select_session_has_ended(
         .first(conn)
 }
 
-fn select_max_session_id(conn: &PgConnection, the_group_id: i32) -> Result<i32, DbError> {
+fn select_max_session_id(conn: &PgConnection, the_group_id: i32) -> QueryResult<i32> {
     use crate::schema::sessions::dsl::*;
     use diesel::dsl::max;
 
@@ -53,7 +53,7 @@ pub fn insert_session(
     the_group_id: i32,
     the_creator_username: String,
     cs: CreatableSession,
-) -> Result<Session, DbError> {
+) -> QueryResult<Session> {
     use crate::schema::sessions;
 
     let new_id = select_max_session_id(conn, the_group_id)? + 1;
@@ -70,7 +70,7 @@ pub fn update_end_session(
     conn: &PgConnection,
     the_group_id: i32,
     the_session_id: i32,
-) -> Result<bool, DbError> {
+) -> QueryResult<bool> {
     use crate::schema::sessions::dsl::*;
 
     let source = sessions

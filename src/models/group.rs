@@ -1,6 +1,5 @@
-use juniper::FieldResult;
+use juniper::{graphql_object, FieldResult};
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::daos::player_in_group_dao::{select_player_count_for_group, select_players_in_group};
 use crate::daos::session_dao::select_sessions_for_group;
@@ -10,7 +9,7 @@ use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::models::session::Session;
 use crate::schema::groups;
 
-#[derive(Debug, Deserialize, Insertable, HasTypescriptType, juniper::GraphQLInputObject)]
+#[derive(Debug, Deserialize, Insertable, juniper::GraphQLInputObject)]
 #[table_name = "groups"]
 #[serde(rename_all = "camelCase")]
 pub struct NewGroup {
@@ -18,7 +17,7 @@ pub struct NewGroup {
     pub rule_set_id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptType)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
 #[serde(rename_all = "camelCase")]
 pub struct Group {
     pub id: i32,
@@ -36,7 +35,7 @@ impl Group {
     }
 }
 
-#[juniper::object(Context = GraphQLContext)]
+#[graphql_object(Context = GraphQLContext)]
 impl Group {
     pub fn id(&self) -> &i32 {
         &self.id
@@ -51,22 +50,29 @@ impl Group {
     }
 
     pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        FieldResult::Ok(select_rule_set_by_id(&context.connection.0, &self.rule_set_id).ok())
+        let connection_mutex = context.connection.lock()?;
+
+        Ok(select_rule_set_by_id(
+            &connection_mutex.0,
+            &self.rule_set_id,
+        )?)
     }
 
     pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        select_player_count_for_group(&context.connection.0, self.id).map_err(graphql_on_db_error)
+        let connection_mutex = context.connection.lock()?;
+
+        select_player_count_for_group(&connection_mutex.0, self.id).map_err(graphql_on_db_error)
     }
 
     pub fn members(&self, context: &GraphQLContext) -> FieldResult<Vec<Player>> {
-        select_players_in_group(&context.connection.0, &self.id).map_err(graphql_on_db_error)
+        let connection_mutex = context.connection.lock()?;
+
+        select_players_in_group(&connection_mutex.0, &self.id).map_err(graphql_on_db_error)
     }
 
     pub fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
-        select_sessions_for_group(&context.connection.0, &self.id).map_err(graphql_on_db_error)
-    }
-}
+        let connection_mutex = context.connection.lock()?;
 
-pub fn exported_ts_types() -> Vec<TsType> {
-    vec![NewGroup::ts_type(), Group::ts_type()]
+        select_sessions_for_group(&connection_mutex.0, &self.id).map_err(graphql_on_db_error)
+    }
 }

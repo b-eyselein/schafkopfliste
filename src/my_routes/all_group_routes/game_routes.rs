@@ -1,3 +1,4 @@
+use rocket::response::status::BadRequest;
 use rocket::{put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
@@ -26,13 +27,15 @@ fn route_create_game(
     let game_json = game_json_try.map_err(|err| on_error("Could not read game from json!", err))?;
 
     let group = select_group_by_id(&conn.0, &group_id)
-        .map_err(|err| on_error("Could not read group from db", err))?;
+        .map_err(|err| on_error("Could not read group from db", err))?
+        .ok_or_else(|| BadRequest(Some("No such group!")))?;
 
     let session_has_ended = select_session_has_ended(&conn.0, &group_id, &session_id)
         .map_err(|err| on_error("could not select session from db", err))?;
 
     let rule_set = select_rule_set_by_id(&conn.0, &group.rule_set_id)
-        .map_err(|err| on_error("No ruleset for session found!", err))?;
+        .map_err(|err| on_error("No ruleset for session found!", err))?
+        .ok_or_else(|| BadRequest(Some("No such rule set!")))?;
 
     if session_has_ended {
         Err(on_error(

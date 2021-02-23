@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use rocket::response::status::BadRequest;
 use rocket::{get, put, routes, Route};
 use rocket_contrib::json::{Json, JsonError};
 
@@ -7,7 +8,6 @@ use crate::jwt_helpers::MyJwt;
 use crate::models::complete_session::{
     analyze_games_for_player, select_complete_session_by_id, CompleteSession,
 };
-
 use crate::models::session::{CreatableSession, Session};
 use crate::DbConn;
 
@@ -27,8 +27,9 @@ fn route_get_session(conn: DbConn, group_id: i32, session_id: i32) -> MyJsonResp
     use crate::daos::session_dao::select_session_by_id;
 
     select_session_by_id(&conn.0, &group_id, &session_id)
-        .map_err(|err| on_error("Could not read session from db", err))
-        .map(Json)
+        .map_err(|err| on_error("Could not read session from db", err))?
+        .map(|x| Json(x))
+        .ok_or_else(|| BadRequest(Some("No such session")))
 }
 
 #[get("/<group_id>/sessions/<session_id>/sessionWithPlayersAndRuleSet")]
@@ -40,8 +41,9 @@ fn route_get_session_with_players_and_rule_set(
     use crate::models::complete_session::select_complete_session_by_id;
 
     select_complete_session_by_id(&conn.0, &group_id, &session_id)
-        .map_err(|err| on_error("Could not read session from db", err))
+        .map_err(|err| on_error("Could not read session from db", err))?
         .map(Json)
+        .ok_or_else(|| BadRequest(Some("No such session")))
 }
 
 #[put(
@@ -84,25 +86,28 @@ fn route_end_session(
 
     let conn = db_conn.0;
 
-    let complete_session: CompleteSession =
-        select_complete_session_by_id(&conn, &group_id, &session_id)
-            .map_err(|err| on_error("Could not read complete session from db", err))?;
+    match select_complete_session_by_id(&conn, &group_id, &session_id)
+        .map_err(|err| on_error("Could not read complete session from db", err))?
+    {
+        None => Err(BadRequest(Some("No such session!"))),
+        Some(complete_session) => {
+            let session_analysis_result = complete_session
+                .players()
+                .iter()
+                .map(|player| analyze_games_for_player(&player.id, complete_session.played_games()))
+                .collect::<HashMap<_, _>>();
 
-    let session_analysis_result = complete_session
-        .players()
-        .iter()
-        .map(|player| analyze_games_for_player(&player.id, complete_session.played_games()))
-        .collect::<HashMap<_, _>>();
+            conn.transaction::<bool, diesel::result::Error, _>(|| {
+                for (player_id, session_result) in session_analysis_result {
+                    update_player_group_result(&conn, player_id, &session_result).map(|_| ())?
+                }
 
-    conn.transaction::<bool, diesel::result::Error, _>(|| {
-        for (player_id, session_result) in session_analysis_result {
-            update_player_group_result(&conn, player_id, &session_result).map(|_| ())?
+                update_end_session(&conn, group_id, session_id)
+            })
+            .map_err(|err: diesel::result::Error| on_error("Could not update has_ended in db", err))
+            .map(Json)
         }
-
-        update_end_session(&conn, group_id, session_id)
-    })
-    .map_err(|err: diesel::result::Error| on_error("Could not update has_ended in db", err))
-    .map(Json)
+    }
 }
 
 pub fn exported_routes() -> Vec<Route> {

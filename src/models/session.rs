@@ -1,6 +1,5 @@
-use juniper::FieldResult;
+use juniper::{graphql_object, FieldResult};
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
 use crate::models::game::{select_games_for_session, Game};
@@ -8,7 +7,7 @@ use crate::schema::sessions;
 
 use super::group::Group;
 
-#[derive(Debug, Serialize, Deserialize, HasTypescriptType)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatableSession {
     date_year: i32,
@@ -24,15 +23,7 @@ pub struct CreatableSession {
 }
 
 #[derive(
-    Debug,
-    Deserialize,
-    Serialize,
-    Identifiable,
-    Queryable,
-    Insertable,
-    Associations,
-    PartialEq,
-    HasTypescriptType,
+    Debug, Deserialize, Serialize, Identifiable, Queryable, Insertable, Associations, PartialEq,
 )]
 #[serde(rename_all = "camelCase")]
 #[belongs_to(Group)]
@@ -100,7 +91,7 @@ impl Session {
     }
 }
 
-#[juniper::object(context = GraphQLContext)]
+#[graphql_object(context = GraphQLContext)]
 impl Session {
     pub fn id(&self) -> &i32 {
         &self.id
@@ -118,11 +109,9 @@ impl Session {
     }
 
     pub fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
-        select_games_for_session(&context.connection.0, &self.id, &self.group_id)
+        let connection_mutex = context.connection.lock()?;
+
+        select_games_for_session(&connection_mutex.0, &self.id, &self.group_id)
             .map_err(graphql_on_db_error)
     }
-}
-
-pub fn exported_ts_types() -> Vec<TsType> {
-    vec![CreatableSession::ts_type(), Session::ts_type()]
 }

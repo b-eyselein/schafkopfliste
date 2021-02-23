@@ -74,17 +74,22 @@ pub fn select_players_in_group_with_group_result(
 pub fn select_group_with_players_and_rule_set_by_id(
     conn: &PgConnection,
     the_group_id: &i32,
-) -> QueryResult<GroupWithPlayersAndRuleSet> {
+) -> QueryResult<Option<GroupWithPlayersAndRuleSet>> {
     use crate::models::rule_set::select_rule_set_by_id;
 
     let group = select_group_by_id(conn, the_group_id)?;
+    let rule_set = select_rule_set_by_id(conn, &the_group_id)?;
 
-    Ok(GroupWithPlayersAndRuleSet {
-        id: group.id,
-        name: group.name,
-        rule_set: select_rule_set_by_id(conn, &group.id)?,
-        players: select_players_in_group_with_group_result(conn, the_group_id)?,
-    })
+    let players = select_players_in_group_with_group_result(conn, the_group_id)?;
+
+    Ok(
+        Option::zip(group, rule_set).map(|(group, rule_set)| GroupWithPlayersAndRuleSet {
+            id: group.id,
+            name: group.name,
+            rule_set,
+            players,
+        }),
+    )
 }
 
 pub fn toggle_group_membership(
@@ -121,33 +126,37 @@ pub fn select_groups_for_player(
 pub fn select_players_and_group_membership(
     conn: &PgConnection,
     the_group_id: &i32,
-) -> QueryResult<GroupWithPlayerMembership> {
+) -> QueryResult<Option<GroupWithPlayerMembership>> {
     use super::player_dao::select_players;
     use crate::schema::player_in_groups::dsl::*;
 
     let group = select_group_by_id(&conn, &the_group_id)?;
 
-    let player_ids_in_group: Vec<i32> = player_in_groups
-        .filter(group_id.eq(the_group_id))
-        .filter(is_active.eq(true))
-        .select(player_id)
-        .load(conn)?;
+    if let Some(group) = group {
+        let player_ids_in_group: Vec<i32> = player_in_groups
+            .filter(group_id.eq(the_group_id))
+            .filter(is_active.eq(true))
+            .select(player_id)
+            .load(conn)?;
 
-    let player_memberships = select_players(conn)?
-        .into_iter()
-        .map(|p| {
-            let is_in_group = player_ids_in_group.contains(&p.id);
-            PlayerAndMembership {
-                player: p,
-                is_member: is_in_group,
-            }
-        })
-        .collect();
+        let player_memberships = select_players(conn)?
+            .into_iter()
+            .map(|p| {
+                let is_in_group = player_ids_in_group.contains(&p.id);
+                PlayerAndMembership {
+                    player: p,
+                    is_member: is_in_group,
+                }
+            })
+            .collect();
 
-    Ok(GroupWithPlayerMembership {
-        group,
-        player_memberships,
-    })
+        Ok(Some(GroupWithPlayerMembership {
+            group,
+            player_memberships,
+        }))
+    } else {
+        Ok(None)
+    }
 }
 
 pub fn update_player_group_result(

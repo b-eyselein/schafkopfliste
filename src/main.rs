@@ -8,7 +8,7 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-use juniper::RootNode;
+use juniper::{EmptySubscription, RootNode};
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
 use rocket::{get, post, response::Redirect, routes, State};
 use rocket_contrib::database;
@@ -16,7 +16,6 @@ use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
 
 use graphql::{GraphQLContext, Mutations, QueryRoot};
-use ts_type_writer::write_all_ts_types;
 
 mod daos;
 mod graphql;
@@ -24,9 +23,8 @@ mod jwt_helpers;
 mod models;
 mod my_routes;
 mod schema;
-mod ts_type_writer;
 
-type Schema = RootNode<'static, QueryRoot, Mutations>;
+type Schema = RootNode<'static, QueryRoot, Mutations, EmptySubscription<GraphQLContext>>;
 
 embed_migrations!();
 
@@ -49,7 +47,7 @@ fn route_index() -> Redirect {
 
 #[get("/graphiql")]
 fn route_get_graphiql() -> rocket::response::content::Html<String> {
-    juniper_rocket::graphiql_source("/graphql")
+    juniper_rocket::graphiql_source("/graphql", None)
 }
 
 #[get("/graphql?<request>")]
@@ -58,7 +56,7 @@ fn route_get_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(&schema, &GraphQLContext { connection })
+    request.execute_sync(&schema, &GraphQLContext::new(connection))
 }
 
 #[post("/graphql", data = "<request>")]
@@ -69,7 +67,7 @@ fn route_post_graphql_handler(
 ) -> GraphQLResponse {
     println!("Got query: {:?}", request);
 
-    request.execute(&schema, &GraphQLContext { connection })
+    request.execute_sync(&schema, &GraphQLContext::new(connection))
 }
 
 fn execute_db_migrations() {
@@ -83,10 +81,6 @@ fn execute_db_migrations() {
 }
 
 fn main() {
-    if cfg!(debug_assertions) {
-        write_all_ts_types();
-    }
-
     execute_db_migrations();
 
     rocket::ignite()
@@ -110,7 +104,7 @@ fn main() {
             "/api/groups",
             my_routes::all_group_routes::exported_routes(),
         )
-        .manage(Schema::new(QueryRoot {}, Mutations {}))
+        .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .attach(DbConn::fairing())
         .attach(make_cors())
         .launch();

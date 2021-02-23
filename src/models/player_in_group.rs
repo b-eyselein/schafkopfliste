@@ -1,5 +1,4 @@
 use serde::Serialize;
-use serde_tsi::prelude::*;
 
 use crate::schema::player_in_groups;
 
@@ -35,14 +34,14 @@ impl PlayerInGroup {
     }
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerWithGroupResult {
     pub player: Player,
     pub session_result: AccumulatedResult,
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayersAndRuleSet {
     pub id: i32,
@@ -51,23 +50,16 @@ pub struct GroupWithPlayersAndRuleSet {
     pub players: Vec<PlayerWithGroupResult>,
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerAndMembership {
     pub player: Player,
     pub is_member: bool,
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayerMembership {
     pub group: Group,
     pub player_memberships: Vec<PlayerAndMembership>,
-}
-
-pub fn exported_ts_types() -> Vec<TsType> {
-    vec![
-        GroupWithPlayerMembership::ts_type(),
-        GroupWithPlayersAndRuleSet::ts_type(),
-    ]
 }

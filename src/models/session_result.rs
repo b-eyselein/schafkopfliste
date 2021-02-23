@@ -1,10 +1,9 @@
 use diesel::{self, prelude::*, result::QueryResult, PgConnection};
 use serde::Serialize;
-use serde_tsi::prelude::*;
 
 use crate::schema::session_results;
 
-#[derive(Debug, Insertable, Queryable, Serialize, HasTypescriptType)]
+#[derive(Debug, Insertable, Queryable, Serialize)]
 pub struct SessionResult {
     player_id: i32,
     session_id: i32,

@@ -1,22 +1,13 @@
 use crate::graphql::GraphQLContext;
+use juniper::graphql_object;
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::schema::games;
 
 use super::super::rule_set::{CountLaufende, RuleSet};
 use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 
-#[derive(
-    Clone,
-    Serialize,
-    Deserialize,
-    Identifiable,
-    Queryable,
-    Insertable,
-    AsChangeset,
-    HasTypescriptType,
-)]
+#[derive(Clone, Serialize, Deserialize, Identifiable, Queryable, Insertable, AsChangeset)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
     pub id: i32,
@@ -90,14 +81,14 @@ impl Game {
     }
 }
 
-#[juniper::object(context = GraphQLContext)]
+#[graphql_object(context = GraphQLContext)]
 impl Game {
     pub fn id(&self) -> &i32 {
         &self.id
     }
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PricedGame {
     pub game: Game,

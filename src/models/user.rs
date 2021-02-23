@@ -1,5 +1,5 @@
+use juniper::graphql_object;
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::schema::users;
 use crate::GraphQLContext;
@@ -30,7 +30,7 @@ impl User {
     }
 }
 
-#[juniper::object(context = GraphQLContext)]
+#[graphql_object(context = GraphQLContext)]
 impl User {
     pub fn username(&self) -> &String {
         &self.username
@@ -41,7 +41,7 @@ impl User {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, HasTypescriptType)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SerializableUser {
     pub username: String,
@@ -59,14 +59,14 @@ impl SerializableUser {
     }
 }
 
-#[derive(Deserialize, HasTypescriptType)]
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Credentials {
     pub username: String,
     pub password: String,
 }
 
-#[derive(Debug, Deserialize, HasTypescriptType)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RegisterValues {
     pub username: String,
@@ -83,7 +83,7 @@ impl RegisterValues {
     }
 }
 
-#[derive(Serialize, HasTypescriptType)]
+#[derive(Serialize)]
 pub struct UserWithToken {
     pub user: SerializableUser,
     pub token: String,
@@ -93,13 +93,4 @@ impl UserWithToken {
     pub fn new(user: SerializableUser, token: String) -> UserWithToken {
         UserWithToken { user, token }
     }
-}
-
-pub fn exported_ts_types() -> Vec<TsType> {
-    vec![
-        SerializableUser::ts_type(),
-        Credentials::ts_type(),
-        RegisterValues::ts_type(),
-        UserWithToken::ts_type(),
-    ]
 }

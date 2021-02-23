@@ -9,6 +9,7 @@ use crate::models::player_in_group::{GroupWithPlayerMembership, GroupWithPlayers
 use crate::DbConn;
 
 use super::super::routes_helpers::{on_error, MyJsonResponse};
+use rocket::response::status::BadRequest;
 
 #[get("/")]
 fn route_groups(conn: DbConn) -> MyJsonResponse<Vec<Group>> {
@@ -49,8 +50,9 @@ fn route_group_with_players_by_id(
     use crate::daos::player_in_group_dao::select_group_with_players_and_rule_set_by_id;
 
     select_group_with_players_and_rule_set_by_id(&conn.0, &group_id)
-        .map_err(|err| on_error("", err))
+        .map_err(|err| on_error("", err))?
         .map(Json)
+        .ok_or_else(|| BadRequest(Some("No such group!")))
 }
 
 #[get("/<group_id>")]
@@ -58,8 +60,9 @@ fn route_group_by_id(_my_jwt: MyJwt, conn: DbConn, group_id: i32) -> MyJsonRespo
     use crate::daos::group_dao::select_group_by_id;
 
     select_group_by_id(&conn.0, &group_id)
-        .map_err(|err| on_error("Could not find such a group", err))
+        .map_err(|err| on_error("Could not find such a group", err))?
         .map(Json)
+        .ok_or_else(|| BadRequest(Some("No such group!")))
 }
 
 #[put(
@@ -104,8 +107,9 @@ fn route_get_group_with_players_and_membership(
     use crate::daos::player_in_group_dao::select_players_and_group_membership;
 
     select_players_and_group_membership(&conn.0, &group_id)
-        .map_err(|err| on_error("could not read from db", err))
+        .map_err(|err| on_error("could not read from db", err))?
         .map(Json)
+        .ok_or_else(|| BadRequest(Some("No such group!")))
 }
 
 #[get("/<group_id>/recalculatedStatistics")]

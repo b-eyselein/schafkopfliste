@@ -1,8 +1,7 @@
 use diesel::sql_types::{BigInt, Integer, Varchar};
 use serde::Serialize;
-use serde_tsi::prelude::*;
 
-#[derive(Serialize, QueryableByName, HasTypescriptType)]
+#[derive(Serialize, QueryableByName)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupWithPlayerCount {
     #[sql_type = "Integer"]

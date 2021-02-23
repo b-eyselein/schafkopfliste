@@ -1,9 +1,10 @@
+use juniper::graphql_object;
 use serde::{Deserialize, Serialize};
-use serde_tsi::prelude::*;
 
 use crate::schema::players;
+use crate::GraphQLContext;
 
-#[derive(Debug, Deserialize, Insertable, HasTypescriptType, juniper::GraphQLInputObject)]
+#[derive(Debug, Deserialize, Insertable, juniper::GraphQLInputObject)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "players"]
 pub struct NewPlayer {
@@ -12,7 +13,7 @@ pub struct NewPlayer {
     pub picture_name: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, HasTypescriptType)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
 #[serde(rename_all = "camelCase")]
 pub struct Player {
     pub id: i32,
@@ -32,7 +33,7 @@ impl Player {
     }
 }
 
-#[juniper::object]
+#[graphql_object(Context = GraphQLContext)]
 impl Player {
     pub fn id(&self) -> &i32 {
         &self.id
@@ -49,8 +50,4 @@ impl Player {
     pub fn picture_name(&self) -> &Option<String> {
         &self.picture_name
     }
-}
-
-pub fn exported_ts_types() -> Vec<TsType> {
-    vec![NewPlayer::ts_type(), Player::ts_type()]
 }
