@@ -43,6 +43,19 @@ type Group {
   sessions: [Session!]!
 }
 
+input GameInput {
+  actingPlayerAbbreviation: String!
+  gameType: GameType!
+  suit: BavarianSuit
+  tout: Boolean!
+  isDoubled: Boolean!
+  laufendeCount: Int!
+  schneiderSchwarz: SchneiderSchwarz
+  playersHavingPutAbbreviations: [String!]!
+  kontra: KontraType
+  playersHavingWonAbbreviations: [String!]!
+}
+
 type Mutations {
   registerUser(registerUserInput: RegisterUserInput!): String!
   login(credentials: Credentials!): UserWithToken
@@ -51,6 +64,7 @@ type Mutations {
   createPlayer(newPlayer: PlayerInput!): String!
   addPlayerToGroup(playerName: String!, groupName: String!, newState: Boolean!): Boolean!
   newSession(groupName: String!, sessionInput: SessionInput!): Int!
+  newGame(groupName: String!, sessionId: Int!, gameInput: GameInput!): Game!
 }
 
 type Session {

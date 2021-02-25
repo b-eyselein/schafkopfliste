@@ -15,14 +15,15 @@
         <div class="column is-two-fifths-widescreen" *ngIf="currentUser && !session.hasEnded">
           <div class="box">
             <skl-new-game [session]="session" [sessionId]="sessionId" [groupName]="groupName"
-                          (gameChanged)="updateGame($event)"
-                          (endSession)="endSession()">
+                          (gameChanged)="updateGame($event)" (gameAdded)="addGame($event)" (endSession)="endSession()">
             </skl-new-game>
           </div>
         </div>
 
         <div class="column">
-          <skl-games-table [session]="session" [runningGame]="game"></skl-games-table>
+          <skl-games-table
+            [players]="[session.firstPlayer, session.secondPlayer, session.thirdPlayer, session.fourthPlayer]"
+            [games]="session.games" [runningGame]="game"></skl-games-table>
         </div>
       </div>
 

@@ -1,10 +1,12 @@
 use bcrypt::{hash, verify, DEFAULT_COST};
+use diesel::prelude::*;
 use juniper::{graphql_object, FieldError, FieldResult, Value};
 
 use crate::daos::group_dao::insert_group;
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::query::graphql_on_db_error;
 use crate::jwt_helpers::generate_token;
+use crate::models::game::{select_max_game_id, upsert_game, Game, GameInput};
 use crate::models::group::{Group, GroupInput};
 use crate::models::player::{insert_player, PlayerInput};
 use crate::models::player_in_group::upsert_group_membership;
@@ -74,17 +76,17 @@ impl Mutations {
         rule_set_input: RuleSetInput,
         context: &GraphQLContext,
     ) -> FieldResult<String> {
-        let connection_mutex = context.connection.lock()?;
+        let connection = &context.connection.lock()?.0;
 
-        insert_rule_set(&connection_mutex.0, &rule_set_input)?;
+        insert_rule_set(&connection, &rule_set_input)?;
 
         Ok(rule_set_input.name)
     }
 
     pub fn create_group(group_input: GroupInput, context: &GraphQLContext) -> FieldResult<Group> {
-        let connection_mutex = context.connection.lock()?;
+        let connection = &context.connection.lock()?.0;
 
-        insert_group(&connection_mutex.0, group_input).map_err(graphql_on_db_error)
+        insert_group(&connection, group_input).map_err(graphql_on_db_error)
     }
 
     pub fn create_player(new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
@@ -101,10 +103,10 @@ impl Mutations {
         new_state: bool,
         context: &GraphQLContext,
     ) -> FieldResult<bool> {
-        let connection_mutex = context.connection.lock()?;
+        let connection = &context.connection.lock()?.0;
 
         Ok(upsert_group_membership(
-            &connection_mutex.0,
+            &connection,
             group_name,
             player_name,
             new_state,
@@ -123,13 +125,61 @@ impl Mutations {
             .claims
             .username();
 
-        let connection_mutex = context.connection.lock()?;
+        let connection = &context.connection.lock()?.0;
 
         Ok(insert_session(
-            &connection_mutex.0,
+            &connection,
             group_name,
             creator_username.to_string(),
             session_input,
         )?)
+    }
+
+    pub fn new_game(
+        group_name: String,
+        session_id: i32,
+        game_input: GameInput,
+        context: &GraphQLContext,
+    ) -> FieldResult<Game> {
+        let connection = &context.connection.lock()?.0;
+
+        let GameInput {
+            acting_player_abbreviation,
+            game_type,
+            suit,
+            tout,
+            is_doubled,
+            laufende_count,
+            schneider_schwarz,
+            players_having_put_abbreviations,
+            kontra,
+            players_having_won_abbreviations,
+        } = game_input;
+
+        connection
+            .transaction(|| {
+                let next_game_id = select_max_game_id(connection, &group_name, &session_id)?
+                    .map(|id| id + 1)
+                    .unwrap_or(1);
+
+                let game = Game::new(
+                    next_game_id,
+                    session_id,
+                    group_name,
+                    acting_player_abbreviation,
+                    game_type,
+                    suit,
+                    tout,
+                    is_doubled,
+                    laufende_count,
+                    schneider_schwarz,
+                    players_having_put_abbreviations,
+                    kontra,
+                    players_having_won_abbreviations,
+                );
+
+                upsert_game(connection, &game)
+            })
+            .map_err(graphql_on_db_error)
     }
 }

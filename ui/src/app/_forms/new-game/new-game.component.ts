@@ -8,38 +8,16 @@ import {
   Suit,
   SUITS
 } from '../../_interfaces/game_types';
-import {ApiService} from '../../_services/api.service';
 import {CircleBufferSelectable} from '../../_components/circle-buffer/circle-buffer.component';
 import {
-  BavarianSuit,
-  GameType,
+  CreateGameGQL,
+  GameInput,
   KontraType,
   SchneiderSchwarz,
   SessionFragment,
   SessionGameFragment,
   SessionPlayerFragment
 } from '../../_services/apollo_services';
-
-
-/**
- * @deprecated
- */
-export interface Game {
-  actingPlayerId: string;
-  gameType: GameType;
-  groupName: string;
-  id: number;
-  isDoubled: boolean;
-  kontra: KontraType | undefined;
-  laufendeCount: number;
-  playersHavingPutIds: string[];
-  playersHavingWonIds: string[];
-  schneiderSchwarz: SchneiderSchwarz | undefined;
-  sessionId: number;
-  suit: BavarianSuit | undefined;
-  tout: boolean;
-}
-
 
 @Component({
   selector: 'skl-new-game',
@@ -67,13 +45,14 @@ export class NewGameComponent implements OnInit {
   @Input() groupName: string;
   @Input() sessionId: number;
 
-  @Output() gameChanged = new EventEmitter<SessionGameFragment>();
+  @Output() gameAdded = new EventEmitter<SessionGameFragment>();
+  @Output() gameChanged = new EventEmitter<GameInput>();
   @Output() endSession = new EventEmitter<void>();
 
   players: SessionPlayerFragment[];
   bufferPlayers: CircleBufferSelectable<SessionPlayerFragment>[];
 
-  game: SessionGameFragment;
+  game: GameInput;
 
   allowedGameTypes: CompleteGameType[] = [];
   allowedSuits: Suit[] = [];
@@ -86,7 +65,7 @@ export class NewGameComponent implements OnInit {
 
   submitted = false;
 
-  constructor(private apiService: ApiService) {
+  constructor(private createGameGQL: CreateGameGQL) {
   }
 
   ngOnInit(): void {
@@ -129,10 +108,6 @@ export class NewGameComponent implements OnInit {
     }
 
     this.game = {
-      id: this.currentGameIndex,
-//      sessionId: this.sessionId,
-      //     groupName: this.groupName,
-
       actingPlayerAbbreviation: undefined,
       gameType: undefined,
       suit: undefined,
@@ -145,8 +120,6 @@ export class NewGameComponent implements OnInit {
       playersHavingPutAbbreviations: [],
       kontra: undefined,
       playersHavingWonAbbreviations: [],
-
-      price: -1
     };
 
   }
@@ -259,19 +232,15 @@ export class NewGameComponent implements OnInit {
       return;
     }
 
-    const theGame: SessionGameFragment = {
-      id: this.currentGameIndex,
-      // sessionId: this.sessionId,
-      // groupName: this.groupName,
-
-      ...this.game,
-    };
-
-    this.apiService.createGame(this.groupName, this.sessionId, theGame)
-      .subscribe((g) => {
-        // this.session.games.push(g);
-        this.resetData();
-      });
+    this.createGameGQL
+      .mutate({groupName: this.groupName, sessionId: this.sessionId, gameInput: this.game})
+      .subscribe(
+        ({data}) => {
+          this.gameAdded.emit(data.newGame);
+          this.resetData();
+        },
+        (error) => console.error(error)
+      );
   }
 
   updateKontra(kontra: KontraType | undefined): void {

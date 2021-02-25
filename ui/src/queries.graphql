@@ -165,6 +165,12 @@ query Session($groupName: String!, $sessionId: Int!) {
   }
 }
 
+mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput!) {
+  newGame(groupName: $groupName, sessionId: $sessionId, gameInput: $gameInput) {
+    ...SessionGame
+  }
+}
+
 # /players
 
 query PlayerList {

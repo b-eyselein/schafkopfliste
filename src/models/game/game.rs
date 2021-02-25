@@ -1,15 +1,13 @@
+use diesel::dsl::max;
 use diesel::{pg::PgConnection, prelude::*, result::QueryResult};
-use juniper::{graphql_object, FieldError, FieldResult, Value};
-use serde::{Deserialize, Serialize};
+use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject, Value};
 
 use crate::graphql::GraphQLContext;
+use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
+use crate::models::rule_set::{select_rule_set_for_group, CountLaufende, RuleSet};
 use crate::schema::games;
 
-use super::super::rule_set::{CountLaufende, RuleSet};
-use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
-
-#[derive(Clone, Serialize, Deserialize, Identifiable, Queryable, Insertable, AsChangeset)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Queryable, Insertable, AsChangeset)]
 pub struct Game {
     pub id: i32,
     pub session_id: i32,
@@ -29,7 +27,55 @@ pub struct Game {
     pub players_having_won_abbreviations: Vec<String>,
 }
 
+#[derive(Debug, GraphQLInputObject)]
+pub struct GameInput {
+    pub acting_player_abbreviation: String,
+    pub game_type: GameType,
+    pub suit: Option<BavarianSuit>,
+    pub tout: bool,
+
+    pub is_doubled: bool,
+    pub laufende_count: i32,
+    pub schneider_schwarz: Option<SchneiderSchwarz>,
+
+    pub players_having_put_abbreviations: Vec<String>,
+    pub kontra: Option<KontraType>,
+    pub players_having_won_abbreviations: Vec<String>,
+}
+
 impl Game {
+    pub fn new(
+        id: i32,
+        session_id: i32,
+        group_name: String,
+        acting_player_abbreviation: String,
+        game_type: GameType,
+        suit: Option<BavarianSuit>,
+        tout: bool,
+        is_doubled: bool,
+        laufende_count: i32,
+        schneider_schwarz: Option<SchneiderSchwarz>,
+        players_having_put_abbreviations: Vec<String>,
+        kontra: Option<KontraType>,
+        players_having_won_abbreviations: Vec<String>,
+    ) -> Self {
+        Self {
+            id,
+            session_id,
+            group_name,
+            acting_player_abbreviation,
+            game_type,
+            suit,
+            tout,
+            is_doubled,
+            laufende_count,
+            schneider_schwarz,
+            players_having_put_abbreviations,
+            kontra,
+            players_having_won_abbreviations,
+        }
+    }
+
     pub fn player_has_acted(&self, player_abbreviation: &str) -> bool {
         &self.acting_player_abbreviation == player_abbreviation
     }
@@ -154,8 +200,14 @@ impl Game {
         &self.players_having_won_abbreviations
     }
 
-    pub fn price(&self) -> FieldResult<i32> {
-        Err(FieldError::new("not yet implemented!", Value::null()))
+    #[graphql(name = "price")]
+    pub fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
+        let connection = &context.connection.lock()?.0;
+
+        let rule_set = select_rule_set_for_group(connection, &self.group_name)?
+            .ok_or_else(|| FieldError::new("Could not find rule set!", Value::null()))?;
+
+        Ok(self.calculate_price(&rule_set))
     }
 }
 
@@ -171,6 +223,20 @@ pub fn upsert_game(conn: &PgConnection, the_game: &Game) -> QueryResult<Game> {
         .set(the_game)
         //.returning(games::all_columns)
         .get_result(conn)
+}
+
+pub fn select_max_game_id(
+    conn: &PgConnection,
+    the_group_name: &str,
+    the_session_id: &i32,
+) -> QueryResult<Option<i32>> {
+    use crate::schema::games::dsl::*;
+
+    games
+        .filter(group_name.eq(the_group_name))
+        .filter(session_id.eq(the_session_id))
+        .select(max(id))
+        .first(conn)
 }
 
 pub fn select_games_for_group(conn: &PgConnection, the_group_name: &str) -> QueryResult<Vec<Game>> {

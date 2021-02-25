@@ -4,7 +4,7 @@ use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject, Value
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
 use crate::models::game::{select_games_for_session, Game};
 use crate::models::player::{select_player_by_abbreviation, Player};
-use crate::models::rule_set::{ select_rule_set_for_group, RuleSet};
+use crate::models::rule_set::{select_rule_set_for_group, RuleSet};
 use crate::schema::sessions;
 
 #[derive(Debug, Queryable, Insertable)]

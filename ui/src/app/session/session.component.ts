@@ -2,7 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../_services/api.service';
 import {AuthenticationService} from '../_services/authentication.service';
-import {LoggedInUserFragment, SessionFragment, SessionGameFragment, SessionGQL} from '../_services/apollo_services';
+import {
+  GameInput,
+  LoggedInUserFragment,
+  SessionFragment,
+  SessionGameFragment,
+  SessionGQL
+} from '../_services/apollo_services';
 import {GraphQLError} from 'graphql';
 
 @Component({templateUrl: './session.component.html'})
@@ -18,7 +24,7 @@ export class SessionComponent implements OnInit {
   session: SessionFragment;
   queryError: GraphQLError;
 
-  game: SessionGameFragment;
+  game: GameInput;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -51,9 +57,12 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  updateGame($event: SessionGameFragment) {
-    console.info($event);
-    this.game = {...$event};
+  updateGame(game: GameInput) {
+    this.game = game;
+  }
+
+  addGame(game: SessionGameFragment): void {
+    this.session.games.push(game);
   }
 
   endSession(): void {
@@ -64,6 +73,7 @@ export class SessionComponent implements OnInit {
   }
 
   renderDate(): string {
+    // TODO!
     return this.session.date;
     /*
     return this.session.dateDayOfMonth.toString().padStart(2, '0') + '.'
@@ -74,6 +84,7 @@ export class SessionComponent implements OnInit {
   }
 
   renderTime(): string {
+    // TODO!
     return this.session.date;
     /*
     return this.session.timeHours.toString().padStart(2, '0') + ':'

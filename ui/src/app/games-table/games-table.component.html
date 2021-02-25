@@ -54,37 +54,37 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let playedGame of session.games">
+        <tr *ngFor="let playedGame of games">
           <td>{{playedGame.id}}</td>
-          <td>{{getDealer(playedGame).abbreviation}}</td>
+          <td>{{getDealer(playedGame.id).abbreviation}}</td>
           <td>{{playedGame.isDoubled ? '&#10004;' : ''}}</td>
           <td>
-            <skl-player-abbreviations [players]="playersHavingPut(playedGame)"></skl-player-abbreviations>
+            <skl-player-abbreviations [players]="playersHavingPut(playedGame.playersHavingPutAbbreviations)"></skl-player-abbreviations>
           </td>
           <td>{{playedGame.gameType}}</td>
-          <td>{{getSuitGermanName(playedGame)}}</td>
+          <td>{{getSuitGermanName(playedGame.suit)}}</td>
           <td>{{getActingPlayer(playedGame).abbreviation}}</td>
           <td>{{playedGame.kontra}}</td>
           <td>
-            <skl-player-abbreviations [players]="playersHavingWon(playedGame)"></skl-player-abbreviations>
+            <skl-player-abbreviations [players]="playersHavingWon(playedGame.playersHavingWonAbbreviations)"></skl-player-abbreviations>
           </td>
           <td>{{playedGame.laufendeCount}}</td>
           <td>{{playedGame.schneiderSchwarz}}</td>
           <td>{{playedGame.price}}</td>
         </tr>
         <tr *ngIf="runningGame" class="is-selected">
-          <td>{{runningGame.id}}</td>
-          <td>{{getDealer(runningGame).abbreviation}}</td>
+          <td></td>
+          <td>{{getDealer(nextGameId()).abbreviation}}</td>
           <td>{{runningGame.isDoubled ? '&#10004;' : ''}}</td>
           <td>
-            <skl-player-abbreviations [players]="playersHavingPut(runningGame)"></skl-player-abbreviations>
+            <skl-player-abbreviations [players]="playersHavingPut(runningGame.playersHavingPutAbbreviations)"></skl-player-abbreviations>
           </td>
           <td>{{runningGame.gameType}}</td>
-          <td>{{getSuitGermanName(runningGame)}}</td>
+          <td>{{getSuitGermanName(runningGame.suit)}}</td>
           <td>{{currentActingPlayer ? currentActingPlayer.abbreviation : ''}}</td>
           <td>{{runningGame.kontra}}</td>
           <td>
-            <skl-player-abbreviations [players]="playersHavingWon(runningGame)"></skl-player-abbreviations>
+            <skl-player-abbreviations [players]="playersHavingWon(runningGame.playersHavingWonAbbreviations)"></skl-player-abbreviations>
           </td>
           <td>{{runningGame.laufendeCount}}</td>
           <td>{{runningGame.schneiderSchwarz}}</td>

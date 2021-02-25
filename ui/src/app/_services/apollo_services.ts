@@ -55,6 +55,19 @@ export type Group = {
   sessions: Array<Session>;
 };
 
+export type GameInput = {
+  actingPlayerAbbreviation: Scalars['String'];
+  gameType: GameType;
+  suit?: Maybe<BavarianSuit>;
+  tout: Scalars['Boolean'];
+  isDoubled: Scalars['Boolean'];
+  laufendeCount: Scalars['Int'];
+  schneiderSchwarz?: Maybe<SchneiderSchwarz>;
+  playersHavingPutAbbreviations: Array<Scalars['String']>;
+  kontra?: Maybe<KontraType>;
+  playersHavingWonAbbreviations: Array<Scalars['String']>;
+};
+
 export type Mutations = {
   __typename?: 'Mutations';
   registerUser: Scalars['String'];
@@ -64,6 +77,7 @@ export type Mutations = {
   createPlayer: Scalars['String'];
   addPlayerToGroup: Scalars['Boolean'];
   newSession: Scalars['Int'];
+  newGame: Game;
 };
 
 
@@ -102,6 +116,13 @@ export type MutationsAddPlayerToGroupArgs = {
 export type MutationsNewSessionArgs = {
   groupName: Scalars['String'];
   sessionInput: SessionInput;
+};
+
+
+export type MutationsNewGameArgs = {
+  groupName: Scalars['String'];
+  sessionId: Scalars['Int'];
+  gameInput: GameInput;
 };
 
 export type Session = {
@@ -454,6 +475,21 @@ export type SessionQuery = (
   )> }
 );
 
+export type CreateGameMutationVariables = Exact<{
+  groupName: Scalars['String'];
+  sessionId: Scalars['Int'];
+  gameInput: GameInput;
+}>;
+
+
+export type CreateGameMutation = (
+  { __typename?: 'Mutations' }
+  & { newGame: (
+    { __typename?: 'Game' }
+    & SessionGameFragment
+  ) }
+);
+
 export type PlayerListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -763,6 +799,21 @@ export const SessionDocument = gql`
   })
   export class SessionGQL extends Apollo.Query<SessionQuery, SessionQueryVariables> {
     document = SessionDocument;
+    
+  }
+export const CreateGameDocument = gql`
+    mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput!) {
+  newGame(groupName: $groupName, sessionId: $sessionId, gameInput: $gameInput) {
+    ...SessionGame
+  }
+}
+    ${SessionGameFragmentDoc}`;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateGameGQL extends Apollo.Mutation<CreateGameMutation, CreateGameMutationVariables> {
+    document = CreateGameDocument;
     
   }
 export const PlayerListDocument = gql`
