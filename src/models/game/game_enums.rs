@@ -1,6 +1,7 @@
+use juniper::GraphQLEnum;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Bavarian_suit"]
 pub enum BavarianSuit {
     Acorns,
@@ -9,7 +10,7 @@ pub enum BavarianSuit {
     Bells,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Game_type"]
 pub enum GameType {
     Ruf,
@@ -23,14 +24,14 @@ pub enum GameType {
     Farbgeier,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Schneider_schwarz"]
 pub enum SchneiderSchwarz {
     Schneider,
     Schwarz,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Kontra_type"]
 pub enum KontraType {
     Kontra,
@@ -50,7 +51,7 @@ impl KontraType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Table_position"]
 pub enum TablePosition {
     Dealer,

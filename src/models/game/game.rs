@@ -1,7 +1,8 @@
-use crate::graphql::GraphQLContext;
-use juniper::graphql_object;
+use diesel::{pg::PgConnection, prelude::*, result::QueryResult};
+use juniper::{graphql_object, FieldError, FieldResult, Value};
 use serde::{Deserialize, Serialize};
 
+use crate::graphql::GraphQLContext;
 use crate::schema::games;
 
 use super::super::rule_set::{CountLaufende, RuleSet};
@@ -12,9 +13,9 @@ use super::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 pub struct Game {
     pub id: i32,
     pub session_id: i32,
-    pub group_id: i32,
+    pub group_name: String,
 
-    pub acting_player_id: i32,
+    pub acting_player_abbreviation: String,
     pub game_type: GameType,
     pub suit: Option<BavarianSuit>,
     pub tout: bool,
@@ -23,12 +24,36 @@ pub struct Game {
     pub laufende_count: i32,
     pub schneider_schwarz: Option<SchneiderSchwarz>,
 
-    pub players_having_put_ids: Vec<i32>,
+    pub players_having_put_abbreviations: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_ids: Vec<i32>,
+    pub players_having_won_abbreviations: Vec<String>,
 }
 
 impl Game {
+    pub fn player_has_acted(&self, player_abbreviation: &str) -> bool {
+        &self.acting_player_abbreviation == player_abbreviation
+    }
+
+    pub fn player_has_put(&self, player_abbreviation: &String) -> bool {
+        *&self
+            .players_having_put_abbreviations
+            .contains(player_abbreviation)
+    }
+
+    pub fn player_has_won(&self, player_abbreviation: &String) -> bool {
+        *&self
+            .players_having_won_abbreviations
+            .contains(player_abbreviation)
+    }
+
+    pub fn is_solo(&self) -> bool {
+        self.game_type == GameType::Farbsolo
+            || self.game_type == GameType::Wenz
+            || self.game_type == GameType::Geier
+            || self.game_type == GameType::Farbwenz
+            || self.game_type == GameType::Farbgeier
+    }
+
     fn base_price<'a>(&self, rule_set: &'a RuleSet) -> &'a i32 {
         match self.game_type {
             GameType::Ruf => rule_set.get_base_price(),
@@ -63,7 +88,7 @@ impl Game {
             Some(SchneiderSchwarz::Schwarz) => 10,
         };
 
-        let leger_count = self.players_having_put_ids.len() as u32;
+        let leger_count = self.players_having_put_abbreviations.len() as u32;
 
         let contra_count = self
             .kontra
@@ -81,40 +106,91 @@ impl Game {
     }
 }
 
+// GraphQL
+
 #[graphql_object(context = GraphQLContext)]
 impl Game {
     pub fn id(&self) -> &i32 {
         &self.id
     }
+
+    pub fn acting_player_abbreviation(&self) -> &str {
+        &self.acting_player_abbreviation
+    }
+
+    pub fn game_type(&self) -> &GameType {
+        &self.game_type
+    }
+
+    pub fn suit(&self) -> &Option<BavarianSuit> {
+        &self.suit
+    }
+
+    pub fn tout(&self) -> &bool {
+        &self.tout
+    }
+
+    pub fn is_doubled(&self) -> &bool {
+        &self.is_doubled
+    }
+
+    pub fn laufende_count(&self) -> &i32 {
+        &self.laufende_count
+    }
+
+    pub fn schneider_schwarz(&self) -> &Option<SchneiderSchwarz> {
+        &self.schneider_schwarz
+    }
+
+    pub fn players_having_put_abbreviations(&self) -> &Vec<String> {
+        &self.players_having_put_abbreviations
+    }
+
+    pub fn kontra(&self) -> &Option<KontraType> {
+        &self.kontra
+    }
+
+    pub fn players_having_won_abbreviations(&self) -> &Vec<String> {
+        &self.players_having_won_abbreviations
+    }
+
+    pub fn price(&self) -> FieldResult<i32> {
+        Err(FieldError::new("not yet implemented!", Value::null()))
+    }
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PricedGame {
-    pub game: Game,
-    pub price: i32,
+// Queries
+
+pub fn upsert_game(conn: &PgConnection, the_game: &Game) -> QueryResult<Game> {
+    use crate::schema::games::dsl::*;
+
+    diesel::insert_into(games)
+        .values(the_game)
+        .on_conflict((id, session_id, group_name))
+        .do_update()
+        .set(the_game)
+        //.returning(games::all_columns)
+        .get_result(conn)
 }
 
-impl PricedGame {
-    pub fn new(game: Game, price: i32) -> PricedGame {
-        PricedGame { game, price }
-    }
+pub fn select_games_for_group(conn: &PgConnection, the_group_name: &str) -> QueryResult<Vec<Game>> {
+    use crate::schema::games::dsl::*;
 
-    pub fn player_has_acted(&self, player_id: &i32) -> bool {
-        &self.game.acting_player_id == player_id
-    }
+    games.filter(group_name.eq(the_group_name)).load(conn)
+}
 
-    pub fn player_has_won(&self, player_id: &i32) -> bool {
-        self.game.players_having_won_ids.contains(player_id)
-    }
+pub fn select_games_for_session(
+    conn: &PgConnection,
+    the_session_id: &i32,
+    the_group_name: &str,
+) -> QueryResult<Vec<Game>> {
+    use crate::schema::games::dsl::*;
 
-    pub fn player_has_put(&self, player_id: &i32) -> bool {
-        self.game.players_having_put_ids.contains(player_id)
-    }
-
-    pub fn is_solo(&self) -> bool {
-        self.game.game_type != GameType::Ruf
-    }
+    games
+        .filter(session_id.eq(the_session_id))
+        .filter(group_name.eq(the_group_name))
+        .order_by(id)
+        .load(conn)
 }
 
 #[cfg(test)]
@@ -126,17 +202,17 @@ mod tests {
         let base_game = Game {
             id: 0,
             session_id: 0,
-            group_id: 0,
-            acting_player_id: 0,
+            group_name: "".to_string(),
+            acting_player_abbreviation: "".to_string(),
             game_type: GameType::Ruf,
             suit: None,
             tout: false,
             is_doubled: false,
             laufende_count: 0,
             schneider_schwarz: None,
-            players_having_put_ids: vec![],
+            players_having_put_abbreviations: vec![],
             kontra: None,
-            players_having_won_ids: vec![],
+            players_having_won_abbreviations: vec![],
         };
 
         let rs1 = RuleSet::new(1, 5, CountLaufende::Never);

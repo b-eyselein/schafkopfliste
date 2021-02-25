@@ -1,54 +1,65 @@
-import {Component} from '@angular/core';
-import {ApiService} from '../../_services/api.service';
-import {RegisterValues, SerializableUser} from '../../_interfaces/interfaces';
+import {Component, OnInit} from '@angular/core';
+import {RegisterGQL, RegisterUserInput} from '../../_services/apollo_services';
+import {GraphQLError} from 'graphql';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({templateUrl: './register-form.component.html'})
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
 
-  username = '';
-  password = '';
-  passwordRepeat = '';
+  registerForm: FormGroup;
 
   submitted = false;
+  loading = false;
 
-  registeredUser: SerializableUser;
+  queryError: GraphQLError;
+  registeredUsername: string;
 
-  constructor(private apiService: ApiService) {
+  constructor(private fb: FormBuilder, private registerMutation: RegisterGQL) {
   }
 
-  usernameIsValid(): boolean {
-    return this.username && this.username.length > 0;
-  }
-
-  passwordIsValid(): boolean {
-    return this.password && this.password.length > 0;
-  }
-
-  passwordRepeatIsValid(): boolean {
-    return this.passwordRepeat && this.passwordRepeat.length > 0 && this.password === this.passwordRepeat;
+  ngOnInit() {
+    // FIXME: validator for password equality!
+    this.registerForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      passwordRepeat: ['', Validators.required]
+    });
   }
 
   register(): void {
-    console.warn('TODO: register...');
+    this.submitted = true;
 
-    if (!this.usernameIsValid() || !this.passwordIsValid() || !this.passwordRepeatIsValid()) {
+    const password = this.registerForm.controls.password.value;
+    const passwordRepeat = this.registerForm.controls.passwordRepeat.value;
+
+    if (this.registerForm.invalid || password !== passwordRepeat) {
       alert('One of your fields is not valid!');
       return;
     }
 
-    const registerValues: RegisterValues = {
-      username: this.username,
-      password: this.password,
-      passwordRepeat: this.passwordRepeat
+    const registerUserInput: RegisterUserInput = {
+      username: this.registerForm.controls.username.value,
+      password,
+      passwordRepeat
     };
 
-    this.submitted = true;
+    this.loading = true;
 
-    this.apiService.putRegistration(registerValues)
-      .subscribe((registeredUser) => {
-        this.registeredUser = registeredUser;
-        this.submitted = false;
-      });
+    this.registerMutation
+      .mutate({registerUserInput})
+      .subscribe(
+        ({data}) => {
+          this.queryError = null;
+          this.registeredUsername = data.registerUser;
+          this.loading = false;
+        },
+        (error: GraphQLError) => {
+          this.queryError = error;
+          this.registeredUsername = null;
+          this.loading = false;
+        }
+      );
+
   }
 
 }

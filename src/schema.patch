@@ -7,10 +7,10 @@ index 0cae4b4..44b62d4 100644
 +    use diesel::sql_types::*;
 +    use crate::models::game::game_enums::{Bavarian_suit, Game_type, Kontra_type, Schneider_schwarz};
 +
-     games (id, session_id, group_id) {
+     games (id, session_id, group_name) {
          id -> Int4,
          session_id -> Int4,
-         group_id -> Int4,
+         group_name -> Varchar,
          acting_player_id -> Int4,
          game_type -> Game_type,
 @@ -36,12 +39,15 @@ table! {
@@ -23,8 +23,7 @@ index 0cae4b4..44b62d4 100644
 +    use diesel::sql_types::*;
 +    use crate::models::rule_set::Count_laufende;
 +
-     rule_sets (id) {
-         id -> Int4,
+     rule_sets (name) {
          name -> Varchar,
          base_price -> Int4,
          solo_price -> Int4,

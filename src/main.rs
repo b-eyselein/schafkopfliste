@@ -8,7 +8,7 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-use juniper::{EmptySubscription, RootNode};
+use juniper::EmptySubscription;
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
 use rocket::{get, post, response::Redirect, routes, State};
 use rocket_contrib::database;
@@ -17,14 +17,15 @@ use rocket_cors::{Cors, CorsOptions};
 
 use graphql::{GraphQLContext, Mutations, QueryRoot};
 
+use crate::additional_headers::AuthorizationHeader;
+use crate::graphql::Schema;
+
+mod additional_headers;
 mod daos;
 mod graphql;
 mod jwt_helpers;
 mod models;
-mod my_routes;
 mod schema;
-
-type Schema = RootNode<'static, QueryRoot, Mutations, EmptySubscription<GraphQLContext>>;
 
 embed_migrations!();
 
@@ -32,7 +33,10 @@ embed_migrations!();
 pub struct DbConn(PgConnection);
 
 fn make_cors() -> Cors {
-    let cors_opts = CorsOptions { allow_credentials: true, ..Default::default() };
+    let cors_opts = CorsOptions {
+        allow_credentials: true,
+        ..Default::default()
+    };
 
     cors_opts.to_cors().expect("Error while building cors!")
 }
@@ -50,21 +54,27 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
 #[get("/graphql?<request>")]
 fn route_get_graphql_handler(
     connection: DbConn,
+    authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute_sync(&schema, &GraphQLContext::new(connection))
+    request.execute_sync(
+        &schema,
+        &GraphQLContext::new(connection, authorization_header),
+    )
 }
 
 #[post("/graphql", data = "<request>")]
 fn route_post_graphql_handler(
     connection: DbConn,
+    authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    println!("Got query: {:?}", request);
-
-    request.execute_sync(&schema, &GraphQLContext::new(connection))
+    request.execute_sync(
+        &schema,
+        &GraphQLContext::new(connection, authorization_header),
+    )
 }
 
 fn execute_db_migrations() {
@@ -91,16 +101,6 @@ fn main() {
             ],
         )
         .mount("/app", StaticFiles::from("static"))
-        .mount("/api/users", my_routes::user_routes())
-        .mount(
-            "/api/ruleSets",
-            my_routes::rule_set_routes::exported_routes(),
-        )
-        .mount("/api/players", my_routes::player_routes::exported_routes())
-        .mount(
-            "/api/groups",
-            my_routes::all_group_routes::exported_routes(),
-        )
         .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .attach(DbConn::fairing())
         .attach(make_cors())

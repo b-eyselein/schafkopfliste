@@ -8,9 +8,38 @@ import {
   Suit,
   SUITS
 } from '../../_interfaces/game_types';
-import {CompleteSession, Game, KontraType, Player, SchneiderSchwarz} from '../../_interfaces/interfaces';
 import {ApiService} from '../../_services/api.service';
 import {CircleBufferSelectable} from '../../_components/circle-buffer/circle-buffer.component';
+import {
+  BavarianSuit,
+  GameType,
+  KontraType,
+  SchneiderSchwarz,
+  SessionFragment,
+  SessionGameFragment,
+  SessionPlayerFragment
+} from '../../_services/apollo_services';
+
+
+/**
+ * @deprecated
+ */
+export interface Game {
+  actingPlayerId: string;
+  gameType: GameType;
+  groupName: string;
+  id: number;
+  isDoubled: boolean;
+  kontra: KontraType | undefined;
+  laufendeCount: number;
+  playersHavingPutIds: string[];
+  playersHavingWonIds: string[];
+  schneiderSchwarz: SchneiderSchwarz | undefined;
+  sessionId: number;
+  suit: BavarianSuit | undefined;
+  tout: boolean;
+}
+
 
 @Component({
   selector: 'skl-new-game',
@@ -20,28 +49,31 @@ export class NewGameComponent implements OnInit {
 
   readonly KontraValues: CircleBufferSelectable<KontraType>[] = [
     {name: '--', value: undefined},
-    {name: 'Kontra', value: 'Kontra'},
-    {name: 'Re', value: 'Re'},
-    {name: 'Supra', value: 'Supra'},
-    {name: 'Resupra', value: 'Resupra'}
+    {name: 'Kontra', value: KontraType.Kontra},
+    {name: 'Re', value: KontraType.Re},
+    {name: 'Supra', value: KontraType.Supra},
+    {name: 'Resupra', value: KontraType.Resupra}
   ];
 
   readonly SuitValues: Suit[] = SUITS;
 
   readonly SchneiderSchwarzValues: { abbreviation: string, value: SchneiderSchwarz }[] = [
-    {abbreviation: 'SN', value: 'Schneider'},
-    {abbreviation: 'SW', value: 'Schwarz'}
+    {abbreviation: 'SN', value: SchneiderSchwarz.Schneider},
+    {abbreviation: 'SW', value: SchneiderSchwarz.Schwarz}
   ];
 
-  @Input() session: CompleteSession;
+  @Input() session: SessionFragment;
 
-  @Output() gameChanged = new EventEmitter<Game>();
+  @Input() groupName: string;
+  @Input() sessionId: number;
+
+  @Output() gameChanged = new EventEmitter<SessionGameFragment>();
   @Output() endSession = new EventEmitter<void>();
 
-  players: Player[];
-  bufferPlayers: CircleBufferSelectable<Player>[];
+  players: SessionPlayerFragment[];
+  bufferPlayers: CircleBufferSelectable<SessionPlayerFragment>[];
 
-  game: Game;
+  game: SessionGameFragment;
 
   allowedGameTypes: CompleteGameType[] = [];
   allowedSuits: Suit[] = [];
@@ -66,7 +98,7 @@ export class NewGameComponent implements OnInit {
     ];
 
     this.bufferPlayers = [
-      {name: '--', value: undefined} as CircleBufferSelectable<Player>,
+      {name: '--', value: undefined} as CircleBufferSelectable<SessionPlayerFragment>,
       ...this.players.map((p) => {
         return {name: p.name, value: p};
       })
@@ -74,8 +106,8 @@ export class NewGameComponent implements OnInit {
 
     this.allowedGameTypes = getAllowedGameTypes(this.session.ruleSet);
 
-    if (this.session.playedGames.length > 0) {
-      this.currentGameIndex = Math.max(...this.session.playedGames.map((pg) => pg.game.id)) + 1;
+    if (this.session.games.length > 0) {
+      this.currentGameIndex = Math.max(...this.session.games.map((pg) => pg.id)) + 1;
     }
 
     this.reInitGame();
@@ -98,10 +130,10 @@ export class NewGameComponent implements OnInit {
 
     this.game = {
       id: this.currentGameIndex,
-      sessionId: this.session.id,
-      groupId: this.session.group.id,
+//      sessionId: this.sessionId,
+      //     groupName: this.groupName,
 
-      actingPlayerId: undefined,
+      actingPlayerAbbreviation: undefined,
       gameType: undefined,
       suit: undefined,
       tout: false,
@@ -110,9 +142,11 @@ export class NewGameComponent implements OnInit {
       laufendeCount: 0,
       schneiderSchwarz: undefined,
 
-      playersHavingPutIds: [],
+      playersHavingPutAbbreviations: [],
       kontra: undefined,
-      playersHavingWonIds: [],
+      playersHavingWonAbbreviations: [],
+
+      price: -1
     };
 
   }
@@ -139,20 +173,20 @@ export class NewGameComponent implements OnInit {
     return gameType.needsSuit && (gameType === RUF ? suit !== HEARTS : true);
   }
 
-  get playersHavingPut(): number[] {
-    return this.game.playersHavingPutIds;
+  get playersHavingPut(): string[] {
+    return this.game.playersHavingPutAbbreviations;
   }
 
-  set playersHavingPut(ids: number[]) {
-    this.game.playersHavingPutIds = ids;
+  set playersHavingPut(ids: string[]) {
+    this.game.playersHavingPutAbbreviations = ids;
   }
 
-  getDealer(): Player {
+  getDealer(): SessionPlayerFragment {
     return this.players[(this.currentGameIndex - 1) % 4];
   }
 
-  togglePlayer(playerId: number): void {
-    this.game.actingPlayerId = this.game.actingPlayerId === playerId ? undefined : playerId;
+  togglePlayer(playerId: string): void {
+    this.game.actingPlayerAbbreviation = this.game.actingPlayerAbbreviation === playerId ? undefined : playerId;
 
     this.gameChanged.emit(this.game);
   }
@@ -187,21 +221,21 @@ export class NewGameComponent implements OnInit {
     this.gameChanged.emit(this.game);
   }
 
-  toggleWinningPlayer(actingPlayer: Player) {
-    if (this.game.playersHavingWonIds.includes(actingPlayer.id)) {
-      this.game.playersHavingWonIds = this.game.playersHavingWonIds.filter((id) => id !== actingPlayer.id);
+  toggleWinningPlayer(actingPlayer: SessionPlayerFragment) {
+    if (this.game.playersHavingWonAbbreviations.includes(actingPlayer.abbreviation)) {
+      this.game.playersHavingWonAbbreviations = this.game.playersHavingWonAbbreviations.filter((id) => id !== actingPlayer.abbreviation);
     } else {
-      this.game.playersHavingWonIds.push(actingPlayer.id);
+      this.game.playersHavingWonAbbreviations.push(actingPlayer.abbreviation);
     }
 
     this.gameChanged.emit(this.game);
   }
 
-  togglePlayerPut(player: Player): void {
-    if (this.playersHavingPut.includes(player.id)) {
-      this.playersHavingPut = this.playersHavingPut.filter((id) => id !== player.id);
+  togglePlayerPut(player: SessionPlayerFragment): void {
+    if (this.playersHavingPut.includes(player.abbreviation)) {
+      this.playersHavingPut = this.playersHavingPut.filter((id) => id !== player.abbreviation);
     } else {
-      this.game.playersHavingPutIds.push(player.id);
+      this.game.playersHavingPutAbbreviations.push(player.abbreviation);
     }
 
     this.gameChanged.emit(this.game);
@@ -217,25 +251,25 @@ export class NewGameComponent implements OnInit {
     this.submitted = true;
 
     if (
-      !this.game.actingPlayerId
+      !this.game.actingPlayerAbbreviation
       || !this.playedGameType
       || (this.playedGameType.needsSuit && !this.game.suit)
-      || this.game.playersHavingWonIds.length === 0
+      || this.game.playersHavingWonAbbreviations.length === 0
     ) {
       return;
     }
 
-    const theGame: Game = {
+    const theGame: SessionGameFragment = {
       id: this.currentGameIndex,
-      sessionId: this.session.id,
-      groupId: this.session.group.id,
+      // sessionId: this.sessionId,
+      // groupName: this.groupName,
 
       ...this.game,
     };
 
-    this.apiService.createGame(this.session.group.id, this.session.id, theGame)
+    this.apiService.createGame(this.groupName, this.sessionId, theGame)
       .subscribe((g) => {
-        this.session.playedGames.push(g);
+        // this.session.games.push(g);
         this.resetData();
       });
   }

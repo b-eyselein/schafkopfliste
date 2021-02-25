@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {AuthenticationService} from './_services/authentication.service';
-import {UserWithToken} from './_interfaces/interfaces';
+import {LoggedInUserFragment} from './_services/apollo_services';
 
 @Component({
   selector: 'skl-root',
@@ -11,7 +11,7 @@ export class AppComponent {
 
   title = 'schafkopf';
 
-  currentUser: UserWithToken;
+  currentUser: LoggedInUserFragment;
 
   navbarToggled = false;
 

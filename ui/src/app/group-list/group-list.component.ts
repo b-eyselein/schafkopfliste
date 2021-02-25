@@ -1,13 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Group, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {GroupListGQL, GroupListQuery} from '../_services/apollo_services';
-
+import {GroupListGQL, GroupListQuery, LoggedInUserFragment} from '../_services/apollo_services';
 
 @Component({templateUrl: './group-list.component.html'})
 export class GroupListComponent implements OnInit {
 
-  currentUser: UserWithToken;
+  currentUser: LoggedInUserFragment;
   groupListQuery: GroupListQuery;
 
   constructor(private authenticationService: AuthenticationService, private groupListGQL: GroupListGQL) {
@@ -21,13 +19,5 @@ export class GroupListComponent implements OnInit {
       .watch()
       .valueChanges
       .subscribe(({data}) => this.groupListQuery = data);
-  }
-
-  onGroupCreated(group: Group) {
-    this.groupListQuery.groups.push({
-      id: group.id,
-      name: group.name,
-      playerCount: 0
-    });
   }
 }

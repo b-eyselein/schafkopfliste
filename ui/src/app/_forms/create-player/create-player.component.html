@@ -1,31 +1,43 @@
-<h1 class="subtitle is-3 has-text-centered">Neuen Spieler anlegen</h1>
+<div class="container">
+  <h1 class="subtitle is-3 has-text-centered">Neuen Spieler anlegen</h1>
 
-<form (ngSubmit)="createPlayer()" [formGroup]="playerForm">
+  <form [formGroup]="playerForm" (ngSubmit)="createPlayer()">
 
-  <div class="field">
-    <label for="firstName" class="label">Vorname:</label>
-    <div class="control">
-      <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
-             autofocus>
+    <div class="field">
+      <label for="firstName" class="label">Vorname:</label>
+      <div class="control">
+        <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
+               autofocus>
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <label for="lastName" class="label">Nachname:</label>
-    <div class="control">
-      <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
+    <div class="field">
+      <label for="lastName" class="label">Nachname:</label>
+      <div class="control">
+        <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <label for="abbreviation" class="label">Abkürzung:</label>
-    <div class="control">
-      <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
+    <div class="field">
+      <label for="abbreviation" class="label">Abkürzung:</label>
+      <div class="control">
+        <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
+      </div>
     </div>
-  </div>
 
-  <div class="buttons">
-    <button class="button is-link is-fullwidth">Spieler anlegen</button>
-  </div>
+    <div *ngIf="queryError" class="notification is-danger has-text-centered">
+      {{queryError.message}}
+    </div>
 
-</form>
+    <div *ngIf="createdPlayerName" class="notification is-success has-text-centered">
+      Spieler {{createdPlayerName}} wurde erstellt.
+    </div>
+
+    <div class="field">
+      <button class="button is-link is-fullwidth" [class.is-loading]="loading" [disabled]="loading">
+        Spieler anlegen
+      </button>
+    </div>
+
+  </form>
+</div>

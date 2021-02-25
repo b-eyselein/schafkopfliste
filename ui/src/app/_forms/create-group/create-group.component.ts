@@ -1,65 +1,59 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {ApiService} from '../../_services/api.service';
-import {
-  Group,
-  GroupCreationGQL,
-  GroupCreationMutation,
-  RuleSetListGQL,
-  RuleSetListQuery
-} from '../../_services/apollo_services';
+import {Component, OnInit} from '@angular/core';
+import {GroupCreationGQL, RuleSetListGQL, RuleSetListQuery} from '../../_services/apollo_services';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {GraphQLError} from 'graphql';
 
-@Component({
-  selector: 'skl-create-group',
-  templateUrl: './create-group.component.html'
-})
+@Component({templateUrl: './create-group.component.html'})
 export class CreateGroupComponent implements OnInit {
 
   ruleSetListQuery: RuleSetListQuery;
 
-  groupName = '';
-  ruleSetId: number;
+  groupFormGroup: FormGroup;
 
-  @Output() groupCreated = new EventEmitter<Group>();
+  loading = false;
 
-  constructor(
-    private apiService: ApiService,
-    private ruleSetListGQL: RuleSetListGQL,
-    private groupCreationGQL: GroupCreationGQL
-  ) {
+  queryError: GraphQLError;
+  createdGroupName: string;
+
+  constructor(private fb: FormBuilder, private ruleSetListGQL: RuleSetListGQL, private groupCreationGQL: GroupCreationGQL) {
   }
 
   ngOnInit(): void {
     this.ruleSetListGQL
       .watch()
       .valueChanges
-      .subscribe(({data}: { data: RuleSetListQuery }) => this.ruleSetListQuery = data);
+      .subscribe(({data}: { data: RuleSetListQuery }) => {
+        this.ruleSetListQuery = data;
+
+        this.groupFormGroup = this.fb.group({
+          name: ['', Validators.required],
+          ruleSetName: ['', Validators.required]
+        });
+      });
   }
 
-  createGroup(): void {
-    if (!this.groupName || this.groupName.length === 0 || !this.ruleSetId) {
+  onSubmit(): void {
+    if (this.groupFormGroup.invalid) {
       alert('Daten sind nicht valide!');
       return;
     }
 
-    console.info(this.groupName);
-    console.info(this.ruleSetId);
+    const name = this.groupFormGroup.controls.name.value;
+    const ruleSetName = this.groupFormGroup.controls.ruleSetName.value;
+
 
     this.groupCreationGQL
-      .mutate({name: this.groupName, ruleSetId: this.ruleSetId})
-      .subscribe(({data}: { data: GroupCreationMutation }) => {
-        // tslint:disable-next-line:no-console
-        console.info(data);
-      });
-
-    /*
-    this.apiService.createGroup(group)
-      .subscribe((result) => {
-        if (group) {
-          this.groupName = '';
-          this.groupCreated.emit(result);
+      .mutate({name, ruleSetName})
+      .subscribe(
+        ({data}) => {
+          this.queryError = null;
+          this.createdGroupName = data.createGroup.name;
+        },
+        (error) => {
+          this.createdGroupName = null;
+          this.queryError = error;
         }
-      });
-     */
+      );
   }
 
 }

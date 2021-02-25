@@ -19,8 +19,7 @@ create type table_position as enum ('dealer', 'pre_hand', 'middle_hand', 'rear_h
 
 
 create table if not exists rule_sets (
-    id                 serial primary key,
-    name               varchar(100)   not null,
+    name               varchar(100) primary key,
 
     base_price         integer        not null default 5,
     solo_price         integer        not null default 15,
@@ -39,92 +38,94 @@ create table if not exists rule_sets (
 );
 
 create table if not exists players (
-    id           serial primary key,
-    abbreviation varchar(5) unique not null,
-    name         varchar(100)      not null,
+    abbreviation varchar(10) primary key,
+    name         varchar(100) not null,
     picture_name varchar(255)
 );
 
-alter sequence players_id_seq restart with 1000;
-
 create table if not exists users (
-    username      varchar(100) primary key,
-    password_hash varchar(100) not null,
-    is_admin      bool         not null default false,
-    player_id     integer      references players (id) on update cascade on delete set null
+    username            varchar(100) primary key,
+    password_hash       varchar(100) not null,
+    is_admin            bool         not null default false,
+    player_abbreviation varchar(10)  references players (abbreviation) on update cascade on delete set null
 );
 
 create table groups (
-    id          serial primary key,
-    name        varchar(100) unique not null,
-    rule_set_id integer             not null references rule_sets (id) on update cascade on delete set null
+    name          varchar(100) primary key,
+    rule_set_name varchar(100) not null references rule_sets (name) on update cascade on delete set null
 );
 
 create table if not exists player_in_groups (
-    group_id     integer not null references groups (id) on update cascade on delete cascade,
-    player_id    integer not null references players (id) on update cascade on delete cascade,
+    group_name          varchar(100) not null references groups (name) on update cascade on delete cascade,
+    player_abbreviation varchar(10)  not null references players (abbreviation) on update cascade on delete cascade,
 
-    balance      integer not null default 0,
-    game_count   integer not null default 0,
-    put_count    integer not null default 0,
-    played_games integer not null default 0,
-    win_count    integer not null default 0,
+    balance             integer      not null default 0,
+    game_count          integer      not null default 0,
+    put_count           integer      not null default 0,
+    played_games        integer      not null default 0,
+    win_count           integer      not null default 0,
 
-    is_active    bool    not null default true,
+    is_active           bool         not null default true,
 
-    primary key (group_id, player_id)
+    primary key (group_name, player_abbreviation)
 );
 
 create table if not exists sessions (
-    id                integer,
-    group_id          integer references groups (id) on update cascade on delete cascade,
+    id                         integer,
+    group_name                 varchar(100) references groups (name) on update cascade on delete cascade,
 
-    date_year         integer      not null check (2000 <= date_year and date_year <= 3000),
-    date_month        integer      not null check (1 <= date_month and date_month <= 12),
-    date_day_of_month integer      not null check (1 <= date_day_of_month and date_day_of_month <= 31),
-    time_hours        integer      not null check (0 <= time_hours and time_hours <= 23),
-    time_minutes      integer      not null check (0 <= time_minutes and time_minutes <= 59),
+    date_year                  integer      not null check (2000 <= date_year and date_year <= 3000),
+    date_month                 integer      not null check (1 <= date_month and date_month <= 12),
+    date_day_of_month          integer      not null check (1 <= date_day_of_month and date_day_of_month <= 31),
+    time_hours                 integer      not null check (0 <= time_hours and time_hours <= 23),
+    time_minutes               integer      not null check (0 <= time_minutes and time_minutes <= 59),
 
-    has_ended         bool         not null default false,
+    has_ended                  bool         not null default false,
 
-    first_player_id   integer      not null references players (id) on update cascade on delete cascade,
-    second_player_id  integer      not null references players (id) on update cascade on delete cascade,
-    third_player_id   integer      not null references players (id) on update cascade on delete cascade,
-    fourth_player_id  integer      not null references players (id) on update cascade on delete cascade,
+    first_player_abbreviation  varchar(10)  not null,
+    second_player_abbreviation varchar(10)  not null,
+    third_player_abbreviation  varchar(10)  not null,
+    fourth_player_abbreviation varchar(10)  not null,
 
-    creator_username  varchar(100) not null references users (username) on update cascade on delete cascade,
+    creator_username           varchar(100) not null references users (username) on update cascade on delete cascade,
 
-    primary key (id, group_id)
+    primary key (id, group_name),
+    foreign key (group_name, first_player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade,
+    foreign key (group_name, second_player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade,
+    foreign key (group_name, third_player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade,
+    foreign key (group_name, fourth_player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade
 );
 
 create table if not exists session_results (
-    player_id  integer references players (id) on update cascade on delete cascade,
-    session_id integer,
-    group_id   integer,
-    result     integer not null,
+    player_abbreviation varchar(10),
+    session_id          integer,
+    group_name          varchar(100),
+    result              integer not null,
 
-    primary key (player_id, session_id, group_id),
-    foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
+    primary key (player_abbreviation, session_id, group_name),
+    foreign key (session_id, group_name) references sessions (id, group_name) on update cascade on delete cascade,
+    foreign key (group_name, player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade
 );
 
 create table if not exists games (
-    id                     integer,
-    session_id             integer,
-    group_id               integer,
+    id                               integer,
+    session_id                       integer,
+    group_name                       varchar(100),
 
-    acting_player_id       integer   not null references players (id) on update cascade on delete cascade,
-    game_type              game_type not null,
-    suit                   bavarian_suit,
-    tout                   boolean   not null default false,
+    acting_player_abbreviation       varchar(10) not null,
+    game_type                        game_type   not null,
+    suit                             bavarian_suit,
+    tout                             boolean     not null default false,
 
-    is_doubled             bool      not null default false,
-    laufende_count         integer   not null default 0,
-    schneider_schwarz      schneider_schwarz  default null,
+    is_doubled                       bool        not null default false,
+    laufende_count                   integer     not null default 0,
+    schneider_schwarz                schneider_schwarz    default null,
 
-    players_having_put_ids integer[] not null default '{}',
-    kontra                 kontra_type        default null,
-    players_having_won_ids integer[] not null default '{}',
+    players_having_put_abbreviations text[]      not null default '{}',
+    kontra                           kontra_type          default null,
+    players_having_won_abbreviations text[]      not null default '{}',
 
-    primary key (id, session_id, group_id),
-    foreign key (session_id, group_id) references sessions (id, group_id) on update cascade on delete cascade
+    primary key (id, session_id, group_name),
+    foreign key (session_id, group_name) references sessions (id, group_name) on update cascade on delete cascade,
+    foreign key (group_name, acting_player_abbreviation) references player_in_groups (group_name, player_abbreviation) on update cascade on delete cascade
 );

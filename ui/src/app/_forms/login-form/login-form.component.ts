@@ -3,21 +3,27 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {first} from 'rxjs/operators';
-import {Credentials} from '../../_interfaces/interfaces';
+import {Credentials} from '../../_services/apollo_services';
+import {GraphQLError} from 'graphql';
 
 @Component({templateUrl: './login-form.component.html'})
 export class LoginFormComponent implements OnInit {
 
   loginForm: FormGroup;
-  loading = false;
+
   submitted = false;
+  loading = false;
+
   returnUrl: string;
 
+  queryError: GraphQLError;
+
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private authenticationService: AuthenticationService) {
+    private authenticationService: AuthenticationService,
+  ) {
 
     if (this.authenticationService.currentUserValue) {
       // noinspection JSIgnoredPromiseFromCall
@@ -26,7 +32,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loginForm = this.formBuilder.group({
+    this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
@@ -46,14 +52,27 @@ export class LoginFormComponent implements OnInit {
       return;
     }
 
-    const credentials: Credentials = {username: this.f.username.value, password: this.f.password.value};
+    const credentials: Credentials = {
+      username: this.loginForm.controls.username.value,
+      password: this.loginForm.controls.password.value
+    };
 
     this.loading = true;
+
     this.authenticationService.login(credentials)
       .pipe(first())
       .subscribe(
-        () => this.router.navigate([this.returnUrl]),
-        () => this.loading = false
+        ({data}) => {
+          this.loading = false;
+
+          if (data.login) {
+            this.router.navigate([this.returnUrl]);
+          }
+        },
+        (queryError: GraphQLError) => {
+          this.queryError = queryError;
+          this.loading = false;
+        }
       );
   }
 }

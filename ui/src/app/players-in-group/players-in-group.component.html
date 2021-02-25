@@ -1,16 +1,14 @@
 <div class="container">
+  <h1 class="title is-3 has-text-centered">Gruppe {{groupName}}: Spieler</h1>
 
-  <ng-container *ngIf="groupWithPlayerMembership; else loadingGroupComponent">
+  <ng-container *ngIf="playersInGroupQuery; else loadingDataComponent">
 
-    <h1 class="title is-3 has-text-centered">Gruppe {{groupWithPlayerMembership.group.name}}: Spieler</h1>
+    <div class="columns is-multiline" *ngIf="playersInGroupQuery.players; else noPlayersFoundBlock">
 
-    <div class="columns is-multiline" *ngIf="groupWithPlayerMembership.playerMemberships">
-
-      <div class="column is-2" *ngFor="let player of groupWithPlayerMembership.playerMemberships">
-        <button class="button is-fullwidth"
-                [class.is-link]="player.isMember"
-                (click)="toggleGroupMembership(player)">
-          {{player.player.name}}
+      <div class="column is-2" *ngFor="let player of playersInGroupQuery.players">
+        <button class="button is-fullwidth" [class.is-link]="player.isMemberInGroup"
+                (click)="toggleGroupMembership(player.abbreviation, !player.isMemberInGroup)">
+          {{player.isMemberInGroup ? '&#10004;' : '&#10008;'}} {{player.name}}
         </button>
       </div>
 
@@ -20,6 +18,10 @@
 
 </div>
 
-<ng-template #loadingGroupComponent>
-  <div class="notification is-primary has-text-centered">Lade Gruppe und Spieler...</div>
+<ng-template #loadingDataComponent>
+  <div class="notification is-primary has-text-centered">Lade Daten...</div>
+</ng-template>
+
+<ng-template #noPlayersFoundBlock>
+  <div class="notification is-warning has-text-centered">Keine Spieler gefunden!</div>
 </ng-template>

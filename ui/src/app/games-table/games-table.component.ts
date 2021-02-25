@@ -1,8 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {CompleteSession, Game, Player} from '../_interfaces/interfaces';
 import {SessionResult} from '../_interfaces/session-result';
 import {SUITS} from '../_interfaces/game_types';
-import {ApiService} from '../_services/api.service';
+import {GameType, SessionFragment, SessionGameFragment, SessionPlayerFragment} from '../_services/apollo_services';
 
 @Component({
   selector: 'skl-games-table',
@@ -10,15 +9,15 @@ import {ApiService} from '../_services/api.service';
 })
 export class GamesTableComponent implements OnInit, OnChanges {
 
-  @Input() session: CompleteSession;
+  @Input() session: SessionFragment;
 
-  @Input() runningGame: Game | undefined;
+  @Input() runningGame: SessionGameFragment | undefined;
 
-  players: Player[];
+  players: SessionPlayerFragment[];
 
-  currentActingPlayer: Player | undefined;
+  currentActingPlayer: SessionPlayerFragment | undefined;
 
-  sessionResults: Map<number, SessionResult>;
+  sessionResults: Map<string, SessionResult>;
 
   ngOnInit(): void {
     this.players = [
@@ -32,8 +31,8 @@ export class GamesTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.runningGame && this.runningGame.actingPlayerId) {
-      this.currentActingPlayer = this.players.find((p) => p.id === this.runningGame.actingPlayerId);
+    if (this.runningGame && this.runningGame.actingPlayerAbbreviation) {
+      this.currentActingPlayer = this.players.find((p) => p.abbreviation === this.runningGame.actingPlayerAbbreviation);
     }
 
     this.updateSaldos();
@@ -48,10 +47,10 @@ export class GamesTableComponent implements OnInit, OnChanges {
           let playedGames = 0;
           let putCount = 0;
 
-          this.session.playedGames.forEach((game) => {
-            const hasWon = game.game.playersHavingWonIds.includes(p.id);
-            const isPlayer = game.game.actingPlayerId === p.id;
-            const priceIsTripled = game.game.gameType !== 'Ruf' && isPlayer;
+          this.session.games.forEach((game) => {
+            const hasWon = game.playersHavingWonAbbreviations.includes(p.abbreviation);
+            const isPlayer = game.actingPlayerAbbreviation === p.abbreviation;
+            const priceIsTripled = game.gameType !== GameType.Ruf && isPlayer;
 
             saldo += (hasWon ? 1 : -1) * (priceIsTripled ? 3 : 1) * game.price;
 
@@ -61,35 +60,35 @@ export class GamesTableComponent implements OnInit, OnChanges {
             if (isPlayer) {
               playedGames++;
             }
-            if (game.game.playersHavingPutIds.includes(p.id)) {
+            if (game.playersHavingPutAbbreviations.includes(p.abbreviation)) {
               putCount++;
             }
           });
 
-          return [p.id, {saldo, wonGames, playedGames, putCount}];
+          return [p.abbreviation, {saldo, wonGames, playedGames, putCount}];
         })
       );
     }
   }
 
-  getDealer(playedGame: Game): Player {
+  getDealer(playedGame: SessionGameFragment): SessionPlayerFragment {
     return this.players[(playedGame.id - 1) % 4];
   }
 
-  getSuitGermanName(playedGame: Game): string {
+  getSuitGermanName(playedGame: SessionGameFragment): string {
     return playedGame.suit ? SUITS.find((s) => s.commitableSuit === playedGame.suit).name : '';
   }
 
-  getActingPlayer(playedGame: Game): Player {
-    return this.players.find((p) => p.id === playedGame.actingPlayerId);
+  getActingPlayer(playedGame: SessionGameFragment): SessionPlayerFragment {
+    return this.players.find((p) => p.abbreviation === playedGame.actingPlayerAbbreviation);
   }
 
-  playersHavingPut(playedGame: Game): Player[] {
-    return this.players.filter((p) => playedGame.playersHavingPutIds.includes(p.id));
+  playersHavingPut(playedGame: SessionGameFragment): SessionPlayerFragment[] {
+    return this.players.filter((p) => playedGame.playersHavingPutAbbreviations.includes(p.abbreviation));
   }
 
-  playersHavingWon(playedGame: Game): Player[] {
-    return this.players.filter((p) => playedGame.playersHavingWonIds.includes(p.id));
+  playersHavingWon(playedGame: SessionGameFragment): SessionPlayerFragment[] {
+    return this.players.filter((p) => playedGame.playersHavingWonAbbreviations.includes(p.abbreviation));
   }
 
 }

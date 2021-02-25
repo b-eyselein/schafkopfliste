@@ -1,6 +1,6 @@
-use diesel::{self, prelude::*, PgConnection, QueryResult};
+use diesel::{prelude::*, PgConnection, QueryResult};
 
-use crate::models::group::{Group, NewGroup};
+use crate::models::group::{Group, GroupInput};
 
 pub fn select_groups(conn: &PgConnection) -> QueryResult<Vec<Group>> {
     use crate::schema::groups::dsl::*;
@@ -8,18 +8,23 @@ pub fn select_groups(conn: &PgConnection) -> QueryResult<Vec<Group>> {
     groups.load(conn)
 }
 
-pub fn select_group_by_id(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Option<Group>> {
+pub fn select_group_by_name(
+    conn: &PgConnection,
+    the_group_name: &str,
+) -> QueryResult<Option<Group>> {
     use crate::schema::groups::dsl::*;
 
-    groups.find(the_group_id).first(conn).optional()
+    groups
+        .filter(name.eq(the_group_name))
+        .first(conn)
+        .optional()
 }
 
-pub fn insert_group(conn: &PgConnection, cg: NewGroup) -> QueryResult<Group> {
+pub fn insert_group(conn: &PgConnection, new_group: GroupInput) -> QueryResult<Group> {
     use crate::schema::groups::dsl::*;
 
     diesel::insert_into(groups)
-        .values(&cg)
-        .returning(id)
+        .values(&new_group)
+        .returning(groups::all_columns())
         .get_result(conn)
-        .map(|new_group_id| Group::new(new_group_id, cg.name, cg.rule_set_id))
 }

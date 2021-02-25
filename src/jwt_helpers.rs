@@ -1,93 +1,60 @@
 use jsonwebtoken::{
-    decode, encode, errors::Error as JwtError, DecodingKey, EncodingKey, Header, Validation,
+    decode, encode, errors::Error as JwtError, DecodingKey, EncodingKey, Header, TokenData,
+    Validation,
 };
-use regex::Regex;
-use rocket::http::Status;
-use rocket::request::FromRequest;
-use rocket::request::Outcome as RequestOutcome;
-use rocket::{Outcome, Request};
 use serde::{Deserialize, Serialize};
 
-use lazy_static::lazy_static;
-
-use crate::models::user::{SerializableUser, UserWithToken};
+use crate::models::user::UserWithToken;
 
 const SECRET: &str = "klasidzf0a89s7dtzfv087sdtfv08d8s7v";
-const HEADER_NAME: &str = "Authorization";
 
-lazy_static! {
-    static ref BEARER_REGEX: Regex = Regex::new(r"Bearer (.*)").unwrap();
-    static ref VALIDATION: Validation = Validation {
-        validate_exp: false,
-        ..Default::default()
-    };
-}
-
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub user: SerializableUser,
+    username: String,
 }
 
 impl Claims {
-    pub fn new(user: SerializableUser) -> Claims {
-        Claims { user }
+    pub fn new(username: String) -> Claims {
+        Claims { username }
+    }
+
+    pub fn username(&self) -> &str {
+        &self.username
     }
 }
 
-pub struct MyJwt {
-    pub header: Header,
-    pub claims: Claims,
-}
-
-pub fn generate_token(user: SerializableUser) -> Result<UserWithToken, JwtError> {
-    let token = encode(
+pub fn encode_token(claims: &Claims) -> jsonwebtoken::errors::Result<String> {
+    encode(
         &Header::default(),
-        &Claims::new(user.clone()),
+        &claims,
         &EncodingKey::from_secret(SECRET.as_ref()),
-    )?;
-
-    Ok(UserWithToken::new(user, token))
+    )
 }
 
-#[derive(Debug)]
-pub enum MyJwtTokenError {
-    BadCount,
-    Missing,
-    Invalid,
+pub fn decode_token(token: &str) -> jsonwebtoken::errors::Result<TokenData<Claims>> {
+    let validation = Validation {
+        validate_exp: false,
+        ..Default::default()
+    };
+
+    decode::<Claims>(
+        &token,
+        &DecodingKey::from_secret(SECRET.as_ref()),
+        &validation,
+    )
 }
 
-fn decode_token(auth_header: &str) -> RequestOutcome<MyJwt, MyJwtTokenError> {
-    match BEARER_REGEX
-        .captures(auth_header)
-        .and_then(|token| token.get(1))
-    {
-        None => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Invalid)),
-        Some(token_match) => {
-            match decode::<Claims>(
-                &token_match.as_str(),
-                &DecodingKey::from_secret(SECRET.as_ref()),
-                &VALIDATION,
-            ) {
-                Err(_) => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Invalid)),
-                Ok(claim) => Outcome::Success(MyJwt {
-                    header: claim.header,
-                    claims: claim.claims,
-                }),
-            }
-        }
-    }
-}
+pub fn generate_token(
+    username: String,
+    is_admin: bool,
+    player_abbreviation: Option<String>,
+) -> Result<UserWithToken, JwtError> {
+    let token = encode_token(&Claims::new(username.clone()))?;
 
-impl<'a, 'r> FromRequest<'a, 'r> for MyJwt {
-    type Error = MyJwtTokenError;
-
-    fn from_request(request: &'a Request<'r>) -> RequestOutcome<Self, MyJwtTokenError> {
-        let auth_headers = request.headers().get(HEADER_NAME).collect::<Vec<&str>>();
-
-        match auth_headers.as_slice() {
-            [] => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::Missing)),
-            [auth_header] => decode_token(auth_header),
-            _ => Outcome::Failure((Status::Unauthorized, MyJwtTokenError::BadCount)),
-        }
-    }
+    Ok(UserWithToken::new(
+        username,
+        is_admin,
+        player_abbreviation,
+        token,
+    ))
 }

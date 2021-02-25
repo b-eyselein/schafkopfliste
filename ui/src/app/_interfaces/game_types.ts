@@ -1,14 +1,14 @@
-import {BavarianSuit, GameType, RuleSet} from './interfaces';
+import {BavarianSuit, GameType, RuleSetFragment} from '../_services/apollo_services';
 
 export interface Suit {
   name: string;
   commitableSuit: BavarianSuit;
 }
 
-const ACORNS: Suit = {name: 'Eichel', commitableSuit: 'Acorns'};
-const LEAVES: Suit = {name: 'Blatt', commitableSuit: 'Leaves'};
-export const HEARTS: Suit = {name: 'Herz', commitableSuit: 'Hearts'};
-const BELLS: Suit = {name: 'Schellen', commitableSuit: 'Bells'};
+const ACORNS: Suit = {name: 'Eichel', commitableSuit: BavarianSuit.Acorns};
+const LEAVES: Suit = {name: 'Blatt', commitableSuit: BavarianSuit.Leaves};
+export const HEARTS: Suit = {name: 'Herz', commitableSuit: BavarianSuit.Hearts};
+const BELLS: Suit = {name: 'Schellen', commitableSuit: BavarianSuit.Bells};
 
 const RUF_SUITS: Suit[] = [ACORNS, LEAVES, BELLS];
 
@@ -23,17 +23,23 @@ export interface CompleteGameType {
 }
 
 export const RUF: CompleteGameType = {
-  name: 'Ruf',
+  name: GameType.Ruf,
   playerPartySize: 2,
   needsSuit: true,
   canBeTout: true,
   isDefaultGameType: true
 };
 
-const WENZ: CompleteGameType = {name: 'Wenz', playerPartySize: 1, needsSuit: false, canBeTout: true, isDefaultGameType: true};
+const WENZ: CompleteGameType = {
+  name: GameType.Wenz,
+  playerPartySize: 1,
+  needsSuit: false,
+  canBeTout: true,
+  isDefaultGameType: true
+};
 
 const FARB_SOLO: CompleteGameType = {
-  name: 'Farbsolo',
+  name: GameType.Farbsolo,
   playerPartySize: 1,
   needsSuit: true,
   canBeTout: true,
@@ -41,7 +47,7 @@ const FARB_SOLO: CompleteGameType = {
 };
 
 const GEIER: CompleteGameType = {
-  name: 'Geier',
+  name: GameType.Geier,
   playerPartySize: 1,
   needsSuit: false,
   canBeTout: true,
@@ -49,7 +55,7 @@ const GEIER: CompleteGameType = {
 };
 
 const HOCHZEIT: CompleteGameType = {
-  name: 'Hochzeit',
+  name: GameType.Hochzeit,
   playerPartySize: 2,
   needsSuit: false,
   canBeTout: true,
@@ -57,7 +63,7 @@ const HOCHZEIT: CompleteGameType = {
 };
 
 const BETTEL: CompleteGameType = {
-  name: 'Bettel',
+  name: GameType.Bettel,
   playerPartySize: 1,
   needsSuit: false,
   canBeTout: false,
@@ -65,7 +71,7 @@ const BETTEL: CompleteGameType = {
 };
 
 const RAMSCH: CompleteGameType = {
-  name: 'Ramsch',
+  name: GameType.Ramsch,
   playerPartySize: 1,
   needsSuit: false,
   canBeTout: false,
@@ -73,7 +79,7 @@ const RAMSCH: CompleteGameType = {
 };
 
 const FARB_WENZ: CompleteGameType = {
-  name: 'Farbwenz',
+  name: GameType.Farbwenz,
   playerPartySize: 1,
   needsSuit: true,
   canBeTout: true,
@@ -81,7 +87,7 @@ const FARB_WENZ: CompleteGameType = {
 };
 
 const FARB_GEIER: CompleteGameType = {
-  name: 'Farbgeier',
+  name: GameType.Farbgeier,
   playerPartySize: 1,
   needsSuit: true,
   canBeTout: true,
@@ -96,7 +102,7 @@ export function getSuitsForGameType(playedGame: CompleteGameType): Suit[] {
   }
 }
 
-export function getAllowedGameTypes(ruleSet: RuleSet): CompleteGameType[] {
+export function getAllowedGameTypes(ruleSet: RuleSetFragment): CompleteGameType[] {
   return [
     RUF, WENZ, FARB_SOLO,
     ruleSet.geierAllowed ? GEIER : null,

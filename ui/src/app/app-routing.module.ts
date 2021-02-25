@@ -10,22 +10,32 @@ import {GroupComponent} from './group/group.component';
 import {RuleSetListComponent} from './rule-set-list/rule-set-list.component';
 import {NewSessionComponent} from './new-session/new-session.component';
 import {PlayersInGroupComponent} from './players-in-group/players-in-group.component';
-import {UploadSpreadsheetComponent} from './upload-spreadsheet/upload-spreadsheet.component';
 import {RegisterFormComponent} from './_forms/register-form/register-form.component';
-
+import {RuleSetComponent} from './rule-set/rule-set.component';
+import {CreateRuleSetComponent} from './rule-set-form/create-rule-set.component';
+import {CreateGroupComponent} from './_forms/create-group/create-group.component';
+import {CreatePlayerComponent} from './_forms/create-player/create-player.component';
 
 export const routingComponents = [
   IndexComponent,
+
   RegisterFormComponent,
   LoginFormComponent,
+
   RuleSetListComponent,
+  CreateRuleSetComponent,
+  RuleSetComponent,
+
   PlayerListComponent,
+  CreatePlayerComponent,
+
   GroupListComponent,
+  CreateGroupComponent,
+
   GroupComponent,
   PlayersInGroupComponent,
   NewSessionComponent,
   SessionComponent,
-  UploadSpreadsheetComponent
 ];
 
 const routes: Routes = [
@@ -35,18 +45,23 @@ const routes: Routes = [
   {path: 'loginForm', component: LoginFormComponent},
 
   {path: 'ruleSets', component: RuleSetListComponent},
-  {path: 'players', component: PlayerListComponent, canActivate: [AuthGuard]},
-  {path: 'groups', component: GroupListComponent},
-  {path: 'groups/:groupId', component: GroupComponent},
-  {path: 'groups/:groupId/players', component: PlayersInGroupComponent, canActivate: [AuthGuard]},
-  {path: 'groups/:groupId/newSession', component: NewSessionComponent, canActivate: [AuthGuard]},
-  {path: 'groups/:groupId/sessions/:serialNumber', component: SessionComponent},
+  {path: 'ruleSets/new', component: CreateRuleSetComponent},
+  {path: 'ruleSets/:id', component: RuleSetComponent},
 
-  {path: 'groups/:groupId/uploadSpreadsheet', component: UploadSpreadsheetComponent, canActivate: [AuthGuard]}
+  {path: 'players', component: PlayerListComponent, canActivate: [AuthGuard]},
+  {path: 'players/new', component: CreatePlayerComponent, canActivate: [AuthGuard]},
+
+  {path: 'groups', component: GroupListComponent},
+  {path: 'groups/new', component: CreateGroupComponent},
+
+  {path: 'groups/:groupName', component: GroupComponent},
+  {path: 'groups/:groupName/players', component: PlayersInGroupComponent, canActivate: [AuthGuard]},
+  {path: 'groups/:groupName/newSession', component: NewSessionComponent, canActivate: [AuthGuard]},
+  {path: 'groups/:groupName/sessions/:sessionId', component: SessionComponent},
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, {useHash: true, relativeLinkResolution: 'legacy'})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

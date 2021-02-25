@@ -1,23 +1,29 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CompleteSession, Game, UserWithToken} from '../_interfaces/interfaces';
 import {ApiService} from '../_services/api.service';
 import {AuthenticationService} from '../_services/authentication.service';
+import {LoggedInUserFragment, SessionFragment, SessionGameFragment, SessionGQL} from '../_services/apollo_services';
+import {GraphQLError} from 'graphql';
 
 @Component({templateUrl: './session.component.html'})
 export class SessionComponent implements OnInit {
 
   readonly playerIndexes = [0, 1, 2, 3];
 
-  currentUser: UserWithToken;
+  groupName: string;
+  sessionId: number;
 
-  session: CompleteSession;
+  currentUser: LoggedInUserFragment;
 
-  game: Game;
+  session: SessionFragment;
+  queryError: GraphQLError;
+
+  game: SessionGameFragment;
 
   constructor(
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
+    private sessionGQL: SessionGQL,
     private apiService: ApiService
   ) {
   }
@@ -27,35 +33,52 @@ export class SessionComponent implements OnInit {
       .subscribe((u) => this.currentUser = u);
 
     this.route.paramMap.subscribe((paramMap) => {
-      const groupId: number = parseInt(paramMap.get('groupId'), 10);
-      const serialNumber: number = parseInt(paramMap.get('serialNumber'), 10);
+      this.groupName = paramMap.get('groupName');
+      this.sessionId = parseInt(paramMap.get('sessionId'), 10);
 
-      this.apiService.getCompleteSession(groupId, serialNumber)
-        .subscribe((session) => this.session = session);
+      this.sessionGQL.watch({groupName: this.groupName, sessionId: this.sessionId})
+        .valueChanges
+        .subscribe(
+          ({data}) => {
+            this.queryError = null;
+            this.session = data.session;
+          },
+          (error) => {
+            this.queryError = error;
+            this.session = null;
+            console.error(error);
+          });
     });
   }
 
-  updateGame($event: Game) {
+  updateGame($event: SessionGameFragment) {
     console.info($event);
     this.game = {...$event};
   }
 
   endSession(): void {
     if (confirm('Wollen Sie die Sitzung wirklich beenden?\nAchtung: Sie können danach keine weiteren Spiele mehr eintragen!')) {
-      this.apiService.endSession(this.session.group.id, this.session.id)
+      this.apiService.endSession(this.groupName, this.sessionId)
         .subscribe((ended) => this.session.hasEnded = ended);
     }
   }
 
   renderDate(): string {
+    return this.session.date;
+    /*
     return this.session.dateDayOfMonth.toString().padStart(2, '0') + '.'
       + this.session.dateMonth.toString().padStart(2, '0') + '.'
       + this.session.dateYear.toString().padStart(4, '0');
+
+     */
   }
 
   renderTime(): string {
+    return this.session.date;
+    /*
     return this.session.timeHours.toString().padStart(2, '0') + ':'
       + this.session.timeMinutes.toString().padStart(2, '0');
+     */
   }
 
 }

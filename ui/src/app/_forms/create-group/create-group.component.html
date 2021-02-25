@@ -1,28 +1,39 @@
-<h1 class="subtitle is-3 has-text-centered">Neue Gruppe anlegen</h1>
+<div class="container">
+  <h1 class="subtitle is-3 has-text-centered">Neue Gruppe anlegen</h1>
 
-<div class="field">
-  <label class="label" for="name">Name:</label>
-  <div class="control">
-    <input type="text" id="name" class="input" [(ngModel)]="groupName" placeholder="Name der Gruppe" autofocus>
-  </div>
-</div>
+  <form *ngIf="ruleSetListQuery && groupFormGroup" [formGroup]="groupFormGroup" (ngSubmit)="onSubmit()">
 
-
-<div class="field">
-  <label class="label" for="ruleSetId">Regelsatz:</label>
-  <div class="control">
-    <div class="select">
-      <select *ngIf="ruleSetListQuery" id="ruleSetId" name="ruleSetId" class="input" [(ngModel)]="ruleSetId">
-        <option *ngFor="let ruleSet of ruleSetListQuery.ruleSets" [value]="ruleSet.id">
-          {{ruleSet.id}} -- {{ruleSet | json}}
-        </option>
-      </select>
+    <div class="field">
+      <label class="label" for="name">Name:</label>
+      <div class="control">
+        <input formControlName="name" id="name" class="input" placeholder="Name der Gruppe" autofocus>
+      </div>
     </div>
-  </div>
-</div>
 
-<br>
+    <div class="field">
+      <label class="label" for="ruleSetName">Regelsatz:</label>
+      <div class="control">
+        <div class="select">
+          <select formControlName="ruleSetName" id="ruleSetName">
+            <option *ngFor="let ruleSet of ruleSetListQuery.ruleSets" [value]="ruleSet.name">
+              {{ruleSet.name}} -- {{ruleSet | json}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-<div class="buttons">
-  <button class="button is-link is-fullwidth" (click)="createGroup()">Gruppe anlegen</button>
+    <div *ngIf="queryError" class="notification is-danger has-text-centered">
+      {{queryError.message}}
+    </div>
+
+    <div *ngIf="createdGroupName" class="notification is-success has-text-centered">
+      Gruppe {{createdGroupName}} wurde erstellt.
+    </div>
+
+    <div class="buttons">
+      <button class="button is-link is-fullwidth" [class.is-loading]="loading">Gruppe anlegen</button>
+    </div>
+  </form>
+
 </div>

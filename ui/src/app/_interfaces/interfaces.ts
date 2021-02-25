@@ -1,15 +1,11 @@
-
-
-export interface AccumulatedResult {
-  balance: number;
-  gameCount: number;
-  playedGames: number;
-  putCount: number;
-  winCount: number;
-}
-
+/**
+ * @deprecated
+ */
 export type BavarianSuit = 'Acorns' | 'Leaves' | 'Hearts' | 'Bells';
 
+/**
+ * @deprecated
+ */
 export interface CompleteSession {
   dateDayOfMonth: number;
   dateMonth: number;
@@ -28,8 +24,14 @@ export interface CompleteSession {
   timeMinutes: number;
 }
 
+/**
+ * @deprecated
+ */
 export type CountLaufende = 'Always' | 'OnlyLosers' | 'Never';
 
+/**
+ * @deprecated
+ */
 export interface CreatableSession {
   dateDayOfMonth: number;
   dateMonth: number;
@@ -42,11 +44,9 @@ export interface CreatableSession {
   timeMinutes: number;
 }
 
-export interface Credentials {
-  password: string;
-  username: string;
-}
-
+/**
+ * @deprecated
+ */
 export interface Game {
   actingPlayerId: number;
   gameType: GameType;
@@ -63,46 +63,37 @@ export interface Game {
   tout: boolean;
 }
 
-export type GameType = 'Ruf' | 'Wenz' | 'Farbsolo' | 'Geier' | 'Hochzeit' | 'Bettel' | 'Ramsch' | 'Farbwenz' | 'Farbgeier';
+/**
+ * @deprecated
+ */
+export type GameType =
+  'Ruf'
+  | 'Wenz'
+  | 'Farbsolo'
+  | 'Geier'
+  | 'Hochzeit'
+  | 'Bettel'
+  | 'Ramsch'
+  | 'Farbwenz'
+  | 'Farbgeier';
 
+/**
+ * @deprecated
+ */
 export interface Group {
   id: number;
   name: string;
   ruleSetId: number;
 }
 
-export interface GroupWithPlayerCount {
-  id: number;
-  name: string;
-  playerCount: number;
-  ruleSetId: number;
-}
-
-export interface GroupWithPlayerMembership {
-  group: Group;
-  playerMemberships: PlayerAndMembership[];
-}
-
-export interface GroupWithPlayersAndRuleSet {
-  id: number;
-  name: string;
-  players: PlayerWithGroupResult[];
-  ruleSet: RuleSet;
-}
-
+/**
+ * @deprecated
+ */
 export type KontraType = 'Kontra' | 'Re' | 'Supra' | 'Resupra';
 
-export interface NewGroup {
-  name: string;
-  ruleSetId: number;
-}
-
-export interface NewPlayer {
-  abbreviation: string;
-  name: string;
-  pictureName: string | undefined;
-}
-
+/**
+ * @deprecated
+ */
 export interface Player {
   abbreviation: string;
   id: number;
@@ -110,27 +101,17 @@ export interface Player {
   pictureName: string | undefined;
 }
 
-export interface PlayerAndMembership {
-  isMember: boolean;
-  player: Player;
-}
-
-export interface PlayerWithGroupResult {
-  player: Player;
-  sessionResult: AccumulatedResult;
-}
-
+/**
+ * @deprecated
+ */
 export interface PricedGame {
   game: Game;
   price: number;
 }
 
-export interface RegisterValues {
-  password: string;
-  passwordRepeat: string;
-  username: string;
-}
-
+/**
+ * @deprecated
+ */
 export interface RuleSet {
   basePrice: number;
   bettelAllowed: boolean;
@@ -148,14 +129,14 @@ export interface RuleSet {
   soloPrice: number;
 }
 
+/**
+ * @deprecated
+ */
 export type SchneiderSchwarz = 'Schneider' | 'Schwarz';
 
-export interface SerializableUser {
-  isAdmin: boolean;
-  playerId: number | undefined;
-  username: string;
-}
-
+/**
+ * @deprecated
+ */
 export interface Session {
   creatorUsername: string;
   dateDayOfMonth: number;
@@ -172,6 +153,9 @@ export interface Session {
   timeMinutes: number;
 }
 
+/**
+ * @deprecated
+ */
 export interface SessionResult {
   groupId: number;
   playerId: number;
@@ -179,7 +163,3 @@ export interface SessionResult {
   sessionId: number;
 }
 
-export interface UserWithToken {
-  token: string;
-  user: SerializableUser;
-}

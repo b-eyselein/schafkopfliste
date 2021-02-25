@@ -1,18 +1,41 @@
+import {APOLLO_OPTIONS} from 'apollo-angular';
+import {HttpLink} from 'apollo-angular/http';
+import {ApolloClientOptions, ApolloLink, InMemoryCache, NormalizedCacheObject} from '@apollo/client/core';
 import {NgModule} from '@angular/core';
-import {ApolloModule, APOLLO_OPTIONS} from 'apollo-angular';
-import {HttpLinkModule, HttpLink} from 'apollo-angular-link-http';
-import {InMemoryCache} from 'apollo-cache-inmemory';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpClientModule} from '@angular/common/http';
+import {setContext} from '@apollo/client/link/context';
+import {LoggedInUserFragment} from './_services/apollo_services';
+import {getCurrentUser} from './_services/authentication.service';
 
-const uri = 'http://localhost:8000/graphql'; // <-- add the URL of the GraphQL server here
-export function createApollo(httpLink: HttpLink) {
+export function createApollo(httpLink: HttpLink): ApolloClientOptions<NormalizedCacheObject> {
+  const auth = setContext(() => {
+    const loggedInUser: LoggedInUserFragment | null = getCurrentUser();
+
+    if (loggedInUser === null) {
+      return {};
+    } else {
+      return {
+        headers: {
+          Authorization: loggedInUser.token
+        }
+      };
+    }
+  });
+
   return {
-    link: httpLink.create({uri}),
+    link: ApolloLink.from([auth, httpLink.create({uri: '/graphql'})]),
     cache: new InMemoryCache(),
+    defaultOptions: {
+      query: {fetchPolicy: 'no-cache'},
+      watchQuery: {fetchPolicy: 'no-cache'},
+      mutate: {fetchPolicy: 'no-cache'}
+    }
   };
 }
 
 @NgModule({
-  exports: [ApolloModule, HttpLinkModule],
+  imports: [BrowserModule, HttpClientModule],
   providers: [
     {
       provide: APOLLO_OPTIONS,

@@ -14,7 +14,7 @@
             <p>{{(group.playerCount !== undefined) ? group.playerCount : '?'}} Spieler</p>
           </div>
           <footer class="card-footer">
-            <a class="card-footer-item" [routerLink]="[group.id]">Zur Gruppe</a>
+            <a class="card-footer-item" [routerLink]="[group.name]">Zur Gruppe</a>
           </footer>
         </div>
       </div>
@@ -22,12 +22,7 @@
 
   </ng-container>
 
-  <hr>
-
-  <div class="box">
-    <skl-create-group (groupCreated)="onGroupCreated($event)"></skl-create-group>
-  </div>
-
+  <a *ngIf="currentUser" class="button is-link is-fullwidth" routerLink="new">Gruppe anlegen</a>
 </div>
 
 <ng-template #loadingGroupsBlock>

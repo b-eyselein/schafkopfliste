@@ -1,46 +1,41 @@
 <div class="container">
   <h1 class="title is-3 has-text-centered">Neuen Account registrieren</h1>
 
-  <form (ngSubmit)="register()">
+  <form [formGroup]="registerForm" (ngSubmit)="register()">
     <div class="field">
       <label class="label" for="username">Nutzername:</label>
       <div class="control">
-        <input type="text" class="input" id="username" [(ngModel)]="username" name="username" placeholder="Nutzername"
-               autofocus>
+        <input type="text" id="username" formControlName="username" class="input" placeholder="Nutzername" autofocus>
       </div>
     </div>
 
     <div class="field">
       <label for="password" class="label">Passwort:</label>
       <div class="control">
-        <input type="password" class="input" id="password" [(ngModel)]="password" name="password"
-               placeholder="Passwort">
+        <input type="password" id="password" formControlName="password" class="input" placeholder="Passwort">
       </div>
     </div>
 
     <div class="field">
       <label for="passwordRepeat" class="label">Passwort wiederholen:</label>
       <div class="control">
-        <input type="password" class="input" id="passwordRepeat" [(ngModel)]="passwordRepeat"
-               name="passwordRepeat" placeholder="Passwort wiederholen">
+        <input type="password" id="passwordRepeat" formControlName="passwordRepeat" class="input"
+               placeholder="Passwort wiederholen">
       </div>
     </div>
 
-    <hr>
-
     <div class="buttons">
-      <button class="button is-link is-fullwidth" [class.is-loading]="submitted">Registrieren</button>
+      <button class="button is-link is-fullwidth" [class.is-loading]="loading">Registrieren</button>
     </div>
   </form>
 
-  <ng-container *ngIf="registeredUser">
-    <hr>
+  <div class="notification is-danger has-text-centered my-3" *ngIf="queryError">
+    Es gab einen Fehler: {{queryError.message}}
+  </div>
 
-    <div class="notification is-primary is-fullwidth">
-      Nutzer {{registeredUser.username}} wurde erfolgreich registriert.
-    </div>
-
-  </ng-container>
+  <div class="notification is-success has-text-centered my-3" *ngIf="registeredUsername">
+    Nutzer {{registeredUsername}} wurde erfolgreich registriert.
+  </div>
 
 
 </div>

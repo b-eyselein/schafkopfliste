@@ -1,104 +1,128 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {ApiService} from '../_services/api.service';
-import {CreatableSession, GroupWithPlayersAndRuleSet, Player, Session} from '../_interfaces/interfaces';
+import {
+  NewSessionGQL,
+  NewSessionPlayerValuesFragment,
+  NewSessionValuesGQL,
+  NewSessionValuesGroupFragment,
+  SessionInput
+} from '../_services/apollo_services';
+import {GraphQLError} from 'graphql';
 
 @Component({templateUrl: './new-session.component.html'})
 export class NewSessionComponent implements OnInit {
 
-  group: GroupWithPlayersAndRuleSet;
+  groupName: string;
 
-  players: Player[];
+  group: NewSessionValuesGroupFragment;
+  queryError: GraphQLError;
 
   submitted = false;
 
+  playersForPreHand: NewSessionPlayerValuesFragment[] = [];
+  playersForMiddleHand: NewSessionPlayerValuesFragment[] = [];
+  playersForRearHand: NewSessionPlayerValuesFragment[] = [];
 
-  playersForPreHand: Player[] = [];
-  playersForMiddleHand: Player[] = [];
-  playersForRearHand: Player[] = [];
+  creatableSession: SessionInput;
 
-  creatableSession: CreatableSession;
+  createdSession: number | undefined;
+  mutationQueryError: GraphQLError;
 
-  createdSession: Session | undefined;
-
-  constructor(private route: ActivatedRoute, private apiService: ApiService) {
+  constructor(
+    private route: ActivatedRoute,
+    private newSessionValuesGQL: NewSessionValuesGQL,
+    private newSessionGQL: NewSessionGQL
+  ) {
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
-      const groupId = parseInt(paramMap.get('groupId'), 10);
+      this.groupName = paramMap.get('groupName');
 
-      this.apiService.getGroupWithPlayersAndRuleSet(groupId)
-        .subscribe((g) => {
-          this.group = g;
+      this.newSessionValuesGQL.watch({groupName: this.groupName})
+        .valueChanges
+        .subscribe(
+          ({data}) => {
+            this.group = data.group;
 
-          this.players = this.group.players.map((p) => p.player);
+            const today = new Date();
 
-          const today = new Date();
-
-          this.creatableSession = {
-            dateYear: today.getFullYear(),
-            dateMonth: today.getMonth() + 1,
-            dateDayOfMonth: today.getDate(),
-            timeHours: today.getHours(),
-            timeMinutes: today.getMinutes(),
-            firstPlayerId: undefined,
-            secondPlayerId: undefined,
-            thirdPlayerId: undefined,
-            fourthPlayerId: undefined,
-          };
-        });
+            this.creatableSession = {
+              dateYear: today.getFullYear(),
+              dateMonth: today.getMonth() + 1,
+              dateDayOfMonth: today.getDate(),
+              timeHours: today.getHours(),
+              timeMinutes: today.getMinutes(),
+              firstPlayerAbbreviation: undefined,
+              secondPlayerAbbreviation: undefined,
+              thirdPlayerAbbreviation: undefined,
+              fourthPlayerAbbreviation: undefined,
+            };
+          },
+          (queryError) => {
+            this.queryError = queryError;
+          });
     });
   }
 
-  updateDealer(dealerId: number | undefined): void {
-    this.creatableSession.firstPlayerId = dealerId;
+  updateDealer(dealerId: string | undefined): void {
+    this.creatableSession.firstPlayerAbbreviation = dealerId;
 
-    this.playersForPreHand = this.players
-      .filter((p) => p.id !== this.creatableSession.firstPlayerId);
+    this.playersForPreHand = this.group.players
+      .filter((p) => p.abbreviation !== this.creatableSession.firstPlayerAbbreviation);
   }
 
-  updatePreHand(preHandId: number): void {
-    this.creatableSession.secondPlayerId = preHandId;
+  updatePreHand(preHandId: string | undefined): void {
+    this.creatableSession.secondPlayerAbbreviation = preHandId;
 
-    const selectedPlayerIds = [this.creatableSession.firstPlayerId, this.creatableSession.secondPlayerId];
+    const selectedPlayerIds = [this.creatableSession.firstPlayerAbbreviation, this.creatableSession.secondPlayerAbbreviation];
 
-    this.playersForMiddleHand = this.players
-      .filter((p) => !selectedPlayerIds.includes(p.id));
+    this.playersForMiddleHand = this.group.players
+      .filter((p) => !selectedPlayerIds.includes(p.abbreviation));
   }
 
-  updateMiddleHand(middleHandId: number): void {
-    this.creatableSession.thirdPlayerId = middleHandId;
+  updateMiddleHand(middleHandId: string | undefined): void {
+    this.creatableSession.thirdPlayerAbbreviation = middleHandId;
 
     const selectedPlayerIds = [
-      this.creatableSession.firstPlayerId,
-      this.creatableSession.secondPlayerId,
-      this.creatableSession.thirdPlayerId
+      this.creatableSession.firstPlayerAbbreviation,
+      this.creatableSession.secondPlayerAbbreviation,
+      this.creatableSession.thirdPlayerAbbreviation
     ];
 
-    this.playersForRearHand = this.players
-      .filter((p) => !selectedPlayerIds.includes(p.id));
+    this.playersForRearHand = this.group.players
+      .filter((p) => !selectedPlayerIds.includes(p.abbreviation));
   }
 
-  updateRearHand(rearHandId: number): void {
-    this.creatableSession.fourthPlayerId = rearHandId;
+  updateRearHand(rearHandId: string | undefined): void {
+    this.creatableSession.fourthPlayerAbbreviation = rearHandId;
   }
 
   createSession(): void {
     this.submitted = true;
 
     if (
-      !this.creatableSession.firstPlayerId ||
-      !this.creatableSession.secondPlayerId ||
-      !this.creatableSession.thirdPlayerId ||
-      !this.creatableSession.fourthPlayerId
+      !this.creatableSession.firstPlayerAbbreviation ||
+      !this.creatableSession.secondPlayerAbbreviation ||
+      !this.creatableSession.thirdPlayerAbbreviation ||
+      !this.creatableSession.fourthPlayerAbbreviation
     ) {
       alert('You have to select a rule set and a player for every position!');
       return;
     }
 
-    this.apiService.createSession(this.group.id, this.creatableSession)
-      .subscribe((session) => this.createdSession = session);
+    this.newSessionGQL.mutate({groupName: this.groupName, sessionInput: this.creatableSession})
+      .subscribe(
+        ({data}) => {
+          console.info(data);
+          this.createdSession = data.newSession;
+          this.mutationQueryError = null;
+        },
+        (queryError) => {
+          this.createdSession = null;
+          this.mutationQueryError = queryError;
+        }
+      );
   }
 
 }

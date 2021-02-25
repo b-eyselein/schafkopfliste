@@ -1,14 +1,12 @@
 import {Component, Input} from '@angular/core';
-import {RuleSet} from '../_interfaces/interfaces';
+import {RuleSetFragment} from '../_services/apollo_services';
 
 @Component({
-  selector: 'skl-rule-set',
   template: `
-    <pre>{{ruleSet | json}}</pre>
-  `
+    <pre>{{ruleSet | json}}</pre>`
 })
 export class RuleSetComponent {
 
-  @Input() ruleSet: RuleSet;
+  @Input() ruleSet: RuleSetFragment;
 
 }

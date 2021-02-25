@@ -1,30 +1,36 @@
 <div class="container is-fluid">
 
-  <ng-container *ngIf="session; else loadingSessionBlock">
+  <ng-container *ngIf="session || queryError; else loadingSessionBlock">
 
-    <h1 class="title is-3 has-text-centered">
-      Gruppe {{session.group.name}},
-      Sitzung {{session.id}},
-      am {{renderDate()}},
-      um {{renderTime()}}
-    </h1>
+    <ng-container *ngIf="session">
 
-    <div class="columns is-widescreen is-multiline">
-      <div class="column is-two-fifths-widescreen" *ngIf="currentUser && !session.hasEnded">
-        <div class="box">
-          <skl-new-game
-            [session]="session"
-            (gameChanged)="updateGame($event)"
-            (endSession)="endSession()">
-          </skl-new-game>
+      <h1 class="title is-3 has-text-centered">
+        Gruppe {{groupName}},
+        Sitzung {{sessionId}},
+        am {{renderDate()}},
+        um {{renderTime()}}
+      </h1>
+
+      <div class="columns is-widescreen is-multiline">
+        <div class="column is-two-fifths-widescreen" *ngIf="currentUser && !session.hasEnded">
+          <div class="box">
+            <skl-new-game [session]="session" [sessionId]="sessionId" [groupName]="groupName"
+                          (gameChanged)="updateGame($event)"
+                          (endSession)="endSession()">
+            </skl-new-game>
+          </div>
+        </div>
+
+        <div class="column">
+          <skl-games-table [session]="session" [runningGame]="game"></skl-games-table>
         </div>
       </div>
 
-      <div class="column">
-        <skl-games-table [session]="session" [runningGame]="game"></skl-games-table>
-      </div>
-    </div>
+    </ng-container>
 
+    <div *ngIf="queryError" class="notification is-danger has-text-centered">
+      {{queryError.message}}
+    </div>
   </ng-container>
 
 </div>

@@ -1,9 +1,7 @@
 <div class="container">
+  <h1 class="title is-3 has-text-centered">Gruppe &quot;{{groupName}}&quot;: Neue Sitzung erstellen</h1>
 
-  <ng-container *ngIf="group; else loadingGroupBlock">
-
-    <h1 class="title is-3 has-text-centered">Gruppe &quot;{{group.name}}&quot;: Neue Sitzung erstellen</h1>
-
+  <ng-container *ngIf="group; else loadingDataBlock">
 
     <div class="columns">
       <div class="column is-three-fifths-desktop">
@@ -66,17 +64,15 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateDealer(p.player.id)" title="{{p.player.name}}"
-                    [ngClass]="{'is-link': creatableSession.firstPlayerId === p.player.id}">
-              {{p.player.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateDealer(p.abbreviation)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.firstPlayerAbbreviation === p.abbreviation}">
+              {{p.abbreviation}}
             </button>
           </div>
         </div>
 
       </div>
     </div>
-
-    <br>
 
     <div class="field">
       <label class="label">1. Vorhand:</label>
@@ -84,18 +80,16 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updatePreHand(p.player.id)" title="{{p.player.name}}"
-                    [ngClass]="{'is-link': creatableSession.secondPlayerId === p.player.id}"
-                    [disabled]="!playersForPreHand.includes(p.player)">
-              {{p.player.abbreviation}}
+            <button class="button is-fullwidth" (click)="updatePreHand(p.abbreviation)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.secondPlayerAbbreviation === p.abbreviation}"
+                    [disabled]="!playersForPreHand.includes(p)">
+              {{p.abbreviation}}
             </button>
           </div>
         </div>
 
       </div>
     </div>
-
-    <br>
 
     <div class="field">
       <label class="label">1. Mittelhand:</label>
@@ -103,18 +97,16 @@
 
         <div class="columns is-multiline">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateMiddleHand(p.player.id)" title="{{p.player.name}}"
-                    [ngClass]="{'is-link': creatableSession.thirdPlayerId === p.player.id}"
-                    [disabled]="!playersForMiddleHand.includes(p.player)">
-              {{p.player.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateMiddleHand(p.abbreviation)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.thirdPlayerAbbreviation === p.abbreviation}"
+                    [disabled]="!playersForMiddleHand.includes(p)">
+              {{p.abbreviation}}
             </button>
           </div>
         </div>
 
       </div>
     </div>
-
-    <br>
 
     <div class="field">
       <label class="label">1. Rückhand:</label>
@@ -122,10 +114,10 @@
 
         <div class="columns">
           <div class="column is-1" *ngFor="let p of group.players">
-            <button class="button is-fullwidth" (click)="updateRearHand(p.player.id)" title="{{p.player.name}}"
-                    [ngClass]="{'is-link': creatableSession.fourthPlayerId === p.player.id}"
-                    [disabled]="!playersForRearHand.includes(p.player)">
-              {{p.player.abbreviation}}
+            <button class="button is-fullwidth" (click)="updateRearHand(p.abbreviation)" title="{{p.name}}"
+                    [ngClass]="{'is-link': creatableSession.fourthPlayerAbbreviation === p.abbreviation}"
+                    [disabled]="!playersForRearHand.includes(p)">
+              {{p.abbreviation}}
             </button>
           </div>
         </div>
@@ -133,23 +125,23 @@
       </div>
     </div>
 
-    <hr>
+    <div *ngIf="mutationQueryError" class="notification is-danger has-text-centered">
+      {{mutationQueryError.message}}
+    </div>
 
     <button class="button is-link is-fullwidth" (click)="createSession()" [disabled]="createdSession">
       Sitzung starten
     </button>
 
-    <br>
-
-    <div class="notification is-primary" *ngIf="createdSession">
-      Sitzung mit der ID {{createdSession.id}} wurde erstellt.
-      <a [routerLink]="['../', 'sessions', createdSession.id]">Zur Sitzung</a>
+    <div *ngIf="createdSession" class="notification is-primary has-text-centered my-3">
+      Sitzung mit der ID {{createdSession}} wurde erstellt.
+      <a [routerLink]="['../', 'sessions', createdSession]">Zur Sitzung</a>
     </div>
 
   </ng-container>
 
 </div>
 
-<ng-template #loadingGroupBlock>
+<ng-template #loadingDataBlock>
   <div class="notification is-primary is-fullwidth">Lade Daten...</div>
 </ng-template>

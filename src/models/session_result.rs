@@ -5,9 +5,9 @@ use crate::schema::session_results;
 
 #[derive(Debug, Insertable, Queryable, Serialize)]
 pub struct SessionResult {
-    player_id: i32,
+    player_abbreviation: String,
     session_id: i32,
-    group_id: i32,
+    group_name: String,
     result: i32,
 }
 
@@ -18,12 +18,12 @@ pub fn select_session_results(conn: &PgConnection) -> QueryResult<Vec<SessionRes
 pub fn select_session_results_for_session(
     conn: &PgConnection,
     the_session_id: i32,
-    the_group_id: i32,
+    the_group_name: &str,
 ) -> QueryResult<Vec<SessionResult>> {
     use crate::schema::session_results::dsl::*;
 
     session_results
-        .filter(group_id.eq(the_group_id))
+        .filter(group_name.eq(the_group_name))
         .filter(session_id.eq(the_session_id))
         .load(conn)
 }
@@ -36,7 +36,7 @@ pub fn upsert_session_result(
 
     diesel::insert_into(session_results)
         .values(&the_session_result)
-        .on_conflict((player_id, session_id, group_id))
+        .on_conflict((player_abbreviation, session_id, group_name))
         .do_update()
         .set(result.eq(the_session_result.result))
         .get_result(conn)

@@ -1,18 +1,19 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Player, PlayerCreationGQL, PlayerCreationMutation} from '../../_services/apollo_services';
+import {PlayerCreationGQL} from '../../_services/apollo_services';
+import {GraphQLError} from 'graphql';
 
-@Component({
-  selector: 'skl-create-player',
-  templateUrl: './create-player.component.html',
-})
+@Component({templateUrl: './create-player.component.html'})
 export class CreatePlayerComponent {
 
   playerForm: FormGroup;
 
-  @Output() playerCreated = new EventEmitter<Player>();
+  loading = false;
 
-  constructor(private fb: FormBuilder,  private playerCreationGQL: PlayerCreationGQL) {
+  queryError: GraphQLError;
+  createdPlayerName: string;
+
+  constructor(private fb: FormBuilder, private playerCreationGQL: PlayerCreationGQL) {
     this.playerForm = this.fb.group({
       abbreviation: ['', Validators.required],
       firstName: ['', Validators.required],
@@ -50,11 +51,16 @@ export class CreatePlayerComponent {
 
     this.playerCreationGQL
       .mutate({name, abbreviation})
-      .subscribe(({data}: { data: PlayerCreationMutation }) => {
-        // tslint:disable-next-line:no-console
-        console.info(data);
-        this.playerCreated.emit(data.createPlayer as Player);
-      });
+      .subscribe(({data}) => {
+          this.createdPlayerName = data.createPlayer;
+          this.queryError = null;
+          this.loading = false;
+        },
+        (error) => {
+          this.createdPlayerName = null;
+          this.queryError = error;
+          this.loading = false;
+        });
   }
 
 }

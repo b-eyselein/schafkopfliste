@@ -1,37 +1,27 @@
-<div class="container is-fluid">
+<div class="container">
 
   <h1 class="title is-3 has-text-centered">Spieler</h1>
 
   <ng-container *ngIf="playerListQuery; else loadingPlayersBlock">
 
-    <div class="columns">
-      <div class="column is-one-fifth-desktop">
-        <div class="box">
-          <skl-create-player (playerCreated)="onPlayerCreated($event)"></skl-create-player>
-        </div>
-      </div>
-
-      <div class="column">
-        <table class="table is-fullwidth" *ngIf="playerListQuery.players.length > 0; else noPlayersFoundBlock">
-          <thead>
-          <tr>
-            <th>ID</th>
-            <th>Kürzel</th>
-            <th>Name</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let p of playerListQuery.players">
-            <td>{{p.id}}</td>
-            <td>{{p.abbreviation}}</td>
-            <td>{{p.name}}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <table class="table is-fullwidth" *ngIf="playerListQuery.players.length > 0; else noPlayersFoundBlock">
+      <thead>
+        <tr>
+          <th>Kürzel</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of playerListQuery.players">
+          <td>{{p.abbreviation}}</td>
+          <td>{{p.name}}</td>
+        </tr>
+      </tbody>
+    </table>
 
   </ng-container>
+
+  <a class="button is-link is-fullwidth" routerLink="new">Spieler erstellen</a>
 
 </div>
 

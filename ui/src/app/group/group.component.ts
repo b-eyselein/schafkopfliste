@@ -1,17 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../_services/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {GroupWithPlayersAndRuleSet, PlayerWithGroupResult, UserWithToken} from '../_interfaces/interfaces';
 import {AuthenticationService} from '../_services/authentication.service';
-import {GroupGQL, GroupQuery} from '../_services/apollo_services';
+import {GroupGQL, GroupQuery, LoggedInUserFragment, PlayerInGroupFragment} from '../_services/apollo_services';
 
 @Component({templateUrl: './group.component.html'})
 export class GroupComponent implements OnInit {
 
-  currentUser: UserWithToken | undefined;
+  currentUser: LoggedInUserFragment | undefined;
 
-  group: GroupWithPlayersAndRuleSet;
   groupQuery: GroupQuery;
+
+  groupName: string;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -21,8 +21,8 @@ export class GroupComponent implements OnInit {
   ) {
   }
 
-  getPlayersOrderedByBalance(): PlayerWithGroupResult[] {
-    return this.group.players.sort((a, b) => b.sessionResult.balance - a.sessionResult.balance);
+  getPlayersOrderedByBalance(): PlayerInGroupFragment[] {
+    return this.groupQuery.group.players.sort((a, b) => a.balance - b.balance);
   }
 
   ngOnInit() {
@@ -30,23 +30,23 @@ export class GroupComponent implements OnInit {
       .subscribe((u) => this.currentUser = u);
 
     this.route.paramMap.subscribe((paramMap) => {
-      const groupId = parseInt(paramMap.get('groupId'), 10);
+      this.groupName = paramMap.get('groupName');
 
       this.groupGqlService
-        .watch({id: groupId})
+        .watch({name: this.groupName})
         .valueChanges
         .subscribe(({data}: { data: GroupQuery }) => this.groupQuery = data);
-
-      this.apiService.getGroupWithPlayersAndRuleSet(groupId)
-        .subscribe((groupWithPlayers) => this.group = groupWithPlayers);
     });
   }
 
   recalculateStatistics() {
+    console.error('TODO!');
+    /*
     this.apiService.getRecalculatedStatistics(this.group.id)
       .subscribe((result) => {
         // tslint:disable-next-line:no-console
         console.info(JSON.stringify(result, null, 2));
       });
+     */
   }
 }

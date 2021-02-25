@@ -26,7 +26,7 @@
   </div>
   <div class="column" *ngFor="let player of players">
     <button class="button is-fullwidth" (click)="togglePlayerPut(player)"
-            [ngClass]="{'is-link': playersHavingPut.includes(player.id)}" title="{{player.name}}">
+            [ngClass]="{'is-link': playersHavingPut.includes(player.abbreviation)}" title="{{player.name}}">
       {{player.abbreviation}}
     </button>
   </div>
@@ -35,11 +35,11 @@
 <div class="columns">
   <div class="column has-text-centered">
     <label class="label"
-           [ngClass]="{'has-text-danger': submitted && !game.actingPlayerId}">Spieler:</label>
+           [ngClass]="{'has-text-danger': submitted && !game.actingPlayerAbbreviation}">Spieler:</label>
   </div>
   <div class="column" *ngFor="let player of players">
-    <button class="button is-fullwidth" (click)="togglePlayer(player.id)"
-            [ngClass]="{'is-link': game.actingPlayerId === player.id}">
+    <button class="button is-fullwidth" (click)="togglePlayer(player.abbreviation)"
+            [ngClass]="{'is-link': game.actingPlayerAbbreviation === player.abbreviation}">
       {{player.abbreviation}}
     </button>
   </div>
@@ -50,7 +50,7 @@
     <label class="label">Spieler:</label>
   </div>
   <div class="column">
-    <skl-circle-buffer [values]="bufferPlayers" (newValue)="togglePlayer($event.id)"></skl-circle-buffer>
+    <skl-circle-buffer [values]="bufferPlayers" (newValue)="togglePlayer($event.abbreviation)"></skl-circle-buffer>
   </div>
 </div>
 
@@ -109,11 +109,11 @@
 <div class="columns">
   <div class="column has-text-centered">
     <label class="label"
-           [ngClass]="{'has-text-danger': submitted && game.playersHavingWonIds.length === 0}">Gewonnen:</label>
+           [ngClass]="{'has-text-danger': submitted && game.playersHavingWonAbbreviations.length === 0}">Gewonnen:</label>
   </div>
   <div class="column" *ngFor="let player of players">
     <button class="button is-fullwidth" (click)="toggleWinningPlayer(player)"
-            [ngClass]="{'is-link': game.playersHavingWonIds.includes(player.id)}">
+            [ngClass]="{'is-link': game.playersHavingWonAbbreviations.includes(player.abbreviation)}">
       {{player.abbreviation}}
     </button>
   </div>
