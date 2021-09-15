@@ -122,7 +122,7 @@ impl Game {
     }
 
     pub fn calculate_price(&self, rule_set: &RuleSet) -> i32 {
-        let base_price = self.base_price(&rule_set);
+        let base_price = self.base_price(rule_set);
 
         let schneider_schwarz_price = match self.schneider_schwarz {
             None => 0,

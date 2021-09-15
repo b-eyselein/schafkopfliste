@@ -65,7 +65,7 @@ impl Mutations {
     pub fn create_rule_set(rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
         let connection = &context.connection.lock()?.0;
 
-        insert_rule_set(&connection, &rule_set_input)?;
+        insert_rule_set(connection, &rule_set_input)?;
 
         Ok(rule_set_input.name)
     }
@@ -85,7 +85,7 @@ impl Mutations {
     pub fn add_player_to_group(player_name: String, group_name: String, new_state: bool, context: &GraphQLContext) -> FieldResult<bool> {
         let connection = &context.connection.lock()?.0;
 
-        Ok(upsert_group_membership(&connection, group_name, player_name, new_state)?)
+        Ok(upsert_group_membership(connection, group_name, player_name, new_state)?)
     }
 
     pub fn new_session(group_name: String, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
@@ -98,7 +98,7 @@ impl Mutations {
 
         let connection = &context.connection.lock()?.0;
 
-        Ok(insert_session(&connection, group_name, creator_username.to_string(), session_input)?)
+        Ok(insert_session(connection, group_name, creator_username.to_string(), session_input)?)
     }
 
     pub fn new_game(group_name: String, session_id: i32, game_input: GameInput, context: &GraphQLContext) -> FieldResult<Game> {
