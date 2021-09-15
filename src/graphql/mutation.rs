@@ -71,9 +71,7 @@ impl Mutations {
     }
 
     pub fn create_group(group_input: GroupInput, context: &GraphQLContext) -> FieldResult<Group> {
-        let connection = &context.connection.lock()?.0;
-
-        insert_group(&connection, group_input).map_err(graphql_on_db_error)
+        insert_group(&context.connection.lock()?.0, group_input).map_err(graphql_on_db_error)
     }
 
     pub fn create_player(new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
