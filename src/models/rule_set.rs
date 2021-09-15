@@ -53,11 +53,11 @@ impl RuleSet {
     }
 
     pub fn get_base_price(&self) -> &i32 {
-        return &self.base_price;
+        &self.base_price
     }
 
     pub fn get_solo_price(&self) -> &i32 {
-        return &self.solo_price;
+        &self.solo_price
     }
 }
 
