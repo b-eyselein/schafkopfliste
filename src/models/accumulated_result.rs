@@ -7,5 +7,5 @@ pub struct AccumulatedResult {
     pub game_count: i32,
     pub put_count: i32,
     pub played_games: i32,
-    pub win_count: i32,
+    pub win_count: i32
 }

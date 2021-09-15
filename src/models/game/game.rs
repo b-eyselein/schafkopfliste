@@ -24,7 +24,7 @@ pub struct Game {
 
     pub players_having_put_abbreviations: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_abbreviations: Vec<String>,
+    pub players_having_won_abbreviations: Vec<String>
 }
 
 #[derive(Debug, GraphQLInputObject)]
@@ -40,7 +40,7 @@ pub struct GameInput {
 
     pub players_having_put_abbreviations: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_abbreviations: Vec<String>,
+    pub players_having_won_abbreviations: Vec<String>
 }
 
 impl Game {
@@ -57,7 +57,7 @@ impl Game {
         schneider_schwarz: Option<SchneiderSchwarz>,
         players_having_put_abbreviations: Vec<String>,
         kontra: Option<KontraType>,
-        players_having_won_abbreviations: Vec<String>,
+        players_having_won_abbreviations: Vec<String>
     ) -> Self {
         Self {
             id,
@@ -72,7 +72,7 @@ impl Game {
             schneider_schwarz,
             players_having_put_abbreviations,
             kontra,
-            players_having_won_abbreviations,
+            players_having_won_abbreviations
         }
     }
 
@@ -81,15 +81,11 @@ impl Game {
     }
 
     pub fn player_has_put(&self, player_abbreviation: &String) -> bool {
-        *&self
-            .players_having_put_abbreviations
-            .contains(player_abbreviation)
+        *&self.players_having_put_abbreviations.contains(player_abbreviation)
     }
 
     pub fn player_has_won(&self, player_abbreviation: &String) -> bool {
-        *&self
-            .players_having_won_abbreviations
-            .contains(player_abbreviation)
+        *&self.players_having_won_abbreviations.contains(player_abbreviation)
     }
 
     pub fn is_solo(&self) -> bool {
@@ -103,7 +99,7 @@ impl Game {
     fn base_price<'a>(&self, rule_set: &'a RuleSet) -> &'a i32 {
         match self.game_type {
             GameType::Ruf => rule_set.get_base_price(),
-            _ => rule_set.get_solo_price(),
+            _ => rule_set.get_solo_price()
         }
     }
 
@@ -113,7 +109,7 @@ impl Game {
         let laufende_are_counted = match &rule_set.count_laufende {
             CountLaufende::Never => false,
             CountLaufende::OnlyLosers => self.laufende_count < 0,
-            CountLaufende::Always => true,
+            CountLaufende::Always => true
         };
 
         let laufende_abs: i32 = min(self.laufende_count.abs(), rule_set.max_laufende_incl);
@@ -131,16 +127,12 @@ impl Game {
         let schneider_schwarz_price = match self.schneider_schwarz {
             None => 0,
             Some(SchneiderSchwarz::Schneider) => 5,
-            Some(SchneiderSchwarz::Schwarz) => 10,
+            Some(SchneiderSchwarz::Schwarz) => 10
         };
 
         let leger_count = self.players_having_put_abbreviations.len() as u32;
 
-        let contra_count = self
-            .kontra
-            .as_ref()
-            .map(|kontra| kontra.get_count())
-            .unwrap_or(0);
+        let contra_count = self.kontra.as_ref().map(|kontra| kontra.get_count()).unwrap_or(0);
 
         let doubled_mult = if self.is_doubled { 2 } else { 1 };
 
@@ -204,8 +196,7 @@ impl Game {
     pub fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
         let connection = &context.connection.lock()?.0;
 
-        let rule_set = select_rule_set_for_group(connection, &self.group_name)?
-            .ok_or_else(|| FieldError::new("Could not find rule set!", Value::null()))?;
+        let rule_set = select_rule_set_for_group(connection, &self.group_name)?.ok_or_else(|| FieldError::new("Could not find rule set!", Value::null()))?;
 
         Ok(self.calculate_price(&rule_set))
     }
@@ -225,11 +216,7 @@ pub fn upsert_game(conn: &PgConnection, the_game: &Game) -> QueryResult<Game> {
         .get_result(conn)
 }
 
-pub fn select_max_game_id(
-    conn: &PgConnection,
-    the_group_name: &str,
-    the_session_id: &i32,
-) -> QueryResult<Option<i32>> {
+pub fn select_max_game_id(conn: &PgConnection, the_group_name: &str, the_session_id: &i32) -> QueryResult<Option<i32>> {
     use crate::schema::games::dsl::*;
 
     games
@@ -245,11 +232,7 @@ pub fn select_games_for_group(conn: &PgConnection, the_group_name: &str) -> Quer
     games.filter(group_name.eq(the_group_name)).load(conn)
 }
 
-pub fn select_games_for_session(
-    conn: &PgConnection,
-    the_session_id: &i32,
-    the_group_name: &str,
-) -> QueryResult<Vec<Game>> {
+pub fn select_games_for_session(conn: &PgConnection, the_session_id: &i32, the_group_name: &str) -> QueryResult<Vec<Game>> {
     use crate::schema::games::dsl::*;
 
     games
@@ -278,7 +261,7 @@ mod tests {
             schneider_schwarz: None,
             players_having_put_abbreviations: vec![],
             kontra: None,
-            players_having_won_abbreviations: vec![],
+            players_having_won_abbreviations: vec![]
         };
 
         let rs1 = RuleSet::new(1, 5, CountLaufende::Never);

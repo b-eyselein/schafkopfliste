@@ -9,19 +9,19 @@ edition = "2018"
 [dependencies]
 chrono = { version = "0.4.19", features = ["serde"] }
 
-rocket = "0.4.7"
-rocket_contrib = { version = "0.4.7", default-features = false, features = ["json", "diesel_postgres_pool", "serve"] }
+rocket = "0.4.10"
+rocket_contrib = { version = "0.4.10", default-features = false, features = ["json", "diesel_postgres_pool", "serve"] }
 rocket_cors = "0.5.2"
 
-diesel = { version = "1.4.5", features = ["chrono", "postgres", "uuid", "serde_json"] }
+diesel = { version = "1.4.7", features = ["chrono", "postgres", "uuid", "serde_json"] }
 diesel-derive-enum = { version = "1.1.0", features = ["postgres"] }
 diesel_migrations = "1.4.0"
 
-serde = { version = "1.0.123", features = ["derive"] }
-serde_json = "1.0.57"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.68"
 
-jsonwebtoken = "*" # TODO: use 5.0.1 because of ring (rocket needs 0.13.5)
-bcrypt = "0.9.0"
+jsonwebtoken = "7.2.0"
+bcrypt = "0.10.0"
 
-juniper = "0.15.3"
-juniper_rocket = "0.6.2"
+juniper = "0.15.7"
+juniper_rocket = "0.7.1"

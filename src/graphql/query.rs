@@ -48,11 +48,7 @@ impl QueryRoot {
         Ok(select_group_by_name(&connection_mutex.0, &name)?)
     }
 
-    pub fn session(
-        id: i32,
-        group_name: String,
-        context: &GraphQLContext,
-    ) -> FieldResult<Option<Session>> {
+    pub fn session(id: i32, group_name: String, context: &GraphQLContext) -> FieldResult<Option<Session>> {
         let connection_mutex = context.connection.lock()?;
 
         Ok(select_session_by_id(&connection_mutex.0, &group_name, &id)?)

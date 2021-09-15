@@ -12,7 +12,7 @@ pub struct User {
     pub username: String,
     pub password_hash: String,
     pub is_admin: bool,
-    pub player_abbreviation: Option<String>,
+    pub player_abbreviation: Option<String>
 }
 
 impl User {
@@ -21,7 +21,7 @@ impl User {
             username,
             password_hash,
             is_admin: false,
-            player_abbreviation: None,
+            player_abbreviation: None
         }
     }
 }
@@ -41,7 +41,7 @@ impl User {
 #[serde(rename_all = "camelCase")]
 pub struct Credentials {
     pub username: String,
-    pub password: String,
+    pub password: String
 }
 
 #[derive(Debug, Deserialize, GraphQLInputObject)]
@@ -49,15 +49,12 @@ pub struct Credentials {
 pub struct RegisterUserInput {
     pub username: String,
     pub password: String,
-    pub password_repeat: String,
+    pub password_repeat: String
 }
 
 impl RegisterUserInput {
     pub fn is_valid(&self) -> bool {
-        !self.username.is_empty()
-            && !self.password.is_empty()
-            && !self.password_repeat.is_empty()
-            && self.password == self.password_repeat
+        !self.username.is_empty() && !self.password.is_empty() && !self.password_repeat.is_empty() && self.password == self.password_repeat
     }
 }
 
@@ -66,21 +63,16 @@ pub struct UserWithToken {
     pub username: String,
     pub is_admin: bool,
     pub player_abbreviation: Option<String>,
-    pub token: String,
+    pub token: String
 }
 
 impl UserWithToken {
-    pub fn new(
-        username: String,
-        is_admin: bool,
-        player_abbreviation: Option<String>,
-        token: String,
-    ) -> UserWithToken {
+    pub fn new(username: String, is_admin: bool, player_abbreviation: Option<String>, token: String) -> UserWithToken {
         UserWithToken {
             username,
             is_admin,
             player_abbreviation,
-            token,
+            token
         }
     }
 }

@@ -5,14 +5,14 @@ use crate::DbConn;
 
 pub struct GraphQLContext {
     pub connection: Arc<Mutex<DbConn>>,
-    pub authorization_header: AuthorizationHeader,
+    pub authorization_header: AuthorizationHeader
 }
 
 impl GraphQLContext {
     pub fn new(conn: DbConn, authorization_header: AuthorizationHeader) -> Self {
         Self {
             connection: Arc::new(Mutex::new(conn)),
-            authorization_header,
+            authorization_header
         }
     }
 }

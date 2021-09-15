@@ -25,16 +25,11 @@ pub struct Session {
     pub third_player_abbreviation: String,
     pub fourth_player_abbreviation: String,
 
-    pub creator_username: String,
+    pub creator_username: String
 }
 
 impl Session {
-    pub fn from_creatable_session(
-        id: i32,
-        group_name: String,
-        creator_username: String,
-        cs: SessionInput,
-    ) -> Session {
+    pub fn from_creatable_session(id: i32, group_name: String, creator_username: String, cs: SessionInput) -> Session {
         let SessionInput {
             date_year,
             date_month,
@@ -44,7 +39,7 @@ impl Session {
             first_player_abbreviation,
             second_player_abbreviation,
             third_player_abbreviation,
-            fourth_player_abbreviation,
+            fourth_player_abbreviation
         } = cs;
 
         Session {
@@ -60,7 +55,7 @@ impl Session {
             second_player_abbreviation,
             third_player_abbreviation,
             fourth_player_abbreviation,
-            creator_username,
+            creator_username
         }
     }
 
@@ -85,7 +80,7 @@ pub struct SessionInput {
     first_player_abbreviation: String,
     second_player_abbreviation: String,
     third_player_abbreviation: String,
-    fourth_player_abbreviation: String,
+    fourth_player_abbreviation: String
 }
 
 #[graphql_object(context = GraphQLContext)]
@@ -99,62 +94,43 @@ impl Session {
     }
 
     pub fn date(&self) -> String {
-        format!(
-            "{}.{}.{}",
-            self.date_day_of_month, self.date_month, self.date_year
-        )
+        format!("{}.{}.{}", self.date_day_of_month, self.date_month, self.date_year)
     }
 
     pub fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
         let connection_mutex = context.connection.lock()?;
 
-        select_games_for_session(&connection_mutex.0, &self.id, &self.group_name)
-            .map_err(graphql_on_db_error)
+        select_games_for_session(&connection_mutex.0, &self.id, &self.group_name).map_err(graphql_on_db_error)
     }
 
     pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(
-            select_rule_set_for_group(&connection_mutex.0, &self.group_name)?
-                .ok_or_else(|| FieldError::new("No rule set found!", Value::null()))?,
-        )
+        Ok(select_rule_set_for_group(&connection_mutex.0, &self.group_name)?.ok_or_else(|| FieldError::new("No rule set found!", Value::null()))?)
     }
 
     pub fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_player_by_abbreviation(
-            &connection_mutex.0,
-            &self.first_player_abbreviation,
-        )?)
+        Ok(select_player_by_abbreviation(&connection_mutex.0, &self.first_player_abbreviation)?)
     }
 
     pub fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_player_by_abbreviation(
-            &connection_mutex.0,
-            &self.second_player_abbreviation,
-        )?)
+        Ok(select_player_by_abbreviation(&connection_mutex.0, &self.second_player_abbreviation)?)
     }
 
     pub fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_player_by_abbreviation(
-            &connection_mutex.0,
-            &self.third_player_abbreviation,
-        )?)
+        Ok(select_player_by_abbreviation(&connection_mutex.0, &self.third_player_abbreviation)?)
     }
 
     pub fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_player_by_abbreviation(
-            &connection_mutex.0,
-            &self.fourth_player_abbreviation,
-        )?)
+        Ok(select_player_by_abbreviation(&connection_mutex.0, &self.fourth_player_abbreviation)?)
     }
 }
 
@@ -171,23 +147,10 @@ fn select_max_session_id(conn: &PgConnection, the_group_name: &str) -> QueryResu
         .map(|maybe_max| maybe_max.unwrap_or(0))
 }
 
-pub fn insert_session(
-    conn: &PgConnection,
-    the_group_name: String,
-    the_creator_username: String,
-    session_input: SessionInput,
-) -> QueryResult<i32> {
+pub fn insert_session(conn: &PgConnection, the_group_name: String, the_creator_username: String, session_input: SessionInput) -> QueryResult<i32> {
     let new_id = select_max_session_id(conn, &the_group_name)? + 1;
 
-    let session = Session::from_creatable_session(
-        new_id,
-        the_group_name,
-        the_creator_username,
-        session_input,
-    );
+    let session = Session::from_creatable_session(new_id, the_group_name, the_creator_username, session_input);
 
-    diesel::insert_into(sessions::table)
-        .values(session)
-        .returning(sessions::id)
-        .get_result(conn)
+    diesel::insert_into(sessions::table).values(session).returning(sessions::id).get_result(conn)
 }

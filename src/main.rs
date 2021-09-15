@@ -8,9 +8,11 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
+use diesel_migrations::RunMigrationsError;
 use juniper::EmptySubscription;
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
-use rocket::{get, post, response::Redirect, routes, State};
+use rocket::{get, post, response::Redirect, Rocket, routes, State};
+use rocket::fairing::AdHoc;
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
@@ -52,16 +54,8 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
 }
 
 #[get("/graphql?<request>")]
-fn route_get_graphql_handler(
-    connection: DbConn,
-    authorization_header: AuthorizationHeader,
-    request: GraphQLRequest,
-    schema: State<Schema>,
-) -> GraphQLResponse {
-    request.execute_sync(
-        &schema,
-        &GraphQLContext::new(connection, authorization_header),
-    )
+fn route_get_graphql_handler(connection: DbConn, authorization_header: AuthorizationHeader, request: GraphQLRequest, schema: State<Schema>) -> GraphQLResponse {
+    request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
 
 #[post("/graphql", data = "<request>")]
@@ -71,38 +65,28 @@ fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: State<Schema>,
 ) -> GraphQLResponse {
-    request.execute_sync(
-        &schema,
-        &GraphQLContext::new(connection, authorization_header),
-    )
+    request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
 
-fn execute_db_migrations() {
-    use diesel::prelude::*;
+fn execute_db_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
+    let conn = DbConn::get_one(&rocket).expect("Could not establish connection to database!");
 
-    let db_conn = diesel::pg::PgConnection::establish("postgres://skl:1234@localhost/skl")
-        .expect("Could not establish connection to database");
-
-    embedded_migrations::run_with_output(&db_conn, &mut std::io::stdout())
-        .expect("Could not run migrations on database");
+    match embedded_migrations::run_with_output(&*conn, &mut std::io::stdout()) {
+        Ok(()) => Ok(rocket),
+        Err(_) => Err(rocket)
+    }
 }
 
 fn main() {
-    execute_db_migrations();
-
     rocket::ignite()
+        .attach(DbConn::fairing())
+        .attach(AdHoc::on_attach("Database migrations", execute_db_migrations))
+        .attach(make_cors())
+        .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .mount(
             "/",
-            routes![
-                route_index,
-                route_get_graphiql,
-                route_get_graphql_handler,
-                route_post_graphql_handler
-            ],
+            routes![route_index, route_get_graphiql, route_get_graphql_handler, route_post_graphql_handler],
         )
         .mount("/app", StaticFiles::from("static"))
-        .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
-        .attach(DbConn::fairing())
-        .attach(make_cors())
         .launch();
 }

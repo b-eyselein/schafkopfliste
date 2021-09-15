@@ -4,5 +4,8 @@ address = "0.0.0.0"
 [global]
 port = 8008
 
-[global.databases]
+[development.databases]
+schafkopfliste = { url = "postgres://skl:1234@localhost:5465/skl" }
+
+[production.databases]
 schafkopfliste = { url = "postgres://skl:1234@localhost/skl" }

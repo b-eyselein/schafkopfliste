@@ -9,7 +9,7 @@ use crate::schema::rule_sets;
 pub enum CountLaufende {
     Always,
     OnlyLosers,
-    Never,
+    Never
 }
 
 #[derive(Debug, Queryable, GraphQLObject, Serialize, Deserialize)]
@@ -30,7 +30,7 @@ pub struct RuleSet {
     pub bettel_allowed: bool,
     pub ramsch_allowed: bool,
     pub farb_wenz_allowed: bool,
-    pub farb_geier_allowed: bool,
+    pub farb_geier_allowed: bool
 }
 
 impl RuleSet {
@@ -48,7 +48,7 @@ impl RuleSet {
             bettel_allowed: false,
             ramsch_allowed: false,
             farb_wenz_allowed: false,
-            farb_geier_allowed: false,
+            farb_geier_allowed: false
         }
     }
 
@@ -81,15 +81,13 @@ pub struct RuleSetInput {
     pub bettel_allowed: bool,
     pub ramsch_allowed: bool,
     pub farb_wenz_allowed: bool,
-    pub farb_geier_allowed: bool,
+    pub farb_geier_allowed: bool
 }
 
 // Queries
 
 pub fn insert_rule_set(conn: &PgConnection, rule_set_input: &RuleSetInput) -> QueryResult<usize> {
-    diesel::insert_into(rule_sets::table)
-        .values(rule_set_input)
-        .execute(conn)
+    diesel::insert_into(rule_sets::table).values(rule_set_input).execute(conn)
 }
 
 pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
@@ -98,19 +96,13 @@ pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {
     rule_sets.load(conn)
 }
 
-pub fn select_rule_set_by_id(
-    conn: &PgConnection,
-    rule_set_name: &str,
-) -> QueryResult<Option<RuleSet>> {
+pub fn select_rule_set_by_id(conn: &PgConnection, rule_set_name: &str) -> QueryResult<Option<RuleSet>> {
     use crate::schema::rule_sets::dsl::*;
 
     rule_sets.find(rule_set_name).first(conn).optional()
 }
 
-pub fn select_rule_set_for_group(
-    conn: &PgConnection,
-    the_group_name: &str,
-) -> QueryResult<Option<RuleSet>> {
+pub fn select_rule_set_for_group(conn: &PgConnection, the_group_name: &str) -> QueryResult<Option<RuleSet>> {
     use crate::schema::groups;
     use crate::schema::rule_sets::dsl::*;
 

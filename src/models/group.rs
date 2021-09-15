@@ -15,15 +15,12 @@ use crate::schema::groups;
 #[serde(rename_all = "camelCase")]
 pub struct Group {
     pub name: String,
-    pub rule_set_name: String,
+    pub rule_set_name: String
 }
 
 impl Group {
     pub fn new(name: String, rule_set_name: String) -> Group {
-        Group {
-            name,
-            rule_set_name,
-        }
+        Group { name, rule_set_name }
     }
 }
 
@@ -33,7 +30,7 @@ impl Group {
 #[table_name = "groups"]
 pub struct GroupInput {
     name: String,
-    rule_set_name: String,
+    rule_set_name: String
 }
 
 #[graphql_object(Context = GraphQLContext)]
@@ -49,17 +46,13 @@ impl Group {
     pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_rule_set_by_id(
-            &connection_mutex.0,
-            &self.rule_set_name,
-        )?)
+        Ok(select_rule_set_by_id(&connection_mutex.0, &self.rule_set_name)?)
     }
 
     pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
         let connection_mutex = context.connection.lock()?;
 
-        let count = select_player_count_for_group(&connection_mutex.0, &self.name)
-            .map_err(graphql_on_db_error)?;
+        let count = select_player_count_for_group(&connection_mutex.0, &self.name).map_err(graphql_on_db_error)?;
 
         Ok(i32::try_from(count)?)
     }
@@ -79,14 +72,8 @@ impl Group {
 
 // Queries
 
-pub fn select_player_count_for_group(
-    conn: &PgConnection,
-    the_group_name: &str,
-) -> QueryResult<i64> {
+pub fn select_player_count_for_group(conn: &PgConnection, the_group_name: &str) -> QueryResult<i64> {
     use crate::schema::player_in_groups::dsl::*;
 
-    player_in_groups
-        .filter(group_name.eq(the_group_name))
-        .count()
-        .first(conn)
+    player_in_groups.filter(group_name.eq(the_group_name)).count().first(conn)
 }

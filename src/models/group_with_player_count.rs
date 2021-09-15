@@ -11,5 +11,5 @@ pub struct GroupWithPlayerCount {
     #[sql_type = "Integer"]
     rule_set_id: i32,
     #[sql_type = "BigInt"]
-    player_count: i64,
+    player_count: i64
 }

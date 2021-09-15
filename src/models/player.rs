@@ -9,7 +9,7 @@ use crate::GraphQLContext;
 pub struct Player {
     abbreviation: String,
     pub name: String,
-    picture_name: Option<String>,
+    picture_name: Option<String>
 }
 
 impl Player {
@@ -17,7 +17,7 @@ impl Player {
         Player {
             abbreviation,
             name,
-            picture_name: None,
+            picture_name: None
         }
     }
 }
@@ -29,7 +29,7 @@ impl Player {
 pub struct PlayerInput {
     pub abbreviation: String,
     pub name: String,
-    pub picture_name: Option<String>,
+    pub picture_name: Option<String>
 }
 
 #[graphql_object(Context = GraphQLContext)]
@@ -46,18 +46,10 @@ impl Player {
         &self.picture_name
     }
 
-    pub fn is_member_in_group(
-        &self,
-        group_name: String,
-        context: &GraphQLContext,
-    ) -> FieldResult<bool> {
+    pub fn is_member_in_group(&self, group_name: String, context: &GraphQLContext) -> FieldResult<bool> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_group_membership_for_player(
-            &connection_mutex.0,
-            &self.abbreviation,
-            &group_name,
-        )?)
+        Ok(select_group_membership_for_player(&connection_mutex.0, &self.abbreviation, &group_name)?)
     }
 }
 
@@ -69,21 +61,14 @@ pub fn select_players(conn: &PgConnection) -> QueryResult<Vec<Player>> {
     players.load(conn)
 }
 
-pub fn select_player_by_abbreviation(
-    conn: &PgConnection,
-    the_abbreviation: &str,
-) -> QueryResult<Player> {
+pub fn select_player_by_abbreviation(conn: &PgConnection, the_abbreviation: &str) -> QueryResult<Player> {
     use crate::schema::players::dsl::*;
 
-    players
-        .filter(abbreviation.eq(the_abbreviation))
-        .first(conn)
+    players.filter(abbreviation.eq(the_abbreviation)).first(conn)
 }
 
 pub fn insert_player(conn: &PgConnection, player_input: &PlayerInput) -> QueryResult<usize> {
     use crate::schema::players::dsl::*;
 
-    diesel::insert_into(players)
-        .values(player_input)
-        .execute(conn)
+    diesel::insert_into(players).values(player_input).execute(conn)
 }
