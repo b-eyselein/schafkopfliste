@@ -77,7 +77,7 @@ impl Game {
     }
 
     pub fn player_has_acted(&self, player_abbreviation: &str) -> bool {
-        &self.acting_player_abbreviation == player_abbreviation
+        self.acting_player_abbreviation == player_abbreviation
     }
 
     pub fn player_has_put(&self, player_abbreviation: &String) -> bool {

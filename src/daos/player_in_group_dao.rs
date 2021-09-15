@@ -9,11 +9,11 @@ pub fn update_player_group_result(conn: &PgConnection, the_player_abbreviation: 
     diesel::update(player_in_groups)
         .filter(player_abbreviation.eq(the_player_abbreviation))
         .set((
-            balance.eq(balance + &res.balance),
-            game_count.eq(game_count + &res.game_count),
-            put_count.eq(put_count + &res.put_count),
-            played_games.eq(played_games + &res.played_games),
-            win_count.eq(win_count + &res.win_count)
+            balance.eq(balance + res.balance),
+            game_count.eq(game_count + res.game_count),
+            put_count.eq(put_count + res.put_count),
+            played_games.eq(played_games + res.played_games),
+            win_count.eq(win_count + res.win_count)
         ))
         .get_result(conn)
 }
