@@ -81,11 +81,11 @@ impl Game {
     }
 
     pub fn player_has_put(&self, player_abbreviation: &String) -> bool {
-        *&self.players_having_put_abbreviations.contains(player_abbreviation)
+        self.players_having_put_abbreviations.contains(player_abbreviation)
     }
 
     pub fn player_has_won(&self, player_abbreviation: &String) -> bool {
-        *&self.players_having_won_abbreviations.contains(player_abbreviation)
+        self.players_having_won_abbreviations.contains(player_abbreviation)
     }
 
     pub fn is_solo(&self) -> bool {
