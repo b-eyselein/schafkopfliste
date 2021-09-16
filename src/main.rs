@@ -8,7 +8,6 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-
 use juniper::EmptySubscription;
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
 use rocket::fairing::AdHoc;

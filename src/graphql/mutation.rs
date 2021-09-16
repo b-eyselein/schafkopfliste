@@ -32,9 +32,7 @@ impl Mutations {
 
             let to_insert = User::new(username, hashed_pw);
 
-            let connection_mutex = context.connection.lock()?;
-
-            insert_user(&connection_mutex.0, to_insert)
+            insert_user(&context.connection.lock()?.0, to_insert)
                 .map_err(|_error| FieldError::new("Could not create user!", Value::null()))
                 .map(|user| user.username)
         }

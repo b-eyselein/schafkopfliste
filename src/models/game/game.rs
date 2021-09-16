@@ -264,71 +264,25 @@ mod tests {
             players_having_won_abbreviations: vec![]
         };
 
-        let rs1 = RuleSet::new(1, 5, CountLaufende::Never);
-        let rs2 = RuleSet::new(2, 5, CountLaufende::OnlyLosers);
-        let rs3 = RuleSet::new(3, 5, CountLaufende::Always);
+        let rs_laufende_never = RuleSet::new(1, 5, CountLaufende::Never);
+        let rs_laufende_only_losers = RuleSet::new(2, 5, CountLaufende::OnlyLosers);
+        let rs_laufende_always = RuleSet::new(3, 5, CountLaufende::Always);
 
-        // 0 Laufende
-        let game_zero = Game {
-            laufende_count: 0,
-            ..base_game.clone()
+        let internal_test = |laufende_count, price_only_losers, price_always| {
+            let game = Game {
+                laufende_count,
+                ..base_game.clone()
+            };
+            assert_eq!(0, game.laufende_price(&rs_laufende_never)); // rs_laufende_never will never charge laufende.
+            assert_eq!(price_only_losers, game.laufende_price(&rs_laufende_only_losers));
+            assert_eq!(price_always, game.laufende_price(&rs_laufende_always));
         };
-        assert_eq!(0, game_zero.laufende_price(&rs1));
-        assert_eq!(0, game_zero.laufende_price(&rs2));
-        assert_eq!(0, game_zero.laufende_price(&rs3));
-
-        // 2 Laufende
-        let game_two = Game {
-            laufende_count: 2,
-            ..base_game.clone()
-        };
-        assert_eq!(0, game_two.laufende_price(&rs1));
-        assert_eq!(0, game_two.laufende_price(&rs2));
-        assert_eq!(10, game_two.laufende_price(&rs3));
-
-        // -2 Laufende
-        let game_minus_two = Game {
-            laufende_count: -2,
-            ..base_game.clone()
-        };
-        assert_eq!(0, game_minus_two.laufende_price(&rs1));
-        assert_eq!(10, game_minus_two.laufende_price(&rs2));
-        assert_eq!(10, game_minus_two.laufende_price(&rs3));
-
-        // 4 Laufende
-        let game_four = Game {
-            laufende_count: 4,
-            ..base_game.clone()
-        };
-        assert_eq!(0, game_four.laufende_price(&rs1));
-        assert_eq!(0, game_four.laufende_price(&rs2));
-        assert_eq!(20, game_four.laufende_price(&rs3));
-
-        // -4 Laufende
-        let game_minus_four = Game {
-            laufende_count: -4,
-            ..base_game.clone()
-        };
-        assert_eq!(0, game_minus_four.laufende_price(&rs1));
-        assert_eq!(20, game_minus_four.laufende_price(&rs2));
-        assert_eq!(20, game_minus_four.laufende_price(&rs3));
-
-        // 5 Laufende
-        let game_five = Game {
-            laufende_count: 5,
-            ..base_game.clone()
-        };
-        assert_eq!(0, game_five.laufende_price(&rs1));
-        assert_eq!(0, game_five.laufende_price(&rs2));
-        assert_eq!(20, game_five.laufende_price(&rs3));
-
-        // -5 Laufende
-        let game_minus_five = Game {
-            laufende_count: -5,
-            ..base_game
-        };
-        assert_eq!(0, game_minus_five.laufende_price(&rs1));
-        assert_eq!(20, game_minus_five.laufende_price(&rs2));
-        assert_eq!(20, game_minus_five.laufende_price(&rs3));
+        internal_test(0, 0, 0); // 0 Laufende
+        internal_test(2, 0, 10); // 0 Laufende
+        internal_test(-2, 10, 10); // 0 Laufende
+        internal_test(4, 0, 20); // 0 Laufende
+        internal_test(-4, 20, 20); // 0 Laufende
+        internal_test(5, 0, 20); // 0 Laufende
+        internal_test(-5, 20, 20); // 0 Laufende
     }
 }
