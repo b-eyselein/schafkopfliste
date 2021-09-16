@@ -13,7 +13,7 @@ pub struct Game {
     pub session_id: i32,
     pub group_name: String,
 
-    pub acting_player_abbreviation: String,
+    pub acting_player_nickname: String,
     pub game_type: GameType,
     pub suit: Option<BavarianSuit>,
     pub tout: bool,
@@ -22,14 +22,14 @@ pub struct Game {
     pub laufende_count: i32,
     pub schneider_schwarz: Option<SchneiderSchwarz>,
 
-    pub players_having_put_abbreviations: Vec<String>,
+    pub players_having_put_nicknames: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_abbreviations: Vec<String>
+    pub players_having_won_nicknames: Vec<String>
 }
 
 #[derive(Debug, GraphQLInputObject)]
 pub struct GameInput {
-    pub acting_player_abbreviation: String,
+    pub acting_player_nickname: String,
     pub game_type: GameType,
     pub suit: Option<BavarianSuit>,
     pub tout: bool,
@@ -38,9 +38,9 @@ pub struct GameInput {
     pub laufende_count: i32,
     pub schneider_schwarz: Option<SchneiderSchwarz>,
 
-    pub players_having_put_abbreviations: Vec<String>,
+    pub players_having_put_nicknames: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_abbreviations: Vec<String>
+    pub players_having_won_nicknames: Vec<String>
 }
 
 impl Game {
@@ -48,44 +48,44 @@ impl Game {
         id: i32,
         session_id: i32,
         group_name: String,
-        acting_player_abbreviation: String,
+        acting_player_nickname: String,
         game_type: GameType,
         suit: Option<BavarianSuit>,
         tout: bool,
         is_doubled: bool,
         laufende_count: i32,
         schneider_schwarz: Option<SchneiderSchwarz>,
-        players_having_put_abbreviations: Vec<String>,
+        players_having_put_nicknames: Vec<String>,
         kontra: Option<KontraType>,
-        players_having_won_abbreviations: Vec<String>
+        players_having_won_nicknames: Vec<String>
     ) -> Self {
         Self {
             id,
             session_id,
             group_name,
-            acting_player_abbreviation,
+            acting_player_nickname,
             game_type,
             suit,
             tout,
             is_doubled,
             laufende_count,
             schneider_schwarz,
-            players_having_put_abbreviations,
+            players_having_put_nicknames,
             kontra,
-            players_having_won_abbreviations
+            players_having_won_nicknames
         }
     }
 
-    pub fn player_has_acted(&self, player_abbreviation: &str) -> bool {
-        self.acting_player_abbreviation == player_abbreviation
+    pub fn player_has_acted(&self, player_nickname: &str) -> bool {
+        self.acting_player_nickname == player_nickname
     }
 
-    pub fn player_has_put(&self, player_abbreviation: &String) -> bool {
-        self.players_having_put_abbreviations.contains(player_abbreviation)
+    pub fn player_has_put(&self, player_nickname: &String) -> bool {
+        self.players_having_put_nicknames.contains(player_nickname)
     }
 
-    pub fn player_has_won(&self, player_abbreviation: &String) -> bool {
-        self.players_having_won_abbreviations.contains(player_abbreviation)
+    pub fn player_has_won(&self, player_nickname: &String) -> bool {
+        self.players_having_won_nicknames.contains(player_nickname)
     }
 
     pub fn is_solo(&self) -> bool {
@@ -130,7 +130,7 @@ impl Game {
             Some(SchneiderSchwarz::Schwarz) => 10
         };
 
-        let leger_count = self.players_having_put_abbreviations.len() as u32;
+        let leger_count = self.players_having_put_nicknames.len() as u32;
 
         let contra_count = self.kontra.as_ref().map(|kontra| kontra.get_count()).unwrap_or(0);
 
@@ -152,8 +152,8 @@ impl Game {
         &self.id
     }
 
-    pub fn acting_player_abbreviation(&self) -> &str {
-        &self.acting_player_abbreviation
+    pub fn acting_player_nickname(&self) -> &str {
+        &self.acting_player_nickname
     }
 
     pub fn game_type(&self) -> &GameType {
@@ -180,16 +180,16 @@ impl Game {
         &self.schneider_schwarz
     }
 
-    pub fn players_having_put_abbreviations(&self) -> &Vec<String> {
-        &self.players_having_put_abbreviations
+    pub fn players_having_put_nicknames(&self) -> &Vec<String> {
+        &self.players_having_put_nicknames
     }
 
     pub fn kontra(&self) -> &Option<KontraType> {
         &self.kontra
     }
 
-    pub fn players_having_won_abbreviations(&self) -> &Vec<String> {
-        &self.players_having_won_abbreviations
+    pub fn players_having_won_nicknames(&self) -> &Vec<String> {
+        &self.players_having_won_nicknames
     }
 
     #[graphql(name = "price")]
@@ -252,16 +252,16 @@ mod tests {
             id: 0,
             session_id: 0,
             group_name: "".to_string(),
-            acting_player_abbreviation: "".to_string(),
+            acting_player_nickname: "".to_string(),
             game_type: GameType::Ruf,
             suit: None,
             tout: false,
             is_doubled: false,
             laufende_count: 0,
             schneider_schwarz: None,
-            players_having_put_abbreviations: vec![],
+            players_having_put_nicknames: vec![],
             kontra: None,
-            players_having_won_abbreviations: vec![]
+            players_having_won_nicknames: vec![]
         };
 
         let rs_laufende_never = RuleSet::new(1, 5, CountLaufende::Never);

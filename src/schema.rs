@@ -6,16 +6,16 @@ table! {
         id -> Int4,
         session_id -> Int4,
         group_name -> Varchar,
-        acting_player_abbreviation -> Varchar,
+        acting_player_nickname -> Varchar,
         game_type -> Game_type,
         suit -> Nullable<Bavarian_suit>,
         tout -> Bool,
         is_doubled -> Bool,
         laufende_count -> Int4,
         schneider_schwarz -> Nullable<Schneider_schwarz>,
-        players_having_put_abbreviations -> Array<Text>,
+        players_having_put_nicknames -> Array<Text>,
         kontra -> Nullable<Kontra_type>,
-        players_having_won_abbreviations -> Array<Text>,
+        players_having_won_nicknames -> Array<Text>,
     }
 }
 
@@ -27,9 +27,9 @@ table! {
 }
 
 table! {
-    player_in_groups (group_name, player_abbreviation) {
+    player_in_groups (group_name, player_nickname) {
         group_name -> Varchar,
-        player_abbreviation -> Varchar,
+        player_nickname -> Varchar,
         balance -> Int4,
         game_count -> Int4,
         put_count -> Int4,
@@ -40,9 +40,10 @@ table! {
 }
 
 table! {
-    players (abbreviation) {
-        abbreviation -> Varchar,
-        name -> Varchar,
+    players (nickname) {
+        nickname -> Varchar,
+        first_name -> Varchar,
+        last_name -> Varchar,
         picture_name -> Nullable<Varchar>,
     }
 }
@@ -69,8 +70,8 @@ table! {
 }
 
 table! {
-    session_results (player_abbreviation, session_id, group_name) {
-        player_abbreviation -> Varchar,
+    session_results (player_nickname, session_id, group_name) {
+        player_nickname -> Varchar,
         session_id -> Int4,
         group_name -> Varchar,
         result -> Int4,
@@ -87,10 +88,10 @@ table! {
         time_hours -> Int4,
         time_minutes -> Int4,
         has_ended -> Bool,
-        first_player_abbreviation -> Varchar,
-        second_player_abbreviation -> Varchar,
-        third_player_abbreviation -> Varchar,
-        fourth_player_abbreviation -> Varchar,
+        first_player_nickname -> Varchar,
+        second_player_nickname -> Varchar,
+        third_player_nickname -> Varchar,
+        fourth_player_nickname -> Varchar,
         creator_username -> Varchar,
     }
 }
@@ -100,15 +101,15 @@ table! {
         username -> Varchar,
         password_hash -> Varchar,
         is_admin -> Bool,
-        player_abbreviation -> Nullable<Varchar>,
+        player_nickname -> Nullable<Varchar>,
     }
 }
 
 joinable!(groups -> rule_sets (rule_set_name));
 joinable!(player_in_groups -> groups (group_name));
-joinable!(player_in_groups -> players (player_abbreviation));
+joinable!(player_in_groups -> players (player_nickname));
 joinable!(sessions -> groups (group_name));
 joinable!(sessions -> users (creator_username));
-joinable!(users -> players (player_abbreviation));
+joinable!(users -> players (player_nickname));
 
 allow_tables_to_appear_in_same_query!(games, groups, player_in_groups, players, rule_sets, session_results, sessions, users,);

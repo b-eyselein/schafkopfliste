@@ -7,16 +7,18 @@ use crate::GraphQLContext;
 
 #[derive(Debug, Queryable)]
 pub struct Player {
-    abbreviation: String,
-    pub name: String,
+    nickname: String,
+    pub first_name: String,
+    pub last_name: String,
     picture_name: Option<String>
 }
 
 impl Player {
-    pub fn new(abbreviation: String, name: String) -> Player {
+    pub fn new(nickname: String, first_name: String, last_name: String) -> Player {
         Player {
-            abbreviation,
-            name,
+            nickname,
+            first_name,
+            last_name,
             picture_name: None
         }
     }
@@ -27,19 +29,24 @@ impl Player {
 #[derive(Debug, Insertable, GraphQLInputObject)]
 #[table_name = "players"]
 pub struct PlayerInput {
-    pub abbreviation: String,
-    pub name: String,
+    pub nickname: String,
+    pub first_name: String,
+    pub last_name: String,
     pub picture_name: Option<String>
 }
 
 #[graphql_object(Context = GraphQLContext)]
 impl Player {
-    pub fn abbreviation(&self) -> &String {
-        &self.abbreviation
+    pub fn nickname(&self) -> &String {
+        &self.nickname
     }
 
-    pub fn name(&self) -> &String {
-        &self.name
+    pub fn first_name(&self) -> &String {
+        &self.first_name
+    }
+
+    pub fn last_name(&self) -> &String {
+        &self.last_name
     }
 
     pub fn picture_name(&self) -> &Option<String> {
@@ -47,9 +54,7 @@ impl Player {
     }
 
     pub fn is_member_in_group(&self, group_name: String, context: &GraphQLContext) -> FieldResult<bool> {
-        let connection_mutex = context.connection.lock()?;
-
-        Ok(select_group_membership_for_player(&connection_mutex.0, &self.abbreviation, &group_name)?)
+        Ok(select_group_membership_for_player(&context.connection.lock()?.0, &self.nickname, &group_name)?)
     }
 }
 
@@ -61,10 +66,10 @@ pub fn select_players(conn: &PgConnection) -> QueryResult<Vec<Player>> {
     players.load(conn)
 }
 
-pub fn select_player_by_abbreviation(conn: &PgConnection, the_abbreviation: &str) -> QueryResult<Player> {
+pub fn select_player_by_nickname(conn: &PgConnection, the_nickname: &str) -> QueryResult<Player> {
     use crate::schema::players::dsl::*;
 
-    players.filter(abbreviation.eq(the_abbreviation)).first(conn)
+    players.filter(nickname.eq(the_nickname)).first(conn)
 }
 
 pub fn insert_player(conn: &PgConnection, player_input: &PlayerInput) -> QueryResult<usize> {

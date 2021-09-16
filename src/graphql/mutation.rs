@@ -46,13 +46,13 @@ impl Mutations {
             Some(User {
                 username,
                 is_admin,
-                player_abbreviation,
+                player_nickname,
                 password_hash
             }) => {
                 let password_ok = verify(password, &password_hash)?;
 
                 if password_ok {
-                    let token = generate_token(username, is_admin, player_abbreviation)?;
+                    let token = generate_token(username, is_admin, player_nickname)?;
 
                     Ok(Some(token))
                 } else {
@@ -86,7 +86,7 @@ impl Mutations {
             Some(_) => {
                 insert_player(&context.connection.lock()?.0, &new_player)?;
 
-                Ok(new_player.abbreviation)
+                Ok(new_player.nickname)
             }
         }
     }
@@ -116,16 +116,16 @@ impl Mutations {
                 let connection = &context.connection.lock()?.0;
 
                 let GameInput {
-                    acting_player_abbreviation,
+                    acting_player_nickname,
                     game_type,
                     suit,
                     tout,
                     is_doubled,
                     laufende_count,
                     schneider_schwarz,
-                    players_having_put_abbreviations,
+                    players_having_put_nicknames,
                     kontra,
-                    players_having_won_abbreviations
+                    players_having_won_nicknames
                 } = game_input;
 
                 connection
@@ -136,16 +136,16 @@ impl Mutations {
                             next_game_id,
                             session_id,
                             group_name,
-                            acting_player_abbreviation,
+                            acting_player_nickname,
                             game_type,
                             suit,
                             tout,
                             is_doubled,
                             laufende_count,
                             schneider_schwarz,
-                            players_having_put_abbreviations,
+                            players_having_put_nicknames,
                             kontra,
-                            players_having_won_abbreviations
+                            players_having_won_nicknames
                         );
 
                         upsert_game(connection, &game)

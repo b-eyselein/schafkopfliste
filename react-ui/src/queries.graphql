@@ -51,7 +51,7 @@ mutation GroupCreation($name: String!, $ruleSetName: String!) {
 # /groups/:name
 
 fragment PlayerInGroup on PlayerInGroup {
-  abbreviation
+  nickname
   name
   balance
   gameCount
@@ -77,8 +77,9 @@ query Group($name: String!) {
 
 query PlayersInGroup($groupName: String!) {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
     isMemberInGroup(groupName: $groupName)
   }
 }
@@ -90,7 +91,7 @@ mutation AddPlayerToGroup($playerName: String!, $groupName: String!, $newState: 
 # /groups/:name/newSession
 
 fragment NewSessionPlayerValues on PlayerInGroup {
-  abbreviation
+  nickname
   name
 }
 
@@ -116,23 +117,24 @@ mutation NewSession($groupName: String!, $sessionInput: SessionInput!) {
 # /groups/:name/sessions/:sessionId
 
 fragment SessionPlayer on Player {
-  abbreviation
-  name
+  nickname
+  firstName
+  lastName
   pictureName
 }
 
 fragment SessionGame on Game {
   id
-  actingPlayerAbbreviation
+  actingPlayerNickname
   gameType
   suit
   tout
   isDoubled
   laufendeCount
   schneiderSchwarz
-  playersHavingPutAbbreviations
+  playersHavingPutNicknames
   kontra
-  playersHavingWonAbbreviations
+  playersHavingWonNicknames
   price
 }
 
@@ -175,15 +177,16 @@ mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput
 
 query PlayerList {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
   }
 }
 
 # /players/new
 
-mutation PlayerCreation($name: String!, $abbreviation: String!) {
-  createPlayer(newPlayer: {name: $name, abbreviation: $abbreviation })
+mutation PlayerCreation($playerInput: PlayerInput!) {
+  createPlayer(newPlayer: $playerInput)
 }
 
 # /register
@@ -198,7 +201,7 @@ fragment LoggedInUser on UserWithToken {
   username
   token
   isAdmin
-  playerAbbreviation
+  playerNickname
 }
 
 mutation Login($credentials: Credentials!) {

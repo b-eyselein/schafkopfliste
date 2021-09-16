@@ -1,27 +1,28 @@
-import React, {useState} from 'react';
+import React, {Dispatch, useState} from 'react';
 import {Home} from './Home';
 import {Route, Switch} from 'react-router';
 import classNames from 'classnames';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {RegisterForm} from './RegisterForm';
+import {LoginForm} from './LoginForm';
+import {useDispatch, useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
+import {StoreAction, userLogoutAction} from './store/actions';
+import {homeUrl, loginUrl, playersBaseUrl, registerUrl, ruleSetsBaseUrl} from './urls';
+import {RuleSetsBase} from './RuleSets';
+import {PlayersBase} from './Players';
 
-interface User {
-  username: string;
-}
-
-function getCurrentUser(): User | undefined {
-  return undefined;
-}
-
-export function App() {
+export function App(): JSX.Element {
 
   const [navbarToggled, setNavbarToggled] = useState(false);
-
-  // TODO!
-  const currentUser = getCurrentUser();
+  const dispatch = useDispatch<Dispatch<StoreAction>>();
+  const currentUser = useSelector(currentUserSelector);
+  const history = useHistory();
 
   function logout(): void {
-    console.error('TODO: logout!');
+    dispatch(userLogoutAction);
+    // FIXME: redirect!
+    history.push('/loginForm');
   }
 
   return (
@@ -29,7 +30,7 @@ export function App() {
 
       <nav className="navbar is-danger" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
-          <Link className="navbar-item has-text-weight-bold" to="/">SchafkopfListe</Link>
+          <Link className="navbar-item has-text-weight-bold" to={homeUrl}>SchafkopfListe</Link>
 
           <a role="button" className={classNames('navbar-burger', 'burger', {'is-active': navbarToggled})} aria-label="menu" aria-expanded="false"
              onClick={() => setNavbarToggled((navbarToggled) => !navbarToggled)}>
@@ -48,10 +49,12 @@ export function App() {
 
           <div className="navbar-end">
             {currentUser
-              ? <button className="navbar-item" onClick={logout}>Logout {currentUser.username}</button>
+              ? <div className="navbar-item">
+                <button className="button" onClick={logout}>Logout {currentUser.username}</button>
+              </div>
               : <>
-                <Link className="navbar-item" to="/registerForm">Registrieren</Link>
-                <Link className="navbar-item" to="/loginForm">Login</Link>
+                <Link className="navbar-item" to={registerUrl}>Registrieren</Link>
+                <Link className="navbar-item" to={loginUrl}>Login</Link>
               </>}
           </div>
 
@@ -60,8 +63,11 @@ export function App() {
 
 
       <Switch>
-        <Route path={'/'} exact component={Home}/>
-        <Route path={'/registerForm'} component={RegisterForm}/>
+        <Route path={homeUrl} exact component={Home}/>
+        <Route path={loginUrl} component={LoginForm}/>
+        <Route path={registerUrl} component={RegisterForm}/>
+        <Route path={ruleSetsBaseUrl} component={RuleSetsBase}/>
+        <Route path={playersBaseUrl} component={PlayersBase}/>
       </Switch>
     </>
   );

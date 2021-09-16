@@ -1,24 +1,8 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
 schema {
   query: QueryRoot
   mutation: Mutations
-}
-
-enum BavarianSuit {
-  ACORNS
-  BELLS
-  HEARTS
-  LEAVES
-}
-
-enum CountLaufende {
-  ALWAYS
-  NEVER
-  ONLY_LOSERS
-}
-
-input Credentials {
-  password: String!
-  username: String!
 }
 
 type Game {
@@ -36,31 +20,6 @@ type Game {
   tout: Boolean!
 }
 
-input GameInput {
-  actingPlayerNickname: String!
-  gameType: GameType!
-  isDoubled: Boolean!
-  kontra: KontraType
-  laufendeCount: Int!
-  playersHavingPutNicknames: [String!]!
-  playersHavingWonNicknames: [String!]!
-  schneiderSchwarz: SchneiderSchwarz
-  suit: BavarianSuit
-  tout: Boolean!
-}
-
-enum GameType {
-  BETTEL
-  FARBGEIER
-  FARBSOLO
-  FARBWENZ
-  GEIER
-  HOCHZEIT
-  RAMSCH
-  RUF
-  WENZ
-}
-
 type Group {
   name: String!
   playerCount: Int!
@@ -68,18 +27,6 @@ type Group {
   ruleSet: RuleSet
   ruleSetName: String!
   sessions: [Session!]!
-}
-
-input GroupInput {
-  name: String!
-  ruleSetName: String!
-}
-
-enum KontraType {
-  KONTRA
-  RE
-  RESUPRA
-  SUPRA
 }
 
 type Mutations {
@@ -112,13 +59,6 @@ type PlayerInGroup {
   winCount: Int!
 }
 
-input PlayerInput {
-  firstName: String!
-  lastName: String!
-  nickname: String!
-  pictureName: String
-}
-
 type QueryRoot {
   group(name: String!): Group
   groups: [Group!]!
@@ -126,12 +66,6 @@ type QueryRoot {
   ruleSet(name: String!): RuleSet
   ruleSets: [RuleSet!]!
   session(groupName: String!, id: Int!): Session
-}
-
-input RegisterUserInput {
-  password: String!
-  passwordRepeat: String!
-  username: String!
 }
 
 type RuleSet {
@@ -150,6 +84,98 @@ type RuleSet {
   soloPrice: Int!
 }
 
+type Session {
+  date: String!
+  firstPlayer: Player!
+  fourthPlayer: Player!
+  games: [Game!]!
+  hasEnded: Boolean!
+  id: Int!
+  ruleSet: RuleSet!
+  secondPlayer: Player!
+  thirdPlayer: Player!
+}
+
+type UserWithToken {
+  isAdmin: Boolean!
+  playerNickname: String
+  token: String!
+  username: String!
+}
+
+enum BavarianSuit {
+  ACORNS
+  BELLS
+  HEARTS
+  LEAVES
+}
+
+enum CountLaufende {
+  ALWAYS
+  NEVER
+  ONLY_LOSERS
+}
+
+enum GameType {
+  BETTEL
+  FARBGEIER
+  FARBSOLO
+  FARBWENZ
+  GEIER
+  HOCHZEIT
+  RAMSCH
+  RUF
+  WENZ
+}
+
+enum KontraType {
+  KONTRA
+  RE
+  RESUPRA
+  SUPRA
+}
+
+enum SchneiderSchwarz {
+  SCHNEIDER
+  SCHWARZ
+}
+
+input Credentials {
+  password: String!
+  username: String!
+}
+
+input GameInput {
+  actingPlayerNickname: String!
+  gameType: GameType!
+  isDoubled: Boolean!
+  kontra: KontraType
+  laufendeCount: Int!
+  playersHavingPutNicknames: [String!]!
+  playersHavingWonNicknames: [String!]!
+  schneiderSchwarz: SchneiderSchwarz
+  suit: BavarianSuit
+  tout: Boolean!
+}
+
+input GroupInput {
+  name: String!
+  ruleSetName: String!
+}
+
+input PlayerInput {
+  firstName: String!
+  lastName: String!
+  nickname: String!
+  pictureName: String
+}
+
+input RegisterUserInput {
+  password: String!
+  passwordRepeat: String!
+  username: String!
+}
+
 input RuleSetInput {
   basePrice: Int!
   bettelAllowed: Boolean!
@@ -166,23 +192,6 @@ input RuleSetInput {
   soloPrice: Int!
 }
 
-enum SchneiderSchwarz {
-  SCHNEIDER
-  SCHWARZ
-}
-
-type Session {
-  date: String!
-  firstPlayer: Player!
-  fourthPlayer: Player!
-  games: [Game!]!
-  hasEnded: Boolean!
-  id: Int!
-  ruleSet: RuleSet!
-  secondPlayer: Player!
-  thirdPlayer: Player!
-}
-
 input SessionInput {
   dateDayOfMonth: Int!
   dateMonth: Int!
@@ -193,11 +202,4 @@ input SessionInput {
   thirdPlayerNickname: String!
   timeHours: Int!
   timeMinutes: Int!
-}
-
-type UserWithToken {
-  isAdmin: Boolean!
-  playerNickname: String
-  token: String!
-  username: String!
 }

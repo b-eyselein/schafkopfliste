@@ -14,70 +14,12 @@ export type Scalars = {
   Float: number;
 };
 
-export type QueryRoot = {
-  __typename?: 'QueryRoot';
-  group?: Maybe<Group>;
-  groups: Array<Group>;
-  players: Array<Player>;
-  ruleSet?: Maybe<RuleSet>;
-  ruleSets: Array<RuleSet>;
-  session?: Maybe<Session>;
-};
-
-
-export type QueryRootGroupArgs = {
-  name: Scalars['String'];
-};
-
-
-export type QueryRootRuleSetArgs = {
-  name: Scalars['String'];
-};
-
-
-export type QueryRootSessionArgs = {
-  groupName: Scalars['String'];
-  id: Scalars['Int'];
-};
-
-export type Group = {
-  __typename?: 'Group';
-  name: Scalars['String'];
-  playerCount: Scalars['Int'];
-  players: Array<PlayerInGroup>;
-  ruleSet?: Maybe<RuleSet>;
-  ruleSetName: Scalars['String'];
-  sessions: Array<Session>;
-};
-
-export type PlayerInGroup = {
-  __typename?: 'PlayerInGroup';
-  abbreviation: Scalars['String'];
-  balance: Scalars['Int'];
-  gameCount: Scalars['Int'];
-  isActive: Scalars['Boolean'];
-  name: Scalars['String'];
-  playedGames: Scalars['Int'];
-  putCount: Scalars['Int'];
-  winCount: Scalars['Int'];
-};
-
-export type RuleSet = {
-  __typename?: 'RuleSet';
-  basePrice: Scalars['Int'];
-  bettelAllowed: Scalars['Boolean'];
-  countLaufende: CountLaufende;
-  farbGeierAllowed: Scalars['Boolean'];
-  farbWenzAllowed: Scalars['Boolean'];
-  geierAllowed: Scalars['Boolean'];
-  hochzeitAllowed: Scalars['Boolean'];
-  laufendePrice: Scalars['Int'];
-  maxLaufendeIncl: Scalars['Int'];
-  minLaufendeIncl: Scalars['Int'];
-  name: Scalars['String'];
-  ramschAllowed: Scalars['Boolean'];
-  soloPrice: Scalars['Int'];
-};
+export enum BavarianSuit {
+  Acorns = 'ACORNS',
+  Bells = 'BELLS',
+  Hearts = 'HEARTS',
+  Leaves = 'LEAVES'
+}
 
 export enum CountLaufende {
   Always = 'ALWAYS',
@@ -85,43 +27,35 @@ export enum CountLaufende {
   OnlyLosers = 'ONLY_LOSERS'
 }
 
-export type Session = {
-  __typename?: 'Session';
-  date: Scalars['String'];
-  firstPlayer: Player;
-  fourthPlayer: Player;
-  games: Array<Game>;
-  hasEnded: Scalars['Boolean'];
-  id: Scalars['Int'];
-  ruleSet: RuleSet;
-  secondPlayer: Player;
-  thirdPlayer: Player;
-};
-
-export type Player = {
-  __typename?: 'Player';
-  abbreviation: Scalars['String'];
-  isMemberInGroup: Scalars['Boolean'];
-  name: Scalars['String'];
-  pictureName?: Maybe<Scalars['String']>;
-};
-
-
-export type PlayerIsMemberInGroupArgs = {
-  groupName: Scalars['String'];
+export type Credentials = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type Game = {
   __typename?: 'Game';
-  actingPlayerAbbreviation: Scalars['String'];
+  actingPlayerNickname: Scalars['String'];
   gameType: GameType;
   id: Scalars['Int'];
   isDoubled: Scalars['Boolean'];
   kontra?: Maybe<KontraType>;
   laufendeCount: Scalars['Int'];
-  playersHavingPutAbbreviations: Array<Scalars['String']>;
-  playersHavingWonAbbreviations: Array<Scalars['String']>;
+  playersHavingPutNicknames: Array<Scalars['String']>;
+  playersHavingWonNicknames: Array<Scalars['String']>;
   price: Scalars['Int'];
+  schneiderSchwarz?: Maybe<SchneiderSchwarz>;
+  suit?: Maybe<BavarianSuit>;
+  tout: Scalars['Boolean'];
+};
+
+export type GameInput = {
+  actingPlayerNickname: Scalars['String'];
+  gameType: GameType;
+  isDoubled: Scalars['Boolean'];
+  kontra?: Maybe<KontraType>;
+  laufendeCount: Scalars['Int'];
+  playersHavingPutNicknames: Array<Scalars['String']>;
+  playersHavingWonNicknames: Array<Scalars['String']>;
   schneiderSchwarz?: Maybe<SchneiderSchwarz>;
   suit?: Maybe<BavarianSuit>;
   tout: Scalars['Boolean'];
@@ -139,23 +73,26 @@ export enum GameType {
   Wenz = 'WENZ'
 }
 
+export type Group = {
+  __typename?: 'Group';
+  name: Scalars['String'];
+  playerCount: Scalars['Int'];
+  players: Array<PlayerInGroup>;
+  ruleSet?: Maybe<RuleSet>;
+  ruleSetName: Scalars['String'];
+  sessions: Array<Session>;
+};
+
+export type GroupInput = {
+  name: Scalars['String'];
+  ruleSetName: Scalars['String'];
+};
+
 export enum KontraType {
   Kontra = 'KONTRA',
   Re = 'RE',
   Resupra = 'RESUPRA',
   Supra = 'SUPRA'
-}
-
-export enum SchneiderSchwarz {
-  Schneider = 'SCHNEIDER',
-  Schwarz = 'SCHWARZ'
-}
-
-export enum BavarianSuit {
-  Acorns = 'ACORNS',
-  Bells = 'BELLS',
-  Hearts = 'HEARTS',
-  Leaves = 'LEAVES'
 }
 
 export type Mutations = {
@@ -215,15 +152,86 @@ export type MutationsRegisterUserArgs = {
   registerUserInput: RegisterUserInput;
 };
 
-export type GroupInput = {
+export type Player = {
+  __typename?: 'Player';
+  firstName: Scalars['String'];
+  isMemberInGroup: Scalars['Boolean'];
+  lastName: Scalars['String'];
+  nickname: Scalars['String'];
+  pictureName?: Maybe<Scalars['String']>;
+};
+
+
+export type PlayerIsMemberInGroupArgs = {
+  groupName: Scalars['String'];
+};
+
+export type PlayerInGroup = {
+  __typename?: 'PlayerInGroup';
+  balance: Scalars['Int'];
+  gameCount: Scalars['Int'];
+  isActive: Scalars['Boolean'];
   name: Scalars['String'];
-  ruleSetName: Scalars['String'];
+  nickname: Scalars['String'];
+  playedGames: Scalars['Int'];
+  putCount: Scalars['Int'];
+  winCount: Scalars['Int'];
 };
 
 export type PlayerInput = {
-  abbreviation: Scalars['String'];
-  name: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  nickname: Scalars['String'];
   pictureName?: Maybe<Scalars['String']>;
+};
+
+export type QueryRoot = {
+  __typename?: 'QueryRoot';
+  group?: Maybe<Group>;
+  groups: Array<Group>;
+  players: Array<Player>;
+  ruleSet?: Maybe<RuleSet>;
+  ruleSets: Array<RuleSet>;
+  session?: Maybe<Session>;
+};
+
+
+export type QueryRootGroupArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QueryRootRuleSetArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QueryRootSessionArgs = {
+  groupName: Scalars['String'];
+  id: Scalars['Int'];
+};
+
+export type RegisterUserInput = {
+  password: Scalars['String'];
+  passwordRepeat: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type RuleSet = {
+  __typename?: 'RuleSet';
+  basePrice: Scalars['Int'];
+  bettelAllowed: Scalars['Boolean'];
+  countLaufende: CountLaufende;
+  farbGeierAllowed: Scalars['Boolean'];
+  farbWenzAllowed: Scalars['Boolean'];
+  geierAllowed: Scalars['Boolean'];
+  hochzeitAllowed: Scalars['Boolean'];
+  laufendePrice: Scalars['Int'];
+  maxLaufendeIncl: Scalars['Int'];
+  minLaufendeIncl: Scalars['Int'];
+  name: Scalars['String'];
+  ramschAllowed: Scalars['Boolean'];
+  soloPrice: Scalars['Int'];
 };
 
 export type RuleSetInput = {
@@ -242,47 +250,41 @@ export type RuleSetInput = {
   soloPrice: Scalars['Int'];
 };
 
-export type Credentials = {
-  password: Scalars['String'];
-  username: Scalars['String'];
-};
+export enum SchneiderSchwarz {
+  Schneider = 'SCHNEIDER',
+  Schwarz = 'SCHWARZ'
+}
 
-export type UserWithToken = {
-  __typename?: 'UserWithToken';
-  isAdmin: Scalars['Boolean'];
-  playerAbbreviation?: Maybe<Scalars['String']>;
-  token: Scalars['String'];
-  username: Scalars['String'];
-};
-
-export type GameInput = {
-  actingPlayerAbbreviation: Scalars['String'];
-  gameType: GameType;
-  isDoubled: Scalars['Boolean'];
-  kontra?: Maybe<KontraType>;
-  laufendeCount: Scalars['Int'];
-  playersHavingPutAbbreviations: Array<Scalars['String']>;
-  playersHavingWonAbbreviations: Array<Scalars['String']>;
-  schneiderSchwarz?: Maybe<SchneiderSchwarz>;
-  suit?: Maybe<BavarianSuit>;
-  tout: Scalars['Boolean'];
+export type Session = {
+  __typename?: 'Session';
+  date: Scalars['String'];
+  firstPlayer: Player;
+  fourthPlayer: Player;
+  games: Array<Game>;
+  hasEnded: Scalars['Boolean'];
+  id: Scalars['Int'];
+  ruleSet: RuleSet;
+  secondPlayer: Player;
+  thirdPlayer: Player;
 };
 
 export type SessionInput = {
   dateDayOfMonth: Scalars['Int'];
   dateMonth: Scalars['Int'];
   dateYear: Scalars['Int'];
-  firstPlayerAbbreviation: Scalars['String'];
-  fourthPlayerAbbreviation: Scalars['String'];
-  secondPlayerAbbreviation: Scalars['String'];
-  thirdPlayerAbbreviation: Scalars['String'];
+  firstPlayerNickname: Scalars['String'];
+  fourthPlayerNickname: Scalars['String'];
+  secondPlayerNickname: Scalars['String'];
+  thirdPlayerNickname: Scalars['String'];
   timeHours: Scalars['Int'];
   timeMinutes: Scalars['Int'];
 };
 
-export type RegisterUserInput = {
-  password: Scalars['String'];
-  passwordRepeat: Scalars['String'];
+export type UserWithToken = {
+  __typename?: 'UserWithToken';
+  isAdmin: Scalars['Boolean'];
+  playerNickname?: Maybe<Scalars['String']>;
+  token: Scalars['String'];
   username: Scalars['String'];
 };
 
@@ -313,21 +315,21 @@ export type GroupCreationMutationVariables = Exact<{
 
 export type GroupCreationMutation = { __typename?: 'Mutations', createGroup: { __typename?: 'Group', name: string, ruleSetName: string } };
 
-export type PlayerInGroupFragment = { __typename?: 'PlayerInGroup', abbreviation: string, name: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number };
+export type PlayerInGroupFragment = { __typename?: 'PlayerInGroup', nickname: string, name: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number };
 
 export type GroupQueryVariables = Exact<{
   name: Scalars['String'];
 }>;
 
 
-export type GroupQuery = { __typename?: 'QueryRoot', group?: Maybe<{ __typename?: 'Group', name: string, players: Array<{ __typename?: 'PlayerInGroup', abbreviation: string, name: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number }>, sessions: Array<{ __typename?: 'Session', id: number, hasEnded: boolean }> }> };
+export type GroupQuery = { __typename?: 'QueryRoot', group?: Maybe<{ __typename?: 'Group', name: string, players: Array<{ __typename?: 'PlayerInGroup', nickname: string, name: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number }>, sessions: Array<{ __typename?: 'Session', id: number, hasEnded: boolean }> }> };
 
 export type PlayersInGroupQueryVariables = Exact<{
   groupName: Scalars['String'];
 }>;
 
 
-export type PlayersInGroupQuery = { __typename?: 'QueryRoot', players: Array<{ __typename?: 'Player', abbreviation: string, name: string, isMemberInGroup: boolean }> };
+export type PlayersInGroupQuery = { __typename?: 'QueryRoot', players: Array<{ __typename?: 'Player', nickname: string, firstName: string, lastName: string, isMemberInGroup: boolean }> };
 
 export type AddPlayerToGroupMutationVariables = Exact<{
   playerName: Scalars['String'];
@@ -338,16 +340,16 @@ export type AddPlayerToGroupMutationVariables = Exact<{
 
 export type AddPlayerToGroupMutation = { __typename?: 'Mutations', addPlayerToGroup: boolean };
 
-export type NewSessionPlayerValuesFragment = { __typename?: 'PlayerInGroup', abbreviation: string, name: string };
+export type NewSessionPlayerValuesFragment = { __typename?: 'PlayerInGroup', nickname: string, name: string };
 
-export type NewSessionValuesGroupFragment = { __typename?: 'Group', players: Array<{ __typename?: 'PlayerInGroup', abbreviation: string, name: string }>, ruleSet?: Maybe<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> };
+export type NewSessionValuesGroupFragment = { __typename?: 'Group', players: Array<{ __typename?: 'PlayerInGroup', nickname: string, name: string }>, ruleSet?: Maybe<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> };
 
 export type NewSessionValuesQueryVariables = Exact<{
   groupName: Scalars['String'];
 }>;
 
 
-export type NewSessionValuesQuery = { __typename?: 'QueryRoot', group?: Maybe<{ __typename?: 'Group', players: Array<{ __typename?: 'PlayerInGroup', abbreviation: string, name: string }>, ruleSet?: Maybe<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> }> };
+export type NewSessionValuesQuery = { __typename?: 'QueryRoot', group?: Maybe<{ __typename?: 'Group', players: Array<{ __typename?: 'PlayerInGroup', nickname: string, name: string }>, ruleSet?: Maybe<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> }> };
 
 export type NewSessionMutationVariables = Exact<{
   groupName: Scalars['String'];
@@ -357,11 +359,11 @@ export type NewSessionMutationVariables = Exact<{
 
 export type NewSessionMutation = { __typename?: 'Mutations', newSession: number };
 
-export type SessionPlayerFragment = { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> };
+export type SessionPlayerFragment = { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> };
 
-export type SessionGameFragment = { __typename?: 'Game', id: number, actingPlayerAbbreviation: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutAbbreviations: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonAbbreviations: Array<string>, price: number };
+export type SessionGameFragment = { __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutNicknames: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonNicknames: Array<string>, price: number };
 
-export type SessionFragment = { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerAbbreviation: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutAbbreviations: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonAbbreviations: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, secondPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, thirdPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, fourthPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> } };
+export type SessionFragment = { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutNicknames: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, secondPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, thirdPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, fourthPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> } };
 
 export type SessionQueryVariables = Exact<{
   groupName: Scalars['String'];
@@ -369,7 +371,7 @@ export type SessionQueryVariables = Exact<{
 }>;
 
 
-export type SessionQuery = { __typename?: 'QueryRoot', session?: Maybe<{ __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerAbbreviation: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutAbbreviations: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonAbbreviations: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, secondPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, thirdPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> }, fourthPlayer: { __typename?: 'Player', abbreviation: string, name: string, pictureName?: Maybe<string> } }> };
+export type SessionQuery = { __typename?: 'QueryRoot', session?: Maybe<{ __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutNicknames: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, secondPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, thirdPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> }, fourthPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string, pictureName?: Maybe<string> } }> };
 
 export type CreateGameMutationVariables = Exact<{
   groupName: Scalars['String'];
@@ -378,16 +380,15 @@ export type CreateGameMutationVariables = Exact<{
 }>;
 
 
-export type CreateGameMutation = { __typename?: 'Mutations', newGame: { __typename?: 'Game', id: number, actingPlayerAbbreviation: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutAbbreviations: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonAbbreviations: Array<string>, price: number } };
+export type CreateGameMutation = { __typename?: 'Mutations', newGame: { __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutNicknames: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonNicknames: Array<string>, price: number } };
 
 export type PlayerListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PlayerListQuery = { __typename?: 'QueryRoot', players: Array<{ __typename?: 'Player', abbreviation: string, name: string }> };
+export type PlayerListQuery = { __typename?: 'QueryRoot', players: Array<{ __typename?: 'Player', nickname: string, firstName: string, lastName: string }> };
 
 export type PlayerCreationMutationVariables = Exact<{
-  name: Scalars['String'];
-  abbreviation: Scalars['String'];
+  playerInput: PlayerInput;
 }>;
 
 
@@ -400,18 +401,18 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutations', registerUser: string };
 
-export type LoggedInUserFragment = { __typename?: 'UserWithToken', username: string, token: string, isAdmin: boolean, playerAbbreviation?: Maybe<string> };
+export type LoggedInUserFragment = { __typename?: 'UserWithToken', username: string, token: string, isAdmin: boolean, playerNickname?: Maybe<string> };
 
 export type LoginMutationVariables = Exact<{
   credentials: Credentials;
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutations', login?: Maybe<{ __typename?: 'UserWithToken', username: string, token: string, isAdmin: boolean, playerAbbreviation?: Maybe<string> }> };
+export type LoginMutation = { __typename?: 'Mutations', login?: Maybe<{ __typename?: 'UserWithToken', username: string, token: string, isAdmin: boolean, playerNickname?: Maybe<string> }> };
 
 export const PlayerInGroupFragmentDoc = gql`
     fragment PlayerInGroup on PlayerInGroup {
-  abbreviation
+  nickname
   name
   balance
   gameCount
@@ -422,7 +423,7 @@ export const PlayerInGroupFragmentDoc = gql`
     `;
 export const NewSessionPlayerValuesFragmentDoc = gql`
     fragment NewSessionPlayerValues on PlayerInGroup {
-  abbreviation
+  nickname
   name
 }
     `;
@@ -457,23 +458,24 @@ ${RuleSetFragmentDoc}`;
 export const SessionGameFragmentDoc = gql`
     fragment SessionGame on Game {
   id
-  actingPlayerAbbreviation
+  actingPlayerNickname
   gameType
   suit
   tout
   isDoubled
   laufendeCount
   schneiderSchwarz
-  playersHavingPutAbbreviations
+  playersHavingPutNicknames
   kontra
-  playersHavingWonAbbreviations
+  playersHavingWonNicknames
   price
 }
     `;
 export const SessionPlayerFragmentDoc = gql`
     fragment SessionPlayer on Player {
-  abbreviation
-  name
+  nickname
+  firstName
+  lastName
   pictureName
 }
     `;
@@ -508,7 +510,7 @@ export const LoggedInUserFragmentDoc = gql`
   username
   token
   isAdmin
-  playerAbbreviation
+  playerNickname
 }
     `;
 export const NewRuleSetDocument = gql`
@@ -691,8 +693,9 @@ export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariable
 export const PlayersInGroupDocument = gql`
     query PlayersInGroup($groupName: String!) {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
     isMemberInGroup(groupName: $groupName)
   }
 }
@@ -727,7 +730,11 @@ export type PlayersInGroupLazyQueryHookResult = ReturnType<typeof usePlayersInGr
 export type PlayersInGroupQueryResult = Apollo.QueryResult<PlayersInGroupQuery, PlayersInGroupQueryVariables>;
 export const AddPlayerToGroupDocument = gql`
     mutation AddPlayerToGroup($playerName: String!, $groupName: String!, $newState: Boolean!) {
-  addPlayerToGroup(playerName: $playerName, groupName: $groupName, newState: $newState)
+  addPlayerToGroup(
+    playerName: $playerName
+    groupName: $groupName
+    newState: $newState
+  )
 }
     `;
 export type AddPlayerToGroupMutationFn = Apollo.MutationFunction<AddPlayerToGroupMutation, AddPlayerToGroupMutationVariables>;
@@ -899,8 +906,9 @@ export type CreateGameMutationOptions = Apollo.BaseMutationOptions<CreateGameMut
 export const PlayerListDocument = gql`
     query PlayerList {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
   }
 }
     `;
@@ -932,8 +940,8 @@ export type PlayerListQueryHookResult = ReturnType<typeof usePlayerListQuery>;
 export type PlayerListLazyQueryHookResult = ReturnType<typeof usePlayerListLazyQuery>;
 export type PlayerListQueryResult = Apollo.QueryResult<PlayerListQuery, PlayerListQueryVariables>;
 export const PlayerCreationDocument = gql`
-    mutation PlayerCreation($name: String!, $abbreviation: String!) {
-  createPlayer(newPlayer: {name: $name, abbreviation: $abbreviation})
+    mutation PlayerCreation($playerInput: PlayerInput!) {
+  createPlayer(newPlayer: $playerInput)
 }
     `;
 export type PlayerCreationMutationFn = Apollo.MutationFunction<PlayerCreationMutation, PlayerCreationMutationVariables>;
@@ -951,8 +959,7 @@ export type PlayerCreationMutationFn = Apollo.MutationFunction<PlayerCreationMut
  * @example
  * const [playerCreationMutation, { data, loading, error }] = usePlayerCreationMutation({
  *   variables: {
- *      name: // value for 'name'
- *      abbreviation: // value for 'abbreviation'
+ *      playerInput: // value for 'playerInput'
  *   },
  * });
  */
