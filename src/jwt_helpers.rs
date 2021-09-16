@@ -30,7 +30,7 @@ pub fn decode_token(token: &str) -> jsonwebtoken::errors::Result<TokenData<Claim
         ..Default::default()
     };
 
-    decode::<Claims>(&token, &DecodingKey::from_secret(SECRET.as_ref()), &validation)
+    decode::<Claims>(token, &DecodingKey::from_secret(SECRET.as_ref()), &validation)
 }
 
 pub fn generate_token(username: String, is_admin: bool, player_abbreviation: Option<String>) -> Result<UserWithToken, JwtError> {
