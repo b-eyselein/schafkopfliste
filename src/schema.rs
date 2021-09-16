@@ -111,13 +111,4 @@ joinable!(sessions -> groups (group_name));
 joinable!(sessions -> users (creator_username));
 joinable!(users -> players (player_abbreviation));
 
-allow_tables_to_appear_in_same_query!(
-    games,
-    groups,
-    player_in_groups,
-    players,
-    rule_sets,
-    session_results,
-    sessions,
-    users,
-);
+allow_tables_to_appear_in_same_query!(games, groups, player_in_groups, players, rule_sets, session_results, sessions, users,);

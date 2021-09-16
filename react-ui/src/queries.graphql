@@ -1,0 +1,208 @@
+# /ruleSets/new
+
+mutation NewRuleSet($ruleSetInput: RuleSetInput!) {
+  createRuleSet(ruleSetInput: $ruleSetInput)
+}
+
+# /ruleSets
+
+fragment RuleSet on RuleSet {
+  name
+  basePrice
+  soloPrice
+  countLaufende
+  minLaufendeIncl
+  maxLaufendeIncl
+  laufendePrice
+  geierAllowed
+  hochzeitAllowed
+  bettelAllowed
+  ramschAllowed
+  farbWenzAllowed
+  farbGeierAllowed
+}
+
+query RuleSetList {
+  ruleSets {
+    ...RuleSet
+  }
+}
+
+# /groups
+
+query GroupList {
+  groups {
+    name
+    playerCount
+  }
+}
+
+
+# /groups/new
+
+mutation GroupCreation($name: String!, $ruleSetName: String!) {
+  createGroup(groupInput: {name: $name, ruleSetName: $ruleSetName}) {
+    name
+    ruleSetName
+  }
+}
+
+
+# /groups/:name
+
+fragment PlayerInGroup on PlayerInGroup {
+  abbreviation
+  name
+  balance
+  gameCount
+  playedGames
+  putCount
+  winCount
+}
+
+query Group($name: String!) {
+  group(name: $name) {
+    name
+    players {
+      ...PlayerInGroup
+    }
+    sessions {
+      id
+      hasEnded
+    }
+  }
+}
+
+# /groups/:name/players
+
+query PlayersInGroup($groupName: String!) {
+  players {
+    abbreviation
+    name
+    isMemberInGroup(groupName: $groupName)
+  }
+}
+
+mutation AddPlayerToGroup($playerName: String!, $groupName: String!, $newState: Boolean!) {
+  addPlayerToGroup(playerName: $playerName, groupName: $groupName, newState: $newState)
+}
+
+# /groups/:name/newSession
+
+fragment NewSessionPlayerValues on PlayerInGroup {
+  abbreviation
+  name
+}
+
+fragment NewSessionValuesGroup on Group {
+  players {
+    ...NewSessionPlayerValues
+  }
+  ruleSet {
+    ...RuleSet
+  }
+}
+
+query NewSessionValues($groupName: String!) {
+  group(name: $groupName) {
+    ...NewSessionValuesGroup
+  }
+}
+
+mutation NewSession($groupName: String!, $sessionInput: SessionInput!) {
+  newSession(groupName: $groupName, sessionInput: $sessionInput)
+}
+
+# /groups/:name/sessions/:sessionId
+
+fragment SessionPlayer on Player {
+  abbreviation
+  name
+  pictureName
+}
+
+fragment SessionGame on Game {
+  id
+  actingPlayerAbbreviation
+  gameType
+  suit
+  tout
+  isDoubled
+  laufendeCount
+  schneiderSchwarz
+  playersHavingPutAbbreviations
+  kontra
+  playersHavingWonAbbreviations
+  price
+}
+
+fragment Session on Session {
+  date
+  games {
+    ...SessionGame
+  }
+  ruleSet {
+    ...RuleSet
+  }
+  firstPlayer {
+    ...SessionPlayer
+  }
+  secondPlayer {
+    ...SessionPlayer
+  }
+  thirdPlayer {
+    ...SessionPlayer
+  }
+  fourthPlayer {
+    ...SessionPlayer
+  }
+  hasEnded
+}
+
+query Session($groupName: String!, $sessionId: Int!) {
+  session(groupName: $groupName, id: $sessionId) {
+    ...Session
+  }
+}
+
+mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput!) {
+  newGame(groupName: $groupName, sessionId: $sessionId, gameInput: $gameInput) {
+    ...SessionGame
+  }
+}
+
+# /players
+
+query PlayerList {
+  players {
+    abbreviation
+    name
+  }
+}
+
+# /players/new
+
+mutation PlayerCreation($name: String!, $abbreviation: String!) {
+  createPlayer(newPlayer: {name: $name, abbreviation: $abbreviation })
+}
+
+# /register
+
+mutation Register($registerUserInput: RegisterUserInput!) {
+  registerUser(registerUserInput: $registerUserInput)
+}
+
+# /loginForm
+
+fragment LoggedInUser on UserWithToken {
+  username
+  token
+  isAdmin
+  playerAbbreviation
+}
+
+mutation Login($credentials: Credentials!) {
+  login(credentials: $credentials) {
+    ...LoggedInUser
+  }
+}

@@ -77,15 +77,15 @@ impl Game {
     }
 
     pub fn player_has_acted(&self, player_abbreviation: &str) -> bool {
-        &self.acting_player_abbreviation == player_abbreviation
+        self.acting_player_abbreviation == player_abbreviation
     }
 
     pub fn player_has_put(&self, player_abbreviation: &String) -> bool {
-        *&self.players_having_put_abbreviations.contains(player_abbreviation)
+        self.players_having_put_abbreviations.contains(player_abbreviation)
     }
 
     pub fn player_has_won(&self, player_abbreviation: &String) -> bool {
-        *&self.players_having_won_abbreviations.contains(player_abbreviation)
+        self.players_having_won_abbreviations.contains(player_abbreviation)
     }
 
     pub fn is_solo(&self) -> bool {
@@ -122,7 +122,7 @@ impl Game {
     }
 
     pub fn calculate_price(&self, rule_set: &RuleSet) -> i32 {
-        let base_price = self.base_price(&rule_set);
+        let base_price = self.base_price(rule_set);
 
         let schneider_schwarz_price = match self.schneider_schwarz {
             None => 0,
@@ -325,7 +325,7 @@ mod tests {
         // -5 Laufende
         let game_minus_five = Game {
             laufende_count: -5,
-            ..base_game.clone()
+            ..base_game
         };
         assert_eq!(0, game_minus_five.laufende_price(&rs1));
         assert_eq!(20, game_minus_five.laufende_price(&rs2));

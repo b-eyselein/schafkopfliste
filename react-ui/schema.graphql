@@ -1,0 +1,201 @@
+schema {
+  query: QueryRoot
+  mutation: Mutations
+}
+
+enum BavarianSuit {
+  ACORNS
+  BELLS
+  HEARTS
+  LEAVES
+}
+
+enum CountLaufende {
+  ALWAYS
+  NEVER
+  ONLY_LOSERS
+}
+
+input Credentials {
+  password: String!
+  username: String!
+}
+
+type Game {
+  actingPlayerAbbreviation: String!
+  gameType: GameType!
+  id: Int!
+  isDoubled: Boolean!
+  kontra: KontraType
+  laufendeCount: Int!
+  playersHavingPutAbbreviations: [String!]!
+  playersHavingWonAbbreviations: [String!]!
+  price: Int!
+  schneiderSchwarz: SchneiderSchwarz
+  suit: BavarianSuit
+  tout: Boolean!
+}
+
+input GameInput {
+  actingPlayerAbbreviation: String!
+  gameType: GameType!
+  isDoubled: Boolean!
+  kontra: KontraType
+  laufendeCount: Int!
+  playersHavingPutAbbreviations: [String!]!
+  playersHavingWonAbbreviations: [String!]!
+  schneiderSchwarz: SchneiderSchwarz
+  suit: BavarianSuit
+  tout: Boolean!
+}
+
+enum GameType {
+  BETTEL
+  FARBGEIER
+  FARBSOLO
+  FARBWENZ
+  GEIER
+  HOCHZEIT
+  RAMSCH
+  RUF
+  WENZ
+}
+
+type Group {
+  name: String!
+  playerCount: Int!
+  players: [PlayerInGroup!]!
+  ruleSet: RuleSet
+  ruleSetName: String!
+  sessions: [Session!]!
+}
+
+input GroupInput {
+  name: String!
+  ruleSetName: String!
+}
+
+enum KontraType {
+  KONTRA
+  RE
+  RESUPRA
+  SUPRA
+}
+
+type Mutations {
+  addPlayerToGroup(groupName: String!, newState: Boolean!, playerName: String!): Boolean!
+  createGroup(groupInput: GroupInput!): Group!
+  createPlayer(newPlayer: PlayerInput!): String!
+  createRuleSet(ruleSetInput: RuleSetInput!): String!
+  login(credentials: Credentials!): UserWithToken
+  newGame(gameInput: GameInput!, groupName: String!, sessionId: Int!): Game!
+  newSession(groupName: String!, sessionInput: SessionInput!): Int!
+  registerUser(registerUserInput: RegisterUserInput!): String!
+}
+
+type Player {
+  abbreviation: String!
+  isMemberInGroup(groupName: String!): Boolean!
+  name: String!
+  pictureName: String
+}
+
+type PlayerInGroup {
+  abbreviation: String!
+  balance: Int!
+  gameCount: Int!
+  isActive: Boolean!
+  name: String!
+  playedGames: Int!
+  putCount: Int!
+  winCount: Int!
+}
+
+input PlayerInput {
+  abbreviation: String!
+  name: String!
+  pictureName: String
+}
+
+type QueryRoot {
+  group(name: String!): Group
+  groups: [Group!]!
+  players: [Player!]!
+  ruleSet(name: String!): RuleSet
+  ruleSets: [RuleSet!]!
+  session(groupName: String!, id: Int!): Session
+}
+
+input RegisterUserInput {
+  password: String!
+  passwordRepeat: String!
+  username: String!
+}
+
+type RuleSet {
+  basePrice: Int!
+  bettelAllowed: Boolean!
+  countLaufende: CountLaufende!
+  farbGeierAllowed: Boolean!
+  farbWenzAllowed: Boolean!
+  geierAllowed: Boolean!
+  hochzeitAllowed: Boolean!
+  laufendePrice: Int!
+  maxLaufendeIncl: Int!
+  minLaufendeIncl: Int!
+  name: String!
+  ramschAllowed: Boolean!
+  soloPrice: Int!
+}
+
+input RuleSetInput {
+  basePrice: Int!
+  bettelAllowed: Boolean!
+  countLaufende: CountLaufende!
+  farbGeierAllowed: Boolean!
+  farbWenzAllowed: Boolean!
+  geierAllowed: Boolean!
+  hochzeitAllowed: Boolean!
+  laufendePrice: Int!
+  maxLaufendeIncl: Int!
+  minLaufendeIncl: Int!
+  name: String!
+  ramschAllowed: Boolean!
+  soloPrice: Int!
+}
+
+enum SchneiderSchwarz {
+  SCHNEIDER
+  SCHWARZ
+}
+
+type Session {
+  date: String!
+  firstPlayer: Player!
+  fourthPlayer: Player!
+  games: [Game!]!
+  hasEnded: Boolean!
+  id: Int!
+  ruleSet: RuleSet!
+  secondPlayer: Player!
+  thirdPlayer: Player!
+}
+
+input SessionInput {
+  dateDayOfMonth: Int!
+  dateMonth: Int!
+  dateYear: Int!
+  firstPlayerAbbreviation: String!
+  fourthPlayerAbbreviation: String!
+  secondPlayerAbbreviation: String!
+  thirdPlayerAbbreviation: String!
+  timeHours: Int!
+  timeMinutes: Int!
+}
+
+type UserWithToken {
+  isAdmin: Boolean!
+  playerAbbreviation: String
+  token: String!
+  username: String!
+}

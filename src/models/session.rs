@@ -106,7 +106,7 @@ impl Session {
     pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
         let connection_mutex = context.connection.lock()?;
 
-        Ok(select_rule_set_for_group(&connection_mutex.0, &self.group_name)?.ok_or_else(|| FieldError::new("No rule set found!", Value::null()))?)
+        select_rule_set_for_group(&connection_mutex.0, &self.group_name)?.ok_or_else(|| FieldError::new("No rule set found!", Value::null()))
     }
 
     pub fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {

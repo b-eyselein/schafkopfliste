@@ -8,11 +8,11 @@ extern crate diesel_derive_enum;
 extern crate diesel_migrations;
 
 use diesel::PgConnection;
-use diesel_migrations::RunMigrationsError;
+
 use juniper::EmptySubscription;
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
-use rocket::{get, post, response::Redirect, Rocket, routes, State};
 use rocket::fairing::AdHoc;
+use rocket::{get, post, response::Redirect, routes, Rocket, State};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
@@ -63,7 +63,7 @@ fn route_post_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
-    schema: State<Schema>,
+    schema: State<Schema>
 ) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
@@ -85,7 +85,7 @@ fn main() {
         .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .mount(
             "/",
-            routes![route_index, route_get_graphiql, route_get_graphql_handler, route_post_graphql_handler],
+            routes![route_index, route_get_graphiql, route_get_graphql_handler, route_post_graphql_handler]
         )
         .mount("/app", StaticFiles::from("static"))
         .launch();
