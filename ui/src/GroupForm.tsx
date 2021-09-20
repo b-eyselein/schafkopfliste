@@ -5,6 +5,10 @@ import {GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQu
 import {WithQuery} from './WithQuery';
 import * as yup from 'yup';
 import classNames from 'classnames';
+import {useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
+import {Redirect} from 'react-router-dom';
+import {groupsBaseUrl} from './urls';
 
 const groupInputSchema: yup.SchemaOf<GroupInput> = yup.object()
   .shape({
@@ -18,6 +22,12 @@ export function GroupForm(): JSX.Element {
   const {t} = useTranslation('common');
   const ruleSetListQuery = useRuleSetListQuery();
   const [createGroup, {data, loading, error}] = useGroupCreationMutation();
+
+  const currentUser = useSelector(currentUserSelector);
+
+  if (!currentUser) {
+    return <Redirect to={groupsBaseUrl}/>;
+  }
 
   function render({ruleSets}: RuleSetListQuery): JSX.Element {
 

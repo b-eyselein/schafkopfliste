@@ -4,6 +4,10 @@ import {useTranslation} from 'react-i18next';
 import {CountLaufende, RuleSetInput, useNewRuleSetMutation} from './graphql';
 import classNames from 'classnames';
 import * as yup from 'yup';
+import {useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
+import {Redirect} from 'react-router-dom';
+import {ruleSetsBaseUrl} from './urls';
 
 const initialValues: RuleSetInput = {
   name: '',
@@ -45,6 +49,12 @@ export function RuleSetForm(): JSX.Element {
 
   const {t} = useTranslation('common');
   const [createRuleSet, {data, loading, error}] = useNewRuleSetMutation();
+
+  const currentUser = useSelector(currentUserSelector);
+
+  if (!currentUser) {
+    return <Redirect to={ruleSetsBaseUrl}/>;
+  }
 
   function onSubmit(ruleSetInput: RuleSetInput): void {
     createRuleSet({variables: {ruleSetInput}})

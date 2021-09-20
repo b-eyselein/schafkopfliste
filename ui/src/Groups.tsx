@@ -7,6 +7,8 @@ import {WithQuery} from './WithQuery';
 import {createNewUrlFragment, groupsBaseUrl} from './urls';
 import {GroupForm} from './GroupForm';
 import {GroupBase} from './GroupOverview';
+import {useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
 
 export function GroupsBase(): JSX.Element {
 
@@ -24,6 +26,7 @@ export function GroupsBase(): JSX.Element {
 function GroupsList(): JSX.Element {
 
   const {t} = useTranslation('common');
+  const currentUser = useSelector(currentUserSelector);
   const groupListQuery = useGroupListQuery();
 
   function render({groups}: GroupListQuery): JSX.Element {
@@ -58,9 +61,9 @@ function GroupsList(): JSX.Element {
 
       <WithQuery query={groupListQuery} render={render}/>
 
-      <div className="my-3">
+      {currentUser && <div className="my-3">
         <Link to={`${groupsBaseUrl}/${createNewUrlFragment}`} className="button is-link is-fullwidth">{t('createNewGroup')}</Link>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -6,6 +6,8 @@ import {useTranslation} from 'react-i18next';
 import {WithQuery} from './WithQuery';
 import {createNewUrlFragment, ruleSetsBaseUrl} from './urls';
 import {RuleSetForm} from './RuleSetForm';
+import {useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
 
 export function RuleSetsBase(): JSX.Element {
 
@@ -80,7 +82,7 @@ function RuleSetCard({ruleSet}: { ruleSet: RuleSetFragment }): JSX.Element {
 function RuleSetList(): JSX.Element {
 
   const {t} = useTranslation('common');
-
+  const currentUser = useSelector(currentUserSelector);
   const ruleSetListQuery = useRuleSetListQuery();
 
   function render({ruleSets}: RuleSetListQuery): JSX.Element {
@@ -103,9 +105,9 @@ function RuleSetList(): JSX.Element {
 
       <WithQuery query={ruleSetListQuery} render={render}/>
 
-      <div className="my-3">
+      {currentUser && <div className="my-3">
         <Link to={`${ruleSetsBaseUrl}/${createNewUrlFragment}`} className="button is-link is-fullwidth">{t('createNewRuleSet')}</Link>
-      </div>
+      </div>}
     </div>
   );
 }
