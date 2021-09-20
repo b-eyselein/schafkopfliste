@@ -3,11 +3,11 @@ use diesel::{prelude::*, PgConnection, QueryResult};
 use crate::models::accumulated_result::AccumulatedResult;
 use crate::models::player_in_group::PlayerInGroup;
 
-pub fn update_player_group_result(conn: &PgConnection, the_player_abbreviation: &str, res: &AccumulatedResult) -> QueryResult<PlayerInGroup> {
+pub fn update_player_group_result(conn: &PgConnection, the_player_nickname: &str, res: &AccumulatedResult) -> QueryResult<PlayerInGroup> {
     use crate::schema::player_in_groups::dsl::*;
 
     diesel::update(player_in_groups)
-        .filter(player_abbreviation.eq(the_player_abbreviation))
+        .filter(player_nickname.eq(the_player_nickname))
         .set((
             balance.eq(balance + res.balance),
             game_count.eq(game_count + res.game_count),

@@ -1,12 +1,12 @@
 use diesel::result::Error as DbError;
-use juniper::{FieldError, FieldResult, graphql_object};
+use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::daos::group_dao::{select_group_by_name, select_groups};
 use crate::daos::session_dao::select_session_by_id;
 use crate::graphql::context::GraphQLContext;
 use crate::models::group::Group;
-use crate::models::player::{Player, select_players};
-use crate::models::rule_set::{RuleSet, select_rule_set_by_id, select_rule_sets};
+use crate::models::player::{select_players, Player};
+use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
 use crate::models::session::Session;
 
 pub struct QueryRoot;

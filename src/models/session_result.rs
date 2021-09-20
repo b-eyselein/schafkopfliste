@@ -5,7 +5,7 @@ use crate::schema::session_results;
 
 #[derive(Debug, Insertable, Queryable, Serialize)]
 pub struct SessionResult {
-    player_abbreviation: String,
+    player_nickname: String,
     session_id: i32,
     group_name: String,
     result: i32
@@ -29,7 +29,7 @@ pub fn upsert_session_result(conn: &PgConnection, the_session_result: SessionRes
 
     diesel::insert_into(session_results)
         .values(&the_session_result)
-        .on_conflict((player_abbreviation, session_id, group_name))
+        .on_conflict((player_nickname, session_id, group_name))
         .do_update()
         .set(result.eq(the_session_result.result))
         .get_result(conn)

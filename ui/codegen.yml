@@ -1,17 +1,12 @@
 overwrite: true
-
-schema: http://localhost:8008/graphql
-
-documents: src/queries.graphql
-
+schema: "http://localhost:8008/graphql"
+documents: "src/**/*.graphql"
 generates:
-  src/schema.graphql:
+  ./schema.graphql:
     plugins:
-      - schema-ast
-
-  src/app/_services/apollo_services.ts:
+      - "schema-ast"
+  src/graphql.ts:
     plugins:
-      - typescript
-      - typescript-operations
-      - typescript-apollo-angular
-
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"

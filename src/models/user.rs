@@ -12,7 +12,7 @@ pub struct User {
     pub username: String,
     pub password_hash: String,
     pub is_admin: bool,
-    pub player_abbreviation: Option<String>
+    pub player_nickname: Option<String>
 }
 
 impl User {
@@ -21,7 +21,7 @@ impl User {
             username,
             password_hash,
             is_admin: false,
-            player_abbreviation: None
+            player_nickname: None
         }
     }
 }
@@ -62,16 +62,16 @@ impl RegisterUserInput {
 pub struct UserWithToken {
     pub username: String,
     pub is_admin: bool,
-    pub player_abbreviation: Option<String>,
+    pub player_nickname: Option<String>,
     pub token: String
 }
 
 impl UserWithToken {
-    pub fn new(username: String, is_admin: bool, player_abbreviation: Option<String>, token: String) -> UserWithToken {
+    pub fn new(username: String, is_admin: bool, player_nickname: Option<String>, token: String) -> UserWithToken {
         UserWithToken {
             username,
             is_admin,
-            player_abbreviation,
+            player_nickname,
             token
         }
     }

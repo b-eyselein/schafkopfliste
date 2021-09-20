@@ -1,11 +1,14 @@
 {
-  "projects": {
-    "skl": {
-      "schemaPath": "schema.graphql",
-      "extensions": {
-        "endpoints": {
-          "default": "http://localhost:8008/graphql"
-        }
+  "name": "Untitled GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "http://localhost:8008/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        },
+        "introspect": false
       }
     }
   }

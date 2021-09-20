@@ -1,28 +1,26 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "es2020",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "target": "es5",
     "lib": [
-      "es2018",
       "dom",
-      "esnext.asynciterable"
+      "dom.iterable",
+      "esnext"
     ],
-    "allowSyntheticDefaultImports": true
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
   },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
-  }
+  "include": [
+    "src"
+  ]
 }

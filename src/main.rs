@@ -9,9 +9,9 @@ extern crate diesel_migrations;
 
 use diesel::PgConnection;
 use juniper::EmptySubscription;
-use juniper_rocket::{GraphQLRequest, GraphQLResponse};
-use rocket::{get, post, response::Redirect, Rocket, routes, State};
+use juniper_rocket::{graphiql_source, GraphQLRequest, GraphQLResponse};
 use rocket::fairing::AdHoc;
+use rocket::{get, post, response::Redirect, routes, Rocket, State};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
@@ -20,6 +20,9 @@ use graphql::{GraphQLContext, Mutations, QueryRoot};
 
 use crate::additional_headers::AuthorizationHeader;
 use crate::graphql::Schema;
+use rocket::response::status::NotFound;
+use rocket::response::NamedFile;
+use std::path::{Path, PathBuf};
 
 mod additional_headers;
 mod daos;
@@ -43,13 +46,13 @@ fn make_cors() -> Cors {
 }
 
 #[get("/")]
-fn route_index() -> Redirect {
-    Redirect::to("/app/")
+fn route_index() -> Result<NamedFile, NotFound<String>> {
+    route_get_file("index.html".into())
 }
 
 #[get("/graphiql")]
 fn route_get_graphiql() -> rocket::response::content::Html<String> {
-    juniper_rocket::graphiql_source("/graphql", None)
+    graphiql_source("/graphql", None)
 }
 
 #[get("/graphql?<request>")]
@@ -62,9 +65,22 @@ fn route_post_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
-    schema: State<Schema>,
+    schema: State<Schema>
 ) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
+}
+
+#[get("/<file..>", rank = 2)]
+fn route_get_file(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let file_path = Path::new("./static").join(&file);
+
+    let named_file_result = if file_path.exists() {
+        NamedFile::open(file_path)
+    } else {
+        NamedFile::open(Path::new("./static").join("index.html"))
+    };
+
+    named_file_result.map_err(|_error| NotFound(format!("The file {} could not be found!", &file.display())))
 }
 
 fn execute_db_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
@@ -84,7 +100,13 @@ fn main() {
         .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .mount(
             "/",
-            routes![route_index, route_get_graphiql, route_get_graphql_handler, route_post_graphql_handler],
+            routes![
+                route_index,
+                route_get_file,
+                route_get_graphiql,
+                route_get_graphql_handler,
+                route_post_graphql_handler
+            ]
         )
         .mount("/app", StaticFiles::from("static"))
         .launch();
