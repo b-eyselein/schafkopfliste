@@ -4,7 +4,7 @@ BUILD_NAME=schafkopfliste
 mkdir -p static artifacts
 
 # client production build
-cd react-ui || exit
+cd ui || exit
 
 npm i
 
@@ -23,7 +23,7 @@ docker run -i -t --rm \
 # create release archive TODO!
 mkdir ${BUILD_NAME}
 
-cp -r artifacts/${BUILD_NAME} Rocket.toml static ${BUILD_NAME}
+cp -r artifacts/${BUILD_NAME} Rocket.toml static docker-compose.yaml ${BUILD_NAME}
 
 tar -cvzf ${BUILD_NAME}.tar.gz ${BUILD_NAME}
 
