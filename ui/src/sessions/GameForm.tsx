@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import classNames from 'classnames';
-import {BavarianSuit, GameInput, GameType, KontraType, SchneiderSchwarz, SessionFragment, useCreateGameMutation} from '../graphql';
+import {BavarianSuit, GameInput, GameType, KontraType, SchneiderSchwarz, SessionFragment, useCreateGameMutation, useEndSessionMutation} from '../graphql';
 import {getAllowedGameTypes} from './gameTypes';
 import {useTranslation} from 'react-i18next';
 import BayAcorns from './bay_eichel.png';
@@ -13,7 +13,6 @@ interface IProps {
   sessionId: number;
   session: SessionFragment;
   onNewGame: () => void;
-  endSession: () => void;
 }
 
 interface IState {
@@ -60,6 +59,7 @@ function needsSuit(gameType: GameType): boolean {
 
 const contraValues: KontraType[] = [KontraType.Kontra, KontraType.Re, KontraType.Supra, KontraType.Resupra];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const suitValues: [BavarianSuit, any][] = [
   [BavarianSuit.Acorns, BayAcorns],
   [BavarianSuit.Leaves, BayLeaves],
@@ -67,11 +67,12 @@ const suitValues: [BavarianSuit, any][] = [
   [BavarianSuit.Bells, BayBells]
 ];
 
-export function GameForm({groupName, sessionId, session, onNewGame, endSession}: IProps): JSX.Element {
+export function GameForm({groupName, sessionId, session, onNewGame}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [state, setState] = useState<IState>(initialState);
   const [createGame, {loading, error}] = useCreateGameMutation();
+  const [endSession, {loading: sessionEndLoading, error: sessionEndError}] = useEndSessionMutation();
 
   const {
     currentGameIndex,
@@ -169,6 +170,14 @@ export function GameForm({groupName, sessionId, session, onNewGame, endSession}:
         }));
       })
       .catch((error) => console.error(error));
+  }
+
+  function onEndSession(): void {
+    if (confirm('Wollen Sie die Sitzung wirklich beenden?\nAchtung: Sie können danach keine weiteren Spiele mehr eintragen!')) {
+      endSession({variables: {groupName, sessionId}})
+        .then(onNewGame)
+        .catch((error) => console.error(error));
+    }
   }
 
   return (
@@ -339,17 +348,21 @@ export function GameForm({groupName, sessionId, session, onNewGame, endSession}:
         </div>
       </div>
 
+      {error && <div className="notification is-danger has-text-centered">{error.message}</div>}
+
+      {sessionEndError && <div className="notification is-danger has-text-centered">{sessionEndError.message}</div>}
+
       <div className="columns">
         <div className="column">
-          <button className="button is-warning is-fullwidth" onClick={throwIn} disabled={loading}>Zusammenschmiss</button>
+          <button className="button is-warning is-fullwidth" onClick={throwIn} disabled={loading || sessionEndLoading}>Zusammenschmiss</button>
         </div>
         <div className="column">
-          <button className="button is-link is-fullwidth" onClick={saveGame} disabled={loading}>Spiel eintragen</button>
+          <button className="button is-link is-fullwidth" onClick={saveGame} disabled={loading || sessionEndLoading}>Spiel eintragen</button>
         </div>
       </div>
 
       <div className="buttons">
-        <button className="button is-danger is-fullwidth" onClick={endSession} disabled={loading}>Sitzung abschließen</button>
+        <button className="button is-danger is-fullwidth" onClick={onEndSession} disabled={loading || sessionEndLoading}>Sitzung abschließen</button>
       </div>
 
     </>

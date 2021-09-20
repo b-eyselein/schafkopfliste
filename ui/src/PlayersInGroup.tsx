@@ -14,7 +14,7 @@ interface IPlayer {
 function PlayerToggleButton({groupName, player, onChange}: { groupName: string, player: IPlayer, onChange: () => void }): JSX.Element {
 
   const {firstName, lastName, isMemberInGroup} = player;
-  const [addPlayerToGroup, {data, loading, error}] = useAddPlayerToGroupMutation();
+  const [addPlayerToGroup] = useAddPlayerToGroupMutation();
 
   function toggleGroupMembership(): void {
     addPlayerToGroup({variables: {groupName, playerName: player.nickname, newState: !isMemberInGroup}})
