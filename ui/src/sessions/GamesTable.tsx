@@ -6,9 +6,16 @@ interface IProps {
   games: SessionGameFragment[];
 }
 
+interface IStats {
+  wonGames: number;
+  putCount: number;
+  playedGames: number;
+  saldo: number;
+}
+
 export function GamesTable({players, games}: IProps): JSX.Element {
 
-  const sessionResults = new Map(
+  const sessionResults: { [p: string]: IStats } = Object.fromEntries(
     players.map((p) => {
       let saldo = 0;
       let wonGames = 0;
@@ -54,20 +61,20 @@ export function GamesTable({players, games}: IProps): JSX.Element {
           <tbody>
             <tr>
               <th>Saldo</th>
-              {players.map((player) =>
-                <td className={sessionResults.get(player.nickname)!.saldo < 0 ? 'has-text-danger' : 'has-text-success'} key={player.nickname}>
-                  {sessionResults.get(player.nickname)!.saldo}
+              {players.map(({nickname}) =>
+                <td className={sessionResults[nickname].saldo < 0 ? 'has-text-danger' : 'has-text-success'} key={nickname}>
+                  {sessionResults[nickname].saldo}
                 </td>)}
             </tr>
             <tr>
               <th># Leger / Spiele / Gewonnen</th>
-              {players.map((player) =>
-                <td key={player.nickname}>
-                  {sessionResults.get(player.nickname)!.putCount}
+              {players.map(({nickname}) =>
+                <td key={nickname}>
+                  {sessionResults[nickname].putCount}
                   /
-                  {sessionResults.get(player.nickname)!.playedGames}
+                  {sessionResults[nickname].playedGames}
                   /
-                  {sessionResults.get(player.nickname)!.wonGames}
+                  {sessionResults[nickname].wonGames}
                 </td>)}
             </tr>
           </tbody>
@@ -98,7 +105,7 @@ export function GamesTable({players, games}: IProps): JSX.Element {
                 <tr key={playedGame.id}>
                   <td>{playedGame.id}</td>
                   <td>{getDealer(playedGame.id).nickname}</td>
-                  <td>{playedGame.isDoubled && <span>&#10004;</span> }</td>
+                  <td>{playedGame.isDoubled && <span>&#10004;</span>}</td>
                   <td>{playedGame.playersHavingPutNicknames.join(', ')}</td>
                   <td>{playedGame.gameType}</td>
                   <td>{/*getSuitGermanName(*/playedGame.suit/*)*/}</td>
