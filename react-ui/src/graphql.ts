@@ -101,6 +101,7 @@ export type Mutations = {
   createGroup: Group;
   createPlayer: Scalars['String'];
   createRuleSet: Scalars['String'];
+  endSession: Scalars['Boolean'];
   login?: Maybe<UserWithToken>;
   newGame: Game;
   newSession: Scalars['Int'];
@@ -127,6 +128,12 @@ export type MutationsCreatePlayerArgs = {
 
 export type MutationsCreateRuleSetArgs = {
   ruleSetInput: RuleSetInput;
+};
+
+
+export type MutationsEndSessionArgs = {
+  groupName: Scalars['String'];
+  sessionId: Scalars['Int'];
 };
 
 
@@ -381,6 +388,14 @@ export type CreateGameMutationVariables = Exact<{
 
 
 export type CreateGameMutation = { __typename?: 'Mutations', newGame: { __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: Maybe<BavarianSuit>, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: Maybe<SchneiderSchwarz>, playersHavingPutNicknames: Array<string>, kontra?: Maybe<KontraType>, playersHavingWonNicknames: Array<string>, price: number } };
+
+export type EndSessionMutationVariables = Exact<{
+  groupName: Scalars['String'];
+  sessionId: Scalars['Int'];
+}>;
+
+
+export type EndSessionMutation = { __typename?: 'Mutations', endSession: boolean };
 
 export type PlayerListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -903,6 +918,38 @@ export function useCreateGameMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateGameMutationHookResult = ReturnType<typeof useCreateGameMutation>;
 export type CreateGameMutationResult = Apollo.MutationResult<CreateGameMutation>;
 export type CreateGameMutationOptions = Apollo.BaseMutationOptions<CreateGameMutation, CreateGameMutationVariables>;
+export const EndSessionDocument = gql`
+    mutation EndSession($groupName: String!, $sessionId: Int!) {
+  endSession(groupName: $groupName, sessionId: $sessionId)
+}
+    `;
+export type EndSessionMutationFn = Apollo.MutationFunction<EndSessionMutation, EndSessionMutationVariables>;
+
+/**
+ * __useEndSessionMutation__
+ *
+ * To run a mutation, you first call `useEndSessionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEndSessionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [endSessionMutation, { data, loading, error }] = useEndSessionMutation({
+ *   variables: {
+ *      groupName: // value for 'groupName'
+ *      sessionId: // value for 'sessionId'
+ *   },
+ * });
+ */
+export function useEndSessionMutation(baseOptions?: Apollo.MutationHookOptions<EndSessionMutation, EndSessionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EndSessionMutation, EndSessionMutationVariables>(EndSessionDocument, options);
+      }
+export type EndSessionMutationHookResult = ReturnType<typeof useEndSessionMutation>;
+export type EndSessionMutationResult = Apollo.MutationResult<EndSessionMutation>;
+export type EndSessionMutationOptions = Apollo.BaseMutationOptions<EndSessionMutation, EndSessionMutationVariables>;
 export const PlayerListDocument = gql`
     query PlayerList {
   players {

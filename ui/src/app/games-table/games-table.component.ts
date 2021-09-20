@@ -30,8 +30,8 @@ export class GamesTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.runningGame && this.runningGame.actingPlayerAbbreviation) {
-      this.currentActingPlayer = this.players.find((p) => p.abbreviation === this.runningGame.actingPlayerAbbreviation);
+    if (this.runningGame && this.runningGame.actingPlayerNickname) {
+      this.currentActingPlayer = this.players.find((p) => p.nickname === this.runningGame.actingPlayerNickname);
     }
 
     this.updateSaldos();
@@ -46,8 +46,8 @@ export class GamesTableComponent implements OnInit, OnChanges {
         let putCount = 0;
 
         this.games.forEach((game) => {
-          const hasWon = game.playersHavingWonAbbreviations.includes(p.abbreviation);
-          const isPlayer = game.actingPlayerAbbreviation === p.abbreviation;
+          const hasWon = game.playersHavingWonNicknames.includes(p.nickname);
+          const isPlayer = game.actingPlayerNickname === p.nickname;
           const priceIsTripled = game.gameType !== GameType.Ruf && isPlayer;
 
           saldo += (hasWon ? 1 : -1) * (priceIsTripled ? 3 : 1) * game.price;
@@ -58,12 +58,12 @@ export class GamesTableComponent implements OnInit, OnChanges {
           if (isPlayer) {
             playedGames++;
           }
-          if (game.playersHavingPutAbbreviations.includes(p.abbreviation)) {
+          if (game.playersHavingPutNicknames.includes(p.nickname)) {
             putCount++;
           }
         });
 
-        return [p.abbreviation, {saldo, wonGames, playedGames, putCount}];
+        return [p.nickname, {saldo, wonGames, playedGames, putCount}];
       })
     );
   }
@@ -81,15 +81,15 @@ export class GamesTableComponent implements OnInit, OnChanges {
   }
 
   getActingPlayer(playedGame: SessionGameFragment): SessionPlayerFragment {
-    return this.players.find((p) => p.abbreviation === playedGame.actingPlayerAbbreviation);
+    return this.players.find((p) => p.nickname === playedGame.actingPlayerNickname);
   }
 
-  playersHavingPut(playersHavingPutAbbreviations: string[]): SessionPlayerFragment[] {
-    return this.players.filter((p) => playersHavingPutAbbreviations.includes(p.abbreviation));
+  playersHavingPut(playersHavingPutNicknames: string[]): SessionPlayerFragment[] {
+    return this.players.filter((p) => playersHavingPutNicknames.includes(p.nickname));
   }
 
-  playersHavingWon(playersHavingWonAbbreviations: string[]): SessionPlayerFragment[] {
-    return this.players.filter((p) => playersHavingWonAbbreviations.includes(p.abbreviation));
+  playersHavingWon(playersHavingWonNicknames: string[]): SessionPlayerFragment[] {
+    return this.players.filter((p) => playersHavingWonNicknames.includes(p.nickname));
   }
 
 }

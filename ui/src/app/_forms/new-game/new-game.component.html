@@ -16,7 +16,7 @@
     </button>
   </div>
   <div class="column">
-    <button class="button is-fullwidth is-static">{{getDealer().abbreviation}}</button>
+    <button class="button is-fullwidth is-static">{{getDealer().nickname}}</button>
   </div>
 </div>
 
@@ -26,8 +26,9 @@
   </div>
   <div class="column" *ngFor="let player of players">
     <button class="button is-fullwidth" (click)="togglePlayerPut(player)"
-            [ngClass]="{'is-link': playersHavingPut.includes(player.abbreviation)}" title="{{player.name}}">
-      {{player.abbreviation}}
+            [ngClass]="{'is-link': playersHavingPut.includes(player.nickname)}"
+            title="{{player.firstName}} {{player.lastName}}">
+      {{player.nickname}}
     </button>
   </div>
 </div>
@@ -35,12 +36,12 @@
 <div class="columns">
   <div class="column has-text-centered">
     <label class="label"
-           [ngClass]="{'has-text-danger': submitted && !game.actingPlayerAbbreviation}">Spieler:</label>
+           [ngClass]="{'has-text-danger': submitted && !game.actingPlayerNickname}">Spieler:</label>
   </div>
   <div class="column" *ngFor="let player of players">
-    <button class="button is-fullwidth" (click)="togglePlayer(player.abbreviation)"
-            [ngClass]="{'is-link': game.actingPlayerAbbreviation === player.abbreviation}">
-      {{player.abbreviation}}
+    <button class="button is-fullwidth" (click)="togglePlayer(player.nickname)"
+            [ngClass]="{'is-link': game.actingPlayerNickname === player.nickname}">
+      {{player.nickname}}
     </button>
   </div>
 </div>
@@ -50,7 +51,7 @@
     <label class="label">Spieler:</label>
   </div>
   <div class="column">
-    <skl-circle-buffer [values]="bufferPlayers" (newValue)="togglePlayer($event.abbreviation)"></skl-circle-buffer>
+    <skl-circle-buffer [values]="bufferPlayers" (newValue)="togglePlayer($event.nickname)"></skl-circle-buffer>
   </div>
 </div>
 
@@ -109,12 +110,12 @@
 <div class="columns">
   <div class="column has-text-centered">
     <label class="label"
-           [ngClass]="{'has-text-danger': submitted && game.playersHavingWonAbbreviations.length === 0}">Gewonnen:</label>
+           [ngClass]="{'has-text-danger': submitted && game.playersHavingWonNicknames.length === 0}">Gewonnen:</label>
   </div>
   <div class="column" *ngFor="let player of players">
     <button class="button is-fullwidth" (click)="toggleWinningPlayer(player)"
-            [ngClass]="{'is-link': game.playersHavingWonAbbreviations.includes(player.abbreviation)}">
-      {{player.abbreviation}}
+            [ngClass]="{'is-link': game.playersHavingWonNicknames.includes(player.nickname)}">
+      {{player.nickname}}
     </button>
   </div>
 </div>
@@ -129,7 +130,7 @@
   <div class="column is-one-fifth" *ngFor="let snsw of SchneiderSchwarzValues">
     <button class="button is-fullwidth" (click)="toggleSchneiderSchwarz(snsw.value)"
             [ngClass]="{'is-link': game.schneiderSchwarz === snsw.value}">
-      {{snsw.abbreviation}}
+      {{snsw.nickname}}
     </button>
   </div>
   <div class="column">

@@ -35,9 +35,9 @@ export class NewGameComponent implements OnInit {
 
   readonly SuitValues: Suit[] = SUITS;
 
-  readonly SchneiderSchwarzValues: { abbreviation: string, value: SchneiderSchwarz }[] = [
-    {abbreviation: 'SN', value: SchneiderSchwarz.Schneider},
-    {abbreviation: 'SW', value: SchneiderSchwarz.Schwarz}
+  readonly SchneiderSchwarzValues: { nickname: string, value: SchneiderSchwarz }[] = [
+    {nickname: 'SN', value: SchneiderSchwarz.Schneider},
+    {nickname: 'SW', value: SchneiderSchwarz.Schwarz}
   ];
 
   @Input() session: SessionFragment;
@@ -79,7 +79,7 @@ export class NewGameComponent implements OnInit {
     this.bufferPlayers = [
       {name: '--', value: undefined} as CircleBufferSelectable<SessionPlayerFragment>,
       ...this.players.map((p) => {
-        return {name: p.name, value: p};
+        return {name: p.firstName + ' ' + p.lastName, value: p};
       })
     ];
 
@@ -108,7 +108,7 @@ export class NewGameComponent implements OnInit {
     }
 
     this.game = {
-      actingPlayerAbbreviation: undefined,
+      actingPlayerNickname: undefined,
       gameType: undefined,
       suit: undefined,
       tout: false,
@@ -117,9 +117,9 @@ export class NewGameComponent implements OnInit {
       laufendeCount: 0,
       schneiderSchwarz: undefined,
 
-      playersHavingPutAbbreviations: [],
+      playersHavingPutNicknames: [],
       kontra: undefined,
-      playersHavingWonAbbreviations: [],
+      playersHavingWonNicknames: [],
     };
 
   }
@@ -147,11 +147,11 @@ export class NewGameComponent implements OnInit {
   }
 
   get playersHavingPut(): string[] {
-    return this.game.playersHavingPutAbbreviations;
+    return this.game.playersHavingPutNicknames;
   }
 
   set playersHavingPut(ids: string[]) {
-    this.game.playersHavingPutAbbreviations = ids;
+    this.game.playersHavingPutNicknames = ids;
   }
 
   getDealer(): SessionPlayerFragment {
@@ -159,7 +159,7 @@ export class NewGameComponent implements OnInit {
   }
 
   togglePlayer(playerId: string): void {
-    this.game.actingPlayerAbbreviation = this.game.actingPlayerAbbreviation === playerId ? undefined : playerId;
+    this.game.actingPlayerNickname = this.game.actingPlayerNickname === playerId ? undefined : playerId;
 
     this.gameChanged.emit(this.game);
   }
@@ -195,20 +195,20 @@ export class NewGameComponent implements OnInit {
   }
 
   toggleWinningPlayer(actingPlayer: SessionPlayerFragment) {
-    if (this.game.playersHavingWonAbbreviations.includes(actingPlayer.abbreviation)) {
-      this.game.playersHavingWonAbbreviations = this.game.playersHavingWonAbbreviations.filter((id) => id !== actingPlayer.abbreviation);
+    if (this.game.playersHavingWonNicknames.includes(actingPlayer.nickname)) {
+      this.game.playersHavingWonNicknames = this.game.playersHavingWonNicknames.filter((id) => id !== actingPlayer.nickname);
     } else {
-      this.game.playersHavingWonAbbreviations.push(actingPlayer.abbreviation);
+      this.game.playersHavingWonNicknames.push(actingPlayer.nickname);
     }
 
     this.gameChanged.emit(this.game);
   }
 
   togglePlayerPut(player: SessionPlayerFragment): void {
-    if (this.playersHavingPut.includes(player.abbreviation)) {
-      this.playersHavingPut = this.playersHavingPut.filter((id) => id !== player.abbreviation);
+    if (this.playersHavingPut.includes(player.nickname)) {
+      this.playersHavingPut = this.playersHavingPut.filter((id) => id !== player.nickname);
     } else {
-      this.game.playersHavingPutAbbreviations.push(player.abbreviation);
+      this.game.playersHavingPutNicknames.push(player.nickname);
     }
 
     this.gameChanged.emit(this.game);
@@ -224,10 +224,10 @@ export class NewGameComponent implements OnInit {
     this.submitted = true;
 
     if (
-      !this.game.actingPlayerAbbreviation
+      !this.game.actingPlayerNickname
       || !this.playedGameType
       || (this.playedGameType.needsSuit && !this.game.suit)
-      || this.game.playersHavingWonAbbreviations.length === 0
+      || this.game.playersHavingWonNicknames.length === 0
     ) {
       return;
     }

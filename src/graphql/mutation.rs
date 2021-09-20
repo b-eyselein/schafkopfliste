@@ -3,6 +3,7 @@ use diesel::prelude::*;
 use juniper::{graphql_object, FieldError, FieldResult, Value};
 
 use crate::daos::group_dao::insert_group;
+use crate::daos::session_dao::update_end_session;
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::query::graphql_on_db_error;
 use crate::jwt_helpers::generate_token;
@@ -107,6 +108,10 @@ impl Mutations {
             creator_username.to_string(),
             session_input
         )?)
+    }
+
+    pub fn end_session(group_name: String, session_id: i32, context: &GraphQLContext) -> FieldResult<bool> {
+        Ok(update_end_session(&context.connection.lock()?.0, &group_name, &session_id)?)
     }
 
     pub fn new_game(group_name: String, session_id: i32, game_input: GameInput, context: &GraphQLContext) -> FieldResult<Game> {

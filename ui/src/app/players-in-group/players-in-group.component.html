@@ -7,8 +7,8 @@
 
       <div class="column is-2" *ngFor="let player of playersInGroupQuery.players">
         <button class="button is-fullwidth" [class.is-link]="player.isMemberInGroup"
-                (click)="toggleGroupMembership(player.abbreviation, !player.isMemberInGroup)">
-          {{player.isMemberInGroup ? '&#10004;' : '&#10008;'}} {{player.name}}
+                (click)="toggleGroupMembership(player.nickname, !player.isMemberInGroup)">
+          {{player.isMemberInGroup ? '&#10004;' : '&#10008;'}} {{player.firstName}} {{player.lastName}}
         </button>
       </div>
 

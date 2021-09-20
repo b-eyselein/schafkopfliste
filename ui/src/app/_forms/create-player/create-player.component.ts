@@ -15,7 +15,7 @@ export class CreatePlayerComponent {
 
   constructor(private fb: FormBuilder, private playerCreationGQL: PlayerCreationGQL) {
     this.playerForm = this.fb.group({
-      abbreviation: ['', Validators.required],
+      nickname: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required]
     });
@@ -33,24 +33,18 @@ export class CreatePlayerComponent {
     return this.f.lastName.value;
   }
 
-  updateAbbreviation(): void {
-    const firstValue = this.firstNameValue ? this.firstNameValue.charAt(0).toUpperCase() : '';
-    const lastValue = this.lastNameValue ? this.lastNameValue.charAt(0).toUpperCase() : '';
-
-    this.f.abbreviation.setValue(firstValue + '' + lastValue);
-  }
-
   createPlayer(): void {
     if (this.playerForm.invalid) {
       alert('Formulardaten sind nicht valide!');
       return;
     }
 
-    const abbreviation = this.f.abbreviation.value;
-    const name = this.firstNameValue + ' ' + this.lastNameValue;
+    const nickname = this.f.nickname.value;
+    const firstName = this.firstNameValue;
+    const lastName = this.lastNameValue;
 
     this.playerCreationGQL
-      .mutate({name, abbreviation})
+      .mutate({firstName, lastName, nickname})
       .subscribe(({data}) => {
           this.createdPlayerName = data.createPlayer;
           this.queryError = null;

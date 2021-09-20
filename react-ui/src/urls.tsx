@@ -10,4 +10,10 @@ export const ruleSetsBaseUrl = '/ruleSets';
 
 export const playersBaseUrl = '/players';
 
+export const groupsBaseUrl = '/groups';
+
 export const createNewUrlFragment = 'createNew';
+
+export const playersUrlFragment = 'players';
+
+export const sessionsUrlFragment = 'sessions';

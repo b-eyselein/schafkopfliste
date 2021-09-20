@@ -87,6 +87,7 @@ type Mutations {
   createGroup(groupInput: GroupInput!): Group!
   createPlayer(newPlayer: PlayerInput!): String!
   createRuleSet(ruleSetInput: RuleSetInput!): String!
+  endSession(groupName: String!, sessionId: Int!): Boolean!
   login(credentials: Credentials!): UserWithToken
   newGame(gameInput: GameInput!, groupName: String!, sessionId: Int!): Game!
   newSession(groupName: String!, sessionInput: SessionInput!): Int!

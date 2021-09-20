@@ -4,26 +4,26 @@
   <form [formGroup]="playerForm" (ngSubmit)="createPlayer()">
 
     <div class="field">
+      <label for="nickname" class="label">Nickname:</label>
+      <div class="control">
+        <input type="text" id="nickname" formControlName="nickname" class="input" autofocus>
+      </div>
+    </div>
+
+    <div class="field">
       <label for="firstName" class="label">Vorname:</label>
       <div class="control">
-        <input type="text" id="firstName" formControlName="firstName" class="input" (change)="updateAbbreviation()"
-               autofocus>
+        <input type="text" id="firstName" formControlName="firstName" class="input">
       </div>
     </div>
 
     <div class="field">
       <label for="lastName" class="label">Nachname:</label>
       <div class="control">
-        <input type="text" id="lastName" formControlName="lastName" class="input" (change)="updateAbbreviation()">
+        <input type="text" id="lastName" formControlName="lastName" class="input">
       </div>
     </div>
 
-    <div class="field">
-      <label for="abbreviation" class="label">Abkürzung:</label>
-      <div class="control">
-        <input type="text" id="abbreviation" formControlName="abbreviation" class="input">
-      </div>
-    </div>
 
     <div *ngIf="queryError" class="notification is-danger has-text-centered">
       {{queryError.message}}

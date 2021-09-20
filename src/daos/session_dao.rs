@@ -15,7 +15,7 @@ pub fn select_session_has_ended(conn: &PgConnection, the_group_name: &str, the_i
     sessions.find((the_id, the_group_name)).select(has_ended).first(conn)
 }
 
-pub fn update_end_session(conn: &PgConnection, the_group_name: &str, the_session_id: i32) -> QueryResult<bool> {
+pub fn update_end_session(conn: &PgConnection, the_group_name: &str, the_session_id: &i32) -> QueryResult<bool> {
     let source = sessions.filter(group_name.eq(the_group_name)).filter(id.eq(the_session_id));
 
     diesel::update(source).set(has_ended.eq(true)).returning(has_ended).get_result(conn)

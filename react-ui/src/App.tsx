@@ -8,9 +8,10 @@ import {LoginForm} from './LoginForm';
 import {useDispatch, useSelector} from 'react-redux';
 import {currentUserSelector} from './store/store';
 import {StoreAction, userLogoutAction} from './store/actions';
-import {homeUrl, loginUrl, playersBaseUrl, registerUrl, ruleSetsBaseUrl} from './urls';
+import {groupsBaseUrl, homeUrl, loginUrl, playersBaseUrl, registerUrl, ruleSetsBaseUrl} from './urls';
 import {RuleSetsBase} from './RuleSets';
 import {PlayersBase} from './Players';
+import {GroupsBase} from './Groups';
 
 export function App(): JSX.Element {
 
@@ -68,6 +69,7 @@ export function App(): JSX.Element {
         <Route path={registerUrl} component={RegisterForm}/>
         <Route path={ruleSetsBaseUrl} component={RuleSetsBase}/>
         <Route path={playersBaseUrl} component={PlayersBase}/>
+        <Route path={groupsBaseUrl} component={GroupsBase}/>
       </Switch>
     </>
   );

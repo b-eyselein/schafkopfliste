@@ -29,8 +29,9 @@ enum KontraType {
 }
 
 input PlayerInput {
-  abbreviation: String!
-  name: String!
+  nickname: String!
+  firstName: String!
+  lastName: String!
   pictureName: String
 }
 
@@ -44,16 +45,16 @@ type Group {
 }
 
 input GameInput {
-  actingPlayerAbbreviation: String!
+  actingPlayerNickname: String!
   gameType: GameType!
   suit: BavarianSuit
   tout: Boolean!
   isDoubled: Boolean!
   laufendeCount: Int!
   schneiderSchwarz: SchneiderSchwarz
-  playersHavingPutAbbreviations: [String!]!
+  playersHavingPutNicknames: [String!]!
   kontra: KontraType
-  playersHavingWonAbbreviations: [String!]!
+  playersHavingWonNicknames: [String!]!
 }
 
 type Mutations {
@@ -96,16 +97,16 @@ type QueryRoot {
 
 type Game {
   id: Int!
-  actingPlayerAbbreviation: String!
+  actingPlayerNickname: String!
   gameType: GameType!
   suit: BavarianSuit
   tout: Boolean!
   isDoubled: Boolean!
   laufendeCount: Int!
   schneiderSchwarz: SchneiderSchwarz
-  playersHavingPutAbbreviations: [String!]!
+  playersHavingPutNicknames: [String!]!
   kontra: KontraType
-  playersHavingWonAbbreviations: [String!]!
+  playersHavingWonNicknames: [String!]!
   price: Int!
 }
 
@@ -152,8 +153,9 @@ input RuleSetInput {
 }
 
 type Player {
-  abbreviation: String!
-  name: String!
+  nickname: String!
+  firstName: String!
+  lastName: String!
   pictureName: String
   isMemberInGroup(groupName: String!): Boolean!
 }
@@ -164,7 +166,7 @@ input GroupInput {
 }
 
 type PlayerInGroup {
-  abbreviation: String!
+  nickname: String!
   name: String!
   balance: Int!
   gameCount: Int!
@@ -177,7 +179,7 @@ type PlayerInGroup {
 type UserWithToken {
   username: String!
   isAdmin: Boolean!
-  playerAbbreviation: String
+  playerNickname: String
   token: String!
 }
 
@@ -187,10 +189,10 @@ input SessionInput {
   dateDayOfMonth: Int!
   timeHours: Int!
   timeMinutes: Int!
-  firstPlayerAbbreviation: String!
-  secondPlayerAbbreviation: String!
-  thirdPlayerAbbreviation: String!
-  fourthPlayerAbbreviation: String!
+  firstPlayerNickname: String!
+  secondPlayerNickname: String!
+  thirdPlayerNickname: String!
+  fourthPlayerNickname: String!
 }
 
 enum BavarianSuit {

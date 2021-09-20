@@ -7,14 +7,16 @@
     <table class="table is-fullwidth" *ngIf="playerListQuery.players.length > 0; else noPlayersFoundBlock">
       <thead>
         <tr>
-          <th>Kürzel</th>
-          <th>Name</th>
+          <th>Nickname</th>
+          <th>Vorname</th>
+          <th>Nachname</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let p of playerListQuery.players">
-          <td>{{p.abbreviation}}</td>
-          <td>{{p.name}}</td>
+          <td>{{p.nickname}}</td>
+          <td>{{p.firstName}}</td>
+          <td>{{p.lastName}}</td>
         </tr>
       </tbody>
     </table>

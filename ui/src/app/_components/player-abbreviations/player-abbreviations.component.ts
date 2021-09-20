@@ -5,7 +5,7 @@ import {SessionPlayerFragment} from '../../_services/apollo_services';
   selector: 'skl-player-abbreviations',
   template: `
     <ng-container *ngFor="let p of players; let last = last">
-      <span title="{{p.name}}">{{p.abbreviation}}</span>
+      <span title="{{p.firstName}} {{p.lastName}}">{{p.nickname}}</span>
 
       <ng-container *ngIf="!last">,</ng-container>
     </ng-container>

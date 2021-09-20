@@ -53,10 +53,10 @@ export class NewSessionComponent implements OnInit {
               dateDayOfMonth: today.getDate(),
               timeHours: today.getHours(),
               timeMinutes: today.getMinutes(),
-              firstPlayerAbbreviation: undefined,
-              secondPlayerAbbreviation: undefined,
-              thirdPlayerAbbreviation: undefined,
-              fourthPlayerAbbreviation: undefined,
+              firstPlayerNickname: undefined,
+              secondPlayerNickname: undefined,
+              thirdPlayerNickname: undefined,
+              fourthPlayerNickname: undefined,
             };
           },
           (queryError) => {
@@ -66,46 +66,46 @@ export class NewSessionComponent implements OnInit {
   }
 
   updateDealer(dealerId: string | undefined): void {
-    this.creatableSession.firstPlayerAbbreviation = dealerId;
+    this.creatableSession.firstPlayerNickname = dealerId;
 
     this.playersForPreHand = this.group.players
-      .filter((p) => p.abbreviation !== this.creatableSession.firstPlayerAbbreviation);
+      .filter((p) => p.nickname !== this.creatableSession.firstPlayerNickname);
   }
 
   updatePreHand(preHandId: string | undefined): void {
-    this.creatableSession.secondPlayerAbbreviation = preHandId;
+    this.creatableSession.secondPlayerNickname = preHandId;
 
-    const selectedPlayerIds = [this.creatableSession.firstPlayerAbbreviation, this.creatableSession.secondPlayerAbbreviation];
+    const selectedPlayerIds = [this.creatableSession.firstPlayerNickname, this.creatableSession.secondPlayerNickname];
 
     this.playersForMiddleHand = this.group.players
-      .filter((p) => !selectedPlayerIds.includes(p.abbreviation));
+      .filter((p) => !selectedPlayerIds.includes(p.nickname));
   }
 
   updateMiddleHand(middleHandId: string | undefined): void {
-    this.creatableSession.thirdPlayerAbbreviation = middleHandId;
+    this.creatableSession.thirdPlayerNickname = middleHandId;
 
     const selectedPlayerIds = [
-      this.creatableSession.firstPlayerAbbreviation,
-      this.creatableSession.secondPlayerAbbreviation,
-      this.creatableSession.thirdPlayerAbbreviation
+      this.creatableSession.firstPlayerNickname,
+      this.creatableSession.secondPlayerNickname,
+      this.creatableSession.thirdPlayerNickname
     ];
 
     this.playersForRearHand = this.group.players
-      .filter((p) => !selectedPlayerIds.includes(p.abbreviation));
+      .filter((p) => !selectedPlayerIds.includes(p.nickname));
   }
 
   updateRearHand(rearHandId: string | undefined): void {
-    this.creatableSession.fourthPlayerAbbreviation = rearHandId;
+    this.creatableSession.fourthPlayerNickname = rearHandId;
   }
 
   createSession(): void {
     this.submitted = true;
 
     if (
-      !this.creatableSession.firstPlayerAbbreviation ||
-      !this.creatableSession.secondPlayerAbbreviation ||
-      !this.creatableSession.thirdPlayerAbbreviation ||
-      !this.creatableSession.fourthPlayerAbbreviation
+      !this.creatableSession.firstPlayerNickname ||
+      !this.creatableSession.secondPlayerNickname ||
+      !this.creatableSession.thirdPlayerNickname ||
+      !this.creatableSession.fourthPlayerNickname
     ) {
       alert('You have to select a rule set and a player for every position!');
       return;
@@ -114,7 +114,7 @@ export class NewSessionComponent implements OnInit {
     this.newSessionGQL.mutate({groupName: this.groupName, sessionInput: this.creatableSession})
       .subscribe(
         ({data}) => {
-          console.info(data);
+          // console.info(data);
           this.createdSession = data.newSession;
           this.mutationQueryError = null;
         },

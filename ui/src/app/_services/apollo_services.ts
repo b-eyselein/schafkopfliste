@@ -40,8 +40,9 @@ export enum KontraType {
 }
 
 export type PlayerInput = {
-  abbreviation: Scalars['String'];
-  name: Scalars['String'];
+  nickname: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
   pictureName?: Maybe<Scalars['String']>;
 };
 
@@ -56,16 +57,16 @@ export type Group = {
 };
 
 export type GameInput = {
-  actingPlayerAbbreviation: Scalars['String'];
+  actingPlayerNickname: Scalars['String'];
   gameType: GameType;
   suit?: Maybe<BavarianSuit>;
   tout: Scalars['Boolean'];
   isDoubled: Scalars['Boolean'];
   laufendeCount: Scalars['Int'];
   schneiderSchwarz?: Maybe<SchneiderSchwarz>;
-  playersHavingPutAbbreviations: Array<Scalars['String']>;
+  playersHavingPutNicknames: Array<Scalars['String']>;
   kontra?: Maybe<KontraType>;
-  playersHavingWonAbbreviations: Array<Scalars['String']>;
+  playersHavingWonNicknames: Array<Scalars['String']>;
 };
 
 export type Mutations = {
@@ -173,16 +174,16 @@ export type QueryRootSessionArgs = {
 export type Game = {
   __typename?: 'Game';
   id: Scalars['Int'];
-  actingPlayerAbbreviation: Scalars['String'];
+  actingPlayerNickname: Scalars['String'];
   gameType: GameType;
   suit?: Maybe<BavarianSuit>;
   tout: Scalars['Boolean'];
   isDoubled: Scalars['Boolean'];
   laufendeCount: Scalars['Int'];
   schneiderSchwarz?: Maybe<SchneiderSchwarz>;
-  playersHavingPutAbbreviations: Array<Scalars['String']>;
+  playersHavingPutNicknames: Array<Scalars['String']>;
   kontra?: Maybe<KontraType>;
-  playersHavingWonAbbreviations: Array<Scalars['String']>;
+  playersHavingWonNicknames: Array<Scalars['String']>;
   price: Scalars['Int'];
 };
 
@@ -231,8 +232,9 @@ export type RuleSetInput = {
 
 export type Player = {
   __typename?: 'Player';
-  abbreviation: Scalars['String'];
-  name: Scalars['String'];
+  nickname: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
   pictureName?: Maybe<Scalars['String']>;
   isMemberInGroup: Scalars['Boolean'];
 };
@@ -249,7 +251,7 @@ export type GroupInput = {
 
 export type PlayerInGroup = {
   __typename?: 'PlayerInGroup';
-  abbreviation: Scalars['String'];
+  nickname: Scalars['String'];
   name: Scalars['String'];
   balance: Scalars['Int'];
   gameCount: Scalars['Int'];
@@ -263,7 +265,7 @@ export type UserWithToken = {
   __typename?: 'UserWithToken';
   username: Scalars['String'];
   isAdmin: Scalars['Boolean'];
-  playerAbbreviation?: Maybe<Scalars['String']>;
+  playerNickname?: Maybe<Scalars['String']>;
   token: Scalars['String'];
 };
 
@@ -273,10 +275,10 @@ export type SessionInput = {
   dateDayOfMonth: Scalars['Int'];
   timeHours: Scalars['Int'];
   timeMinutes: Scalars['Int'];
-  firstPlayerAbbreviation: Scalars['String'];
-  secondPlayerAbbreviation: Scalars['String'];
-  thirdPlayerAbbreviation: Scalars['String'];
-  fourthPlayerAbbreviation: Scalars['String'];
+  firstPlayerNickname: Scalars['String'];
+  secondPlayerNickname: Scalars['String'];
+  thirdPlayerNickname: Scalars['String'];
+  fourthPlayerNickname: Scalars['String'];
 };
 
 export enum BavarianSuit {
@@ -339,7 +341,7 @@ export type GroupCreationMutation = (
 
 export type PlayerInGroupFragment = (
   { __typename?: 'PlayerInGroup' }
-  & Pick<PlayerInGroup, 'abbreviation' | 'name' | 'balance' | 'gameCount' | 'playedGames' | 'putCount' | 'winCount'>
+  & Pick<PlayerInGroup, 'nickname' | 'name' | 'balance' | 'gameCount' | 'playedGames' | 'putCount' | 'winCount'>
 );
 
 export type GroupQueryVariables = Exact<{
@@ -371,7 +373,7 @@ export type PlayersInGroupQuery = (
   { __typename?: 'QueryRoot' }
   & { players: Array<(
     { __typename?: 'Player' }
-    & Pick<Player, 'abbreviation' | 'name' | 'isMemberInGroup'>
+    & Pick<Player, 'nickname' | 'firstName' | 'lastName' | 'isMemberInGroup'>
   )> }
 );
 
@@ -389,7 +391,7 @@ export type AddPlayerToGroupMutation = (
 
 export type NewSessionPlayerValuesFragment = (
   { __typename?: 'PlayerInGroup' }
-  & Pick<PlayerInGroup, 'abbreviation' | 'name'>
+  & Pick<PlayerInGroup, 'nickname' | 'name'>
 );
 
 export type NewSessionValuesGroupFragment = (
@@ -429,12 +431,12 @@ export type NewSessionMutation = (
 
 export type SessionPlayerFragment = (
   { __typename?: 'Player' }
-  & Pick<Player, 'abbreviation' | 'name' | 'pictureName'>
+  & Pick<Player, 'nickname' | 'firstName' | 'lastName' | 'pictureName'>
 );
 
 export type SessionGameFragment = (
   { __typename?: 'Game' }
-  & Pick<Game, 'id' | 'actingPlayerAbbreviation' | 'gameType' | 'suit' | 'tout' | 'isDoubled' | 'laufendeCount' | 'schneiderSchwarz' | 'playersHavingPutAbbreviations' | 'kontra' | 'playersHavingWonAbbreviations' | 'price'>
+  & Pick<Game, 'id' | 'actingPlayerNickname' | 'gameType' | 'suit' | 'tout' | 'isDoubled' | 'laufendeCount' | 'schneiderSchwarz' | 'playersHavingPutNicknames' | 'kontra' | 'playersHavingWonNicknames' | 'price'>
 );
 
 export type SessionFragment = (
@@ -497,13 +499,14 @@ export type PlayerListQuery = (
   { __typename?: 'QueryRoot' }
   & { players: Array<(
     { __typename?: 'Player' }
-    & Pick<Player, 'abbreviation' | 'name'>
+    & Pick<Player, 'nickname' | 'firstName' | 'lastName'>
   )> }
 );
 
 export type PlayerCreationMutationVariables = Exact<{
-  name: Scalars['String'];
-  abbreviation: Scalars['String'];
+  nickname: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
 }>;
 
 
@@ -524,7 +527,7 @@ export type RegisterMutation = (
 
 export type LoggedInUserFragment = (
   { __typename?: 'UserWithToken' }
-  & Pick<UserWithToken, 'username' | 'token' | 'isAdmin' | 'playerAbbreviation'>
+  & Pick<UserWithToken, 'username' | 'token' | 'isAdmin' | 'playerNickname'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -542,7 +545,7 @@ export type LoginMutation = (
 
 export const PlayerInGroupFragmentDoc = gql`
     fragment PlayerInGroup on PlayerInGroup {
-  abbreviation
+  nickname
   name
   balance
   gameCount
@@ -553,7 +556,7 @@ export const PlayerInGroupFragmentDoc = gql`
     `;
 export const NewSessionPlayerValuesFragmentDoc = gql`
     fragment NewSessionPlayerValues on PlayerInGroup {
-  abbreviation
+  nickname
   name
 }
     `;
@@ -588,23 +591,24 @@ ${RuleSetFragmentDoc}`;
 export const SessionGameFragmentDoc = gql`
     fragment SessionGame on Game {
   id
-  actingPlayerAbbreviation
+  actingPlayerNickname
   gameType
   suit
   tout
   isDoubled
   laufendeCount
   schneiderSchwarz
-  playersHavingPutAbbreviations
+  playersHavingPutNicknames
   kontra
-  playersHavingWonAbbreviations
+  playersHavingWonNicknames
   price
 }
     `;
 export const SessionPlayerFragmentDoc = gql`
     fragment SessionPlayer on Player {
-  abbreviation
-  name
+  nickname
+  firstName
+  lastName
   pictureName
 }
     `;
@@ -639,7 +643,7 @@ export const LoggedInUserFragmentDoc = gql`
   username
   token
   isAdmin
-  playerAbbreviation
+  playerNickname
 }
     `;
 export const NewRuleSetDocument = gql`
@@ -727,8 +731,9 @@ export const GroupDocument = gql`
 export const PlayersInGroupDocument = gql`
     query PlayersInGroup($groupName: String!) {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
     isMemberInGroup(groupName: $groupName)
   }
 }
@@ -819,8 +824,9 @@ export const CreateGameDocument = gql`
 export const PlayerListDocument = gql`
     query PlayerList {
   players {
-    abbreviation
-    name
+    nickname
+    firstName
+    lastName
   }
 }
     `;
@@ -833,8 +839,10 @@ export const PlayerListDocument = gql`
     
   }
 export const PlayerCreationDocument = gql`
-    mutation PlayerCreation($name: String!, $abbreviation: String!) {
-  createPlayer(newPlayer: {name: $name, abbreviation: $abbreviation})
+    mutation PlayerCreation($nickname: String!, $firstName: String!, $lastName: String!) {
+  createPlayer(
+    newPlayer: {nickname: $nickname, firstName: $firstName, lastName: $lastName}
+  )
 }
     `;
 

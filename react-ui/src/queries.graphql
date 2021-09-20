@@ -173,6 +173,10 @@ mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput
   }
 }
 
+mutation EndSession($groupName: String!, $sessionId: Int!) {
+  endSession(groupName: $groupName, sessionId: $sessionId)
+}
+
 # /players
 
 query PlayerList {
