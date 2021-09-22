@@ -12,7 +12,7 @@ import {ruleSetsBaseUrl} from './urls';
 const initialValues: RuleSetInput = {
   name: '',
   basePrice: 5,
-  soloPrice: 5,
+  soloPrice: 15,
   countLaufende: CountLaufende.Always,
   laufendePrice: 5,
   minLaufendeIncl: 3,

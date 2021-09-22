@@ -2,7 +2,7 @@ import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {PlayerInput, usePlayerCreationMutation} from './graphql';
 import * as yup from 'yup';
-import {Field, Form, Formik} from 'formik';
+import {Field, Form, Formik, FormikHelpers} from 'formik';
 import classNames from 'classnames';
 
 const initialValues: PlayerInput = {
@@ -23,9 +23,9 @@ export function PlayerForm(): JSX.Element {
   const {t} = useTranslation('common');
   const [createPlayer, {data, loading, error}] = usePlayerCreationMutation();
 
-  function onSubmit(playerInput: PlayerInput): void {
-    console.info(JSON.stringify(playerInput));
+  function onSubmit(playerInput: PlayerInput, {resetForm}: FormikHelpers<PlayerInput>): void {
     createPlayer({variables: {playerInput}})
+      .then(()=> resetForm())
       .catch((error) => console.error(error));
   }
 

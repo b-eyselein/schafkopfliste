@@ -1,7 +1,7 @@
-import {Field, Form, Formik} from 'formik';
+import {Field, Form, Formik, FormikHelpers} from 'formik';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQuery} from './graphql';
+import {Group, GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQuery} from './graphql';
 import {WithQuery} from './WithQuery';
 import * as yup from 'yup';
 import classNames from 'classnames';
@@ -12,7 +12,7 @@ import {groupsBaseUrl} from './urls';
 
 const groupInputSchema: yup.SchemaOf<GroupInput> = yup.object()
   .shape({
-    name: yup.string().min(4).required(),
+    name: yup.string().min(2).required(),
     ruleSetName: yup.string().min(2).required()
   })
   .required();
@@ -36,8 +36,9 @@ export function GroupForm(): JSX.Element {
       ruleSetName: ruleSets.length > 0 ? ruleSets[0].name : ''
     };
 
-    function onSubmit(groupInput: GroupInput): void {
+    function onSubmit(groupInput: GroupInput, {resetForm}: FormikHelpers<GroupInput>): void {
       createGroup({variables: groupInput})
+        .then(() => resetForm())
         .catch((error) => console.error(error));
     }
 
