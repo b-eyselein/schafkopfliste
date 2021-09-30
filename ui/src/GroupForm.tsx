@@ -1,7 +1,7 @@
 import {Field, Form, Formik, FormikHelpers} from 'formik';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {Group, GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQuery} from './graphql';
+import {GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQuery} from './graphql';
 import {WithQuery} from './WithQuery';
 import * as yup from 'yup';
 import classNames from 'classnames';

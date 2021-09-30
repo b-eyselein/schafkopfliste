@@ -7,11 +7,15 @@ extern crate diesel_derive_enum;
 #[macro_use]
 extern crate diesel_migrations;
 
+use std::path::{Path, PathBuf};
+
 use diesel::PgConnection;
 use juniper::EmptySubscription;
 use juniper_rocket::{graphiql_source, GraphQLRequest, GraphQLResponse};
 use rocket::fairing::AdHoc;
-use rocket::{get, post, response::Redirect, routes, Rocket, State};
+use rocket::response::status::NotFound;
+use rocket::response::NamedFile;
+use rocket::{get, post, routes, Rocket, State};
 use rocket_contrib::database;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{Cors, CorsOptions};
@@ -20,9 +24,6 @@ use graphql::{GraphQLContext, Mutations, QueryRoot};
 
 use crate::additional_headers::AuthorizationHeader;
 use crate::graphql::Schema;
-use rocket::response::status::NotFound;
-use rocket::response::NamedFile;
-use std::path::{Path, PathBuf};
 
 mod additional_headers;
 mod daos;
