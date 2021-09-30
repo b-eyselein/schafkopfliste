@@ -15,7 +15,7 @@ use crate::schema::groups;
 #[serde(rename_all = "camelCase")]
 pub struct Group {
     pub name: String,
-    pub rule_set_name: String
+    pub rule_set_name: String,
 }
 
 impl Group {
@@ -30,7 +30,7 @@ impl Group {
 #[table_name = "groups"]
 pub struct GroupInput {
     name: String,
-    rule_set_name: String
+    rule_set_name: String,
 }
 
 #[graphql_object(Context = GraphQLContext)]

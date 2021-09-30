@@ -50,7 +50,7 @@ impl Mutations {
                 username,
                 is_admin,
                 player_nickname,
-                password_hash
+                password_hash,
             }) => {
                 let password_ok = verify(password, &password_hash)?;
 
@@ -68,21 +68,21 @@ impl Mutations {
     pub async fn create_rule_set(rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.token() {
             None => Err(on_no_login()),
-            Some(_) => Ok(context.connection.run(move |c| insert_rule_set(&c, &rule_set_input)).await?)
+            Some(_) => Ok(context.connection.run(move |c| insert_rule_set(&c, &rule_set_input)).await?),
         }
     }
 
     pub async fn create_group(group_input: GroupInput, context: &GraphQLContext) -> FieldResult<Group> {
         match context.authorization_header.token() {
             None => Err(on_no_login()),
-            Some(_) => Ok(context.connection.run(move |c| insert_group(&c, group_input)).await?)
+            Some(_) => Ok(context.connection.run(move |c| insert_group(&c, group_input)).await?),
         }
     }
 
     pub async fn create_player(new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.token() {
             None => Err(on_no_login()),
-            Some(_) => Ok(context.connection.run(move |c| insert_player(&c, &new_player)).await?)
+            Some(_) => Ok(context.connection.run(move |c| insert_player(&c, &new_player)).await?),
         }
     }
 
@@ -92,7 +92,7 @@ impl Mutations {
             Some(_) => Ok(context
                 .connection
                 .run(move |c| upsert_group_membership(&c, group_name, player_name, new_state))
-                .await?)
+                .await?),
         }
     }
 
@@ -130,7 +130,7 @@ impl Mutations {
                     schneider_schwarz,
                     players_having_put_nicknames,
                     kontra,
-                    players_having_won_nicknames
+                    players_having_won_nicknames,
                 } = game_input;
 
                 context
@@ -153,7 +153,7 @@ impl Mutations {
                                     schneider_schwarz,
                                     players_having_put_nicknames,
                                     kontra,
-                                    players_having_won_nicknames
+                                    players_having_won_nicknames,
                                 );
 
                                 upsert_game(connection, &game)

@@ -1,7 +1,7 @@
 use jsonwebtoken::TokenData;
 use rocket::{
     request::{FromRequest, Outcome},
-    Request
+    Request,
 };
 
 use crate::jwt_helpers::{decode_token, Claims};

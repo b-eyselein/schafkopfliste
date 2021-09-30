@@ -14,7 +14,7 @@ pub struct PlayerInGroup {
     put_count: i32,
     played_games: i32,
     win_count: i32,
-    is_active: bool
+    is_active: bool,
 }
 
 impl PlayerInGroup {
@@ -27,7 +27,7 @@ impl PlayerInGroup {
             put_count: 0,
             played_games: 0,
             win_count: 0,
-            is_active
+            is_active,
         }
     }
 }

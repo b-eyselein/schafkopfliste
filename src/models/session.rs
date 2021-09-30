@@ -25,7 +25,7 @@ pub struct Session {
     pub third_player_nickname: String,
     pub fourth_player_nickname: String,
 
-    pub creator_username: String
+    pub creator_username: String,
 }
 
 impl Session {
@@ -39,7 +39,7 @@ impl Session {
             first_player_nickname,
             second_player_nickname,
             third_player_nickname,
-            fourth_player_nickname
+            fourth_player_nickname,
         } = cs;
 
         Session {
@@ -55,7 +55,7 @@ impl Session {
             second_player_nickname,
             third_player_nickname,
             fourth_player_nickname,
-            creator_username
+            creator_username,
         }
     }
 
@@ -80,7 +80,7 @@ pub struct SessionInput {
     first_player_nickname: String,
     second_player_nickname: String,
     third_player_nickname: String,
-    fourth_player_nickname: String
+    fourth_player_nickname: String,
 }
 
 #[graphql_object(context = GraphQLContext)]

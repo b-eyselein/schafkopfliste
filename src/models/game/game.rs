@@ -24,7 +24,7 @@ pub struct Game {
 
     pub players_having_put_nicknames: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_nicknames: Vec<String>
+    pub players_having_won_nicknames: Vec<String>,
 }
 
 #[derive(Debug, GraphQLInputObject)]
@@ -40,7 +40,7 @@ pub struct GameInput {
 
     pub players_having_put_nicknames: Vec<String>,
     pub kontra: Option<KontraType>,
-    pub players_having_won_nicknames: Vec<String>
+    pub players_having_won_nicknames: Vec<String>,
 }
 
 impl Game {
@@ -57,7 +57,7 @@ impl Game {
         schneider_schwarz: Option<SchneiderSchwarz>,
         players_having_put_nicknames: Vec<String>,
         kontra: Option<KontraType>,
-        players_having_won_nicknames: Vec<String>
+        players_having_won_nicknames: Vec<String>,
     ) -> Self {
         Self {
             id,
@@ -72,7 +72,7 @@ impl Game {
             schneider_schwarz,
             players_having_put_nicknames,
             kontra,
-            players_having_won_nicknames
+            players_having_won_nicknames,
         }
     }
 
@@ -99,7 +99,7 @@ impl Game {
     fn base_price<'a>(&self, rule_set: &'a RuleSet) -> &'a i32 {
         match self.game_type {
             GameType::Ruf => rule_set.get_base_price(),
-            _ => rule_set.get_solo_price()
+            _ => rule_set.get_solo_price(),
         }
     }
 
@@ -109,7 +109,7 @@ impl Game {
         let laufende_are_counted = match &rule_set.count_laufende {
             CountLaufende::Never => false,
             CountLaufende::OnlyLosers => self.laufende_count < 0,
-            CountLaufende::Always => true
+            CountLaufende::Always => true,
         };
 
         let laufende_abs: i32 = min(self.laufende_count.abs(), rule_set.max_laufende_incl);
@@ -127,7 +127,7 @@ impl Game {
         let schneider_schwarz_price = match self.schneider_schwarz {
             None => 0,
             Some(SchneiderSchwarz::Schneider) => 5,
-            Some(SchneiderSchwarz::Schwarz) => 10
+            Some(SchneiderSchwarz::Schwarz) => 10,
         };
 
         let leger_count = self.players_having_put_nicknames.len() as u32;
@@ -265,7 +265,7 @@ mod tests {
             schneider_schwarz: None,
             players_having_put_nicknames: vec![],
             kontra: None,
-            players_having_won_nicknames: vec![]
+            players_having_won_nicknames: vec![],
         };
 
         let rs_laufende_never = RuleSet::new(1, 5, CountLaufende::Never);

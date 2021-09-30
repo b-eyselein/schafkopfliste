@@ -9,7 +9,7 @@ use crate::schema::rule_sets;
 pub enum CountLaufende {
     Always,
     OnlyLosers,
-    Never
+    Never,
 }
 
 #[derive(Debug, Queryable, GraphQLObject, Serialize, Deserialize)]
@@ -30,7 +30,7 @@ pub struct RuleSet {
     pub bettel_allowed: bool,
     pub ramsch_allowed: bool,
     pub farb_wenz_allowed: bool,
-    pub farb_geier_allowed: bool
+    pub farb_geier_allowed: bool,
 }
 
 impl RuleSet {
@@ -48,7 +48,7 @@ impl RuleSet {
             bettel_allowed: false,
             ramsch_allowed: false,
             farb_wenz_allowed: false,
-            farb_geier_allowed: false
+            farb_geier_allowed: false,
         }
     }
 
@@ -81,7 +81,7 @@ pub struct RuleSetInput {
     pub bettel_allowed: bool,
     pub ramsch_allowed: bool,
     pub farb_wenz_allowed: bool,
-    pub farb_geier_allowed: bool
+    pub farb_geier_allowed: bool,
 }
 
 // Queries

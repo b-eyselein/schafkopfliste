@@ -12,7 +12,7 @@ pub struct User {
     pub username: String,
     pub password_hash: String,
     pub is_admin: bool,
-    pub player_nickname: Option<String>
+    pub player_nickname: Option<String>,
 }
 
 impl User {
@@ -21,7 +21,7 @@ impl User {
             username,
             password_hash,
             is_admin: false,
-            player_nickname: None
+            player_nickname: None,
         }
     }
 }
@@ -41,7 +41,7 @@ impl User {
 #[serde(rename_all = "camelCase")]
 pub struct Credentials {
     pub username: String,
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Debug, Deserialize, GraphQLInputObject)]
@@ -49,7 +49,7 @@ pub struct Credentials {
 pub struct RegisterUserInput {
     pub username: String,
     pub password: String,
-    pub password_repeat: String
+    pub password_repeat: String,
 }
 
 impl RegisterUserInput {
@@ -63,7 +63,7 @@ pub struct UserWithToken {
     pub username: String,
     pub is_admin: bool,
     pub player_nickname: Option<String>,
-    pub token: String
+    pub token: String,
 }
 
 impl UserWithToken {
@@ -72,7 +72,7 @@ impl UserWithToken {
             username,
             is_admin,
             player_nickname,
-            token
+            token,
         }
     }
 }

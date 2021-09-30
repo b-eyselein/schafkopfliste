@@ -7,7 +7,7 @@ pub enum BavarianSuit {
     Acorns,
     Leaves,
     Hearts,
-    Bells
+    Bells,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
@@ -21,14 +21,14 @@ pub enum GameType {
     Bettel,
     Ramsch,
     Farbwenz,
-    Farbgeier
+    Farbgeier,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
 #[DieselType = "Schneider_schwarz"]
 pub enum SchneiderSchwarz {
     Schneider,
-    Schwarz
+    Schwarz,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, DbEnum, GraphQLEnum)]
@@ -37,7 +37,7 @@ pub enum KontraType {
     Kontra,
     Re,
     Supra,
-    Resupra
+    Resupra,
 }
 
 impl KontraType {
@@ -46,7 +46,7 @@ impl KontraType {
             KontraType::Kontra => 1,
             KontraType::Re => 2,
             KontraType::Supra => 3,
-            KontraType::Resupra => 4
+            KontraType::Resupra => 4,
         }
     }
 }
@@ -57,5 +57,5 @@ pub enum TablePosition {
     Dealer,
     PreHand,
     MiddleHand,
-    RearHand
+    RearHand,
 }

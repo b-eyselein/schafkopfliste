@@ -7,7 +7,7 @@ const SECRET: &str = "klasidzf0a89s7dtzfv087sdtfv08d8s7v";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    username: String
+    username: String,
 }
 
 impl Claims {

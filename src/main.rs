@@ -1,5 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use]
 extern crate diesel;
 #[macro_use]
@@ -60,7 +58,7 @@ fn route_get_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
-    schema: &State<Schema>
+    schema: &State<Schema>,
 ) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
@@ -70,7 +68,7 @@ fn route_post_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
-    schema: &State<Schema>
+    schema: &State<Schema>,
 ) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
@@ -95,7 +93,7 @@ async fn execute_db_migrations(rocket: Rocket<Build>) -> Result<Rocket<Build>, R
 
     conn.run(|c| match embedded_migrations::run_with_output(c, &mut std::io::stdout()) {
         Ok(()) => Ok(rocket),
-        Err(_) => Err(rocket)
+        Err(_) => Err(rocket),
     })
     .await
 }
@@ -115,6 +113,6 @@ fn rocket() -> _ {
                 route_get_graphiql,
                 route_get_graphql_handler,
                 route_post_graphql_handler
-            ]
+            ],
         )
 }

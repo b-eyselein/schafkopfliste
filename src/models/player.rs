@@ -10,7 +10,7 @@ pub struct Player {
     nickname: String,
     pub first_name: String,
     pub last_name: String,
-    picture_name: Option<String>
+    picture_name: Option<String>,
 }
 
 impl Player {
@@ -19,7 +19,7 @@ impl Player {
             nickname,
             first_name,
             last_name,
-            picture_name: None
+            picture_name: None,
         }
     }
 }
@@ -32,7 +32,7 @@ pub struct PlayerInput {
     pub nickname: String,
     pub first_name: String,
     pub last_name: String,
-    pub picture_name: Option<String>
+    pub picture_name: Option<String>,
 }
 
 #[graphql_object(Context = GraphQLContext)]

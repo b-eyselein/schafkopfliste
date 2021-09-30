@@ -8,7 +8,7 @@ pub struct SessionResult {
     player_nickname: String,
     session_id: i32,
     group_name: String,
-    result: i32
+    result: i32,
 }
 
 pub fn select_session_results(conn: &PgConnection) -> QueryResult<Vec<SessionResult>> {
