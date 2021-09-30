@@ -1,7 +1,7 @@
 [debug]
 address = "0.0.0.0"
 
-[global]
+[default]
 port = 8008
 
 [debug.databases]
