@@ -85,9 +85,11 @@ pub fn user_by_username(conn: &PgConnection, name: &str) -> QueryResult<Option<U
     users.filter(username.eq(&name)).first(conn).optional()
 }
 
-pub fn insert_user(conn: &PgConnection, user: User) -> QueryResult<User> {
-    diesel::insert_into(users::table)
-        .values(&user)
-        .returning(users::all_columns)
-        .get_result::<User>(conn)
+pub fn insert_user(conn: &PgConnection, the_username: &str, the_password_hash: &str) -> QueryResult<String> {
+    use crate::schema::users::dsl::*;
+
+    diesel::insert_into(users)
+        .values((username.eq(the_username), (password_hash.eq(the_password_hash))))
+        .returning(username)
+        .get_result(conn)
 }

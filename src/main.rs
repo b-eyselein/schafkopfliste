@@ -13,12 +13,11 @@ use diesel::PgConnection;
 use juniper::EmptySubscription;
 use juniper_rocket::{graphiql_source, GraphQLRequest, GraphQLResponse};
 use rocket::fairing::AdHoc;
+use rocket::fs::NamedFile;
 use rocket::response::status::NotFound;
-use rocket::response::NamedFile;
-use rocket::{get, post, routes, Rocket, State};
-use rocket_contrib::database;
-use rocket_contrib::serve::StaticFiles;
+use rocket::{get, post, routes, Build, Rocket, State};
 use rocket_cors::{Cors, CorsOptions};
+use rocket_sync_db_pools::database;
 
 use graphql::{GraphQLContext, Mutations, QueryRoot};
 
@@ -47,8 +46,8 @@ fn make_cors() -> Cors {
 }
 
 #[get("/")]
-fn route_index() -> Result<NamedFile, NotFound<String>> {
-    route_get_file("index.html".into())
+async fn route_index() -> Result<NamedFile, NotFound<String>> {
+    route_get_file("index.html".into()).await
 }
 
 #[get("/graphiql")]
@@ -57,7 +56,12 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
 }
 
 #[get("/graphql?<request>")]
-fn route_get_graphql_handler(connection: DbConn, authorization_header: AuthorizationHeader, request: GraphQLRequest, schema: State<Schema>) -> GraphQLResponse {
+fn route_get_graphql_handler(
+    connection: DbConn,
+    authorization_header: AuthorizationHeader,
+    request: GraphQLRequest,
+    schema: &State<Schema>
+) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
 
@@ -66,13 +70,13 @@ fn route_post_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
-    schema: State<Schema>
+    schema: &State<Schema>
 ) -> GraphQLResponse {
     request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
 }
 
 #[get("/<file..>", rank = 2)]
-fn route_get_file(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+async fn route_get_file(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let file_path = Path::new("./static").join(&file);
 
     let named_file_result = if file_path.exists() {
@@ -81,22 +85,26 @@ fn route_get_file(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
         NamedFile::open(Path::new("./static").join("index.html"))
     };
 
-    named_file_result.map_err(|_error| NotFound(format!("The file {} could not be found!", &file.display())))
+    named_file_result
+        .await
+        .map_err(|_error| NotFound(format!("The file {} could not be found!", &file.display())))
 }
 
-fn execute_db_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
-    let conn = DbConn::get_one(&rocket).expect("Could not establish connection to database!");
+async fn execute_db_migrations(rocket: Rocket<Build>) -> Result<Rocket<Build>, Rocket<Build>> {
+    let conn = DbConn::get_one(&rocket).await.expect("Could not establish connection to database!");
 
-    match embedded_migrations::run_with_output(&*conn, &mut std::io::stdout()) {
+    conn.run(|c| match embedded_migrations::run_with_output(c, &mut std::io::stdout()) {
         Ok(()) => Ok(rocket),
         Err(_) => Err(rocket)
-    }
+    })
+    .await
 }
 
-fn main() {
-    rocket::ignite()
+#[rocket::launch]
+fn rocket() -> _ {
+    rocket::build()
         .attach(DbConn::fairing())
-        .attach(AdHoc::on_attach("Database migrations", execute_db_migrations))
+        .attach(AdHoc::try_on_ignite("Database migrations", execute_db_migrations))
         .attach(make_cors())
         .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
         .mount(
@@ -109,6 +117,4 @@ fn main() {
                 route_post_graphql_handler
             ]
         )
-        .mount("/app", StaticFiles::from("static"))
-        .launch();
 }

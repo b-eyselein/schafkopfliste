@@ -18,27 +18,27 @@ pub fn graphql_on_db_error(db_error: DbError) -> FieldError {
 
 #[graphql_object(Context = GraphQLContext)]
 impl QueryRoot {
-    pub fn rule_sets(context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
-        Ok(select_rule_sets(&context.connection.lock()?.0)?)
+    pub async fn rule_sets(context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
+        Ok(context.connection.run(|c| select_rule_sets(&c)).await?)
     }
 
-    pub fn rule_set(name: String, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        Ok(select_rule_set_by_id(&context.connection.lock()?.0, &name)?)
+    pub async fn rule_set(name: String, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
+        Ok(context.connection.run(move |c| select_rule_set_by_id(&c, &name)).await?)
     }
 
-    pub fn players(context: &GraphQLContext) -> FieldResult<Vec<Player>> {
-        Ok(select_players(&context.connection.lock()?.0)?)
+    pub async fn players(context: &GraphQLContext) -> FieldResult<Vec<Player>> {
+        Ok(context.connection.run(move |c| select_players(&c)).await?)
     }
 
-    pub fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
-        Ok(select_groups(&context.connection.lock()?.0)?)
+    pub async fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
+        Ok(context.connection.run(move |c| select_groups(&c)).await?)
     }
 
-    pub fn group(name: String, context: &GraphQLContext) -> FieldResult<Option<Group>> {
-        Ok(select_group_by_name(&context.connection.lock()?.0, &name)?)
+    pub async fn group(name: String, context: &GraphQLContext) -> FieldResult<Option<Group>> {
+        Ok(context.connection.run(move |c| select_group_by_name(&c, &name)).await?)
     }
 
-    pub fn session(id: i32, group_name: String, context: &GraphQLContext) -> FieldResult<Option<Session>> {
-        Ok(select_session_by_id(&context.connection.lock()?.0, &group_name, &id)?)
+    pub async fn session(id: i32, group_name: String, context: &GraphQLContext) -> FieldResult<Option<Session>> {
+        Ok(context.connection.run(move |c| select_session_by_id(&c, &group_name, &id)).await?)
     }
 }

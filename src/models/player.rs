@@ -53,8 +53,13 @@ impl Player {
         &self.picture_name
     }
 
-    pub fn is_member_in_group(&self, group_name: String, context: &GraphQLContext) -> FieldResult<bool> {
-        Ok(select_group_membership_for_player(&context.connection.lock()?.0, &self.nickname, &group_name)?)
+    pub async fn is_member_in_group(&self, group_name: String, context: &GraphQLContext) -> FieldResult<bool> {
+        let nickname = self.nickname.clone();
+
+        Ok(context
+            .connection
+            .run(move |c| select_group_membership_for_player(&c, &nickname, &group_name))
+            .await?)
     }
 }
 
@@ -72,8 +77,8 @@ pub fn select_player_by_nickname(conn: &PgConnection, the_nickname: &str) -> Que
     players.filter(nickname.eq(the_nickname)).first(conn)
 }
 
-pub fn insert_player(conn: &PgConnection, player_input: &PlayerInput) -> QueryResult<usize> {
+pub fn insert_player(conn: &PgConnection, player_input: &PlayerInput) -> QueryResult<String> {
     use crate::schema::players::dsl::*;
 
-    diesel::insert_into(players).values(player_input).execute(conn)
+    diesel::insert_into(players).values(player_input).returning(nickname).get_result(conn)
 }

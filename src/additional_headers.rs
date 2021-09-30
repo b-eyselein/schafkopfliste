@@ -16,10 +16,11 @@ impl AuthorizationHeader {
     }
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for AuthorizationHeader {
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for AuthorizationHeader {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
+    async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         let content = request.headers().get_one("Authorization").and_then(|t| decode_token(t).ok());
 
         Outcome::Success(AuthorizationHeader(content))

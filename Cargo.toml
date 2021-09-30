@@ -9,9 +9,12 @@ edition = "2018"
 [dependencies]
 chrono = { version = "0.4.19", features = ["serde"] }
 
-rocket = "0.4.10"
-rocket_contrib = { version = "0.4.10", default-features = false, features = ["json", "diesel_postgres_pool", "serve"] }
-rocket_cors = "0.5.2"
+rocket = "0.5.0-rc.1"
+# rocket_contrib = { version = "0.4.10", default-features = false, features = ["json", "diesel_postgres_pool", "serve"] }
+# FIXME: use git version until new version...
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" } # "0.5.2"
+rocket_sync_db_pools = { version = "0.1.0-rc.1", features = ["diesel_postgres_pool"] }
+futures = "0.3.17"
 
 diesel = { version = "1.4.8", features = ["chrono", "postgres", "uuid", "serde_json"] }
 diesel-derive-enum = { version = "1.1.1", features = ["postgres"] }
@@ -24,4 +27,4 @@ jsonwebtoken = "7.2.0"
 bcrypt = "0.10.0"
 
 juniper = "0.15.7"
-juniper_rocket = "0.7.1"
+juniper_rocket = "0.8.0"

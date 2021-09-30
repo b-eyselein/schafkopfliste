@@ -86,8 +86,10 @@ pub struct RuleSetInput {
 
 // Queries
 
-pub fn insert_rule_set(conn: &PgConnection, rule_set_input: &RuleSetInput) -> QueryResult<usize> {
-    diesel::insert_into(rule_sets::table).values(rule_set_input).execute(conn)
+pub fn insert_rule_set(conn: &PgConnection, rule_set_input: &RuleSetInput) -> QueryResult<String> {
+    use crate::schema::rule_sets::dsl::*;
+
+    diesel::insert_into(rule_sets).values(rule_set_input).returning(name).get_result(conn)
 }
 
 pub fn select_rule_sets(conn: &PgConnection) -> QueryResult<Vec<RuleSet>> {

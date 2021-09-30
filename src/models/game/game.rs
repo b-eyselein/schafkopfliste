@@ -1,6 +1,6 @@
 use diesel::dsl::max;
 use diesel::{pg::PgConnection, prelude::*, result::QueryResult};
-use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject, Value};
+use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::GraphQLContext;
 use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
@@ -193,10 +193,14 @@ impl Game {
     }
 
     #[graphql(name = "price")]
-    pub fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        let connection = &context.connection.lock()?.0;
+    pub async fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
+        let group_name = self.group_name.clone();
 
-        let rule_set = select_rule_set_for_group(connection, &self.group_name)?.ok_or_else(|| FieldError::new("Could not find rule set!", Value::null()))?;
+        let rule_set = context
+            .connection
+            .run(move |c| select_rule_set_for_group(c, &group_name))
+            .await?
+            .ok_or_else(|| FieldError::from("Could not find rule set!"))?;
 
         Ok(self.calculate_price(&rule_set))
     }

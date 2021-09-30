@@ -43,30 +43,32 @@ impl Group {
         &self.rule_set_name
     }
 
-    pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        let connection_mutex = context.connection.lock()?;
-
-        Ok(select_rule_set_by_id(&connection_mutex.0, &self.rule_set_name)?)
+    pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
+        let rule_set_name = self.rule_set_name.clone();
+        Ok(context.connection.run(move |c| select_rule_set_by_id(&c, &rule_set_name)).await?)
     }
 
-    pub fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        let connection_mutex = context.connection.lock()?;
+    pub async fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
+        let group_name = self.name.clone();
 
-        let count = select_player_count_for_group(&connection_mutex.0, &self.name).map_err(graphql_on_db_error)?;
+        let count = context
+            .connection
+            .run(move |c| select_player_count_for_group(&c, &group_name).map_err(graphql_on_db_error))
+            .await?;
 
         Ok(i32::try_from(count)?)
     }
 
-    pub fn players(&self, context: &GraphQLContext) -> FieldResult<Vec<PlayerInGroup>> {
-        let connection_mutex = context.connection.lock()?;
+    pub async fn players(&self, context: &GraphQLContext) -> FieldResult<Vec<PlayerInGroup>> {
+        let group_name = self.name.clone();
 
-        select_players_in_group(&connection_mutex.0, &self.name).map_err(graphql_on_db_error)
+        Ok(context.connection.run(move |c| select_players_in_group(&c, &group_name)).await?)
     }
 
-    pub fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
-        let connection_mutex = context.connection.lock()?;
+    pub async fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
+        let group_name = self.name.clone();
 
-        select_sessions_for_group(&connection_mutex.0, &self.name).map_err(graphql_on_db_error)
+        Ok(context.connection.run(move |c| select_sessions_for_group(&c, &group_name)).await?)
     }
 }
 

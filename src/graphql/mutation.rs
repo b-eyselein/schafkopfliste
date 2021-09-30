@@ -1,6 +1,6 @@
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::prelude::*;
-use juniper::{graphql_object, FieldError, FieldResult, Value};
+use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::daos::group_dao::insert_group;
 use crate::daos::session_dao::update_end_session;
@@ -23,26 +23,28 @@ fn on_no_login() -> FieldError {
 
 #[graphql_object(Context = GraphQLContext)]
 impl Mutations {
-    pub fn register_user(register_user_input: RegisterUserInput, context: &GraphQLContext) -> FieldResult<String> {
+    pub async fn register_user(register_user_input: RegisterUserInput, context: &GraphQLContext) -> FieldResult<String> {
         if !register_user_input.is_valid() {
-            Err(FieldError::new("Input is not valid!", Value::null()))
-        } else {
-            let RegisterUserInput { username, password, .. } = register_user_input;
-
-            let hashed_pw = hash(password, DEFAULT_COST)?;
-
-            let to_insert = User::new(username, hashed_pw);
-
-            insert_user(&context.connection.lock()?.0, to_insert)
-                .map_err(|_error| FieldError::new("Could not create user!", Value::null()))
-                .map(|user| user.username)
+            return Err(FieldError::from("Input is not valid!"));
         }
+
+        let RegisterUserInput { username, password, .. } = register_user_input;
+
+        let hashed_pw = hash(password, DEFAULT_COST)?;
+
+        Ok(context
+            .connection
+            .run(move |c| insert_user(&c, &username, &hashed_pw))
+            .await
+            .map_err(|_error| FieldError::from("Could not create user!"))?)
     }
 
-    pub fn login(credentials: Credentials, context: &GraphQLContext) -> FieldResult<Option<UserWithToken>> {
+    pub async fn login(credentials: Credentials, context: &GraphQLContext) -> FieldResult<Option<UserWithToken>> {
         let Credentials { username, password } = credentials;
 
-        match user_by_username(&context.connection.lock()?.0, &username)? {
+        let user = context.connection.run(move |c| user_by_username(&c, &username)).await?;
+
+        match user {
             None => Ok(None),
             Some(User {
                 username,
@@ -63,63 +65,61 @@ impl Mutations {
         }
     }
 
-    pub fn create_rule_set(rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
+    pub async fn create_rule_set(rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
+        match context.authorization_header.token() {
+            None => Err(on_no_login()),
+            Some(_) => Ok(context.connection.run(move |c| insert_rule_set(&c, &rule_set_input)).await?)
+        }
+    }
+
+    pub async fn create_group(group_input: GroupInput, context: &GraphQLContext) -> FieldResult<Group> {
+        match context.authorization_header.token() {
+            None => Err(on_no_login()),
+            Some(_) => Ok(context.connection.run(move |c| insert_group(&c, group_input)).await?)
+        }
+    }
+
+    pub async fn create_player(new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
+        match context.authorization_header.token() {
+            None => Err(on_no_login()),
+            Some(_) => Ok(context.connection.run(move |c| insert_player(&c, &new_player)).await?)
+        }
+    }
+
+    pub async fn add_player_to_group(player_name: String, group_name: String, new_state: bool, context: &GraphQLContext) -> FieldResult<bool> {
+        match context.authorization_header.token() {
+            None => Err(on_no_login()),
+            Some(_) => Ok(context
+                .connection
+                .run(move |c| upsert_group_membership(&c, group_name, player_name, new_state))
+                .await?)
+        }
+    }
+
+    pub async fn new_session(group_name: String, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
+        let creator_username = context
+            .authorization_header
+            .token()
+            .ok_or_else(on_no_login)?
+            .claims
+            .username()
+            .to_string()
+            .clone();
+
+        Ok(context
+            .connection
+            .run(move |c| insert_session(&c, group_name, creator_username, session_input))
+            .await?)
+    }
+
+    pub async fn end_session(group_name: String, session_id: i32, context: &GraphQLContext) -> FieldResult<bool> {
+        Ok(context.connection.run(move |c| update_end_session(&c, &group_name, &session_id)).await?)
+    }
+
+    pub async fn new_game(group_name: String, session_id: i32, game_input: GameInput, context: &GraphQLContext) -> FieldResult<Game> {
         match context.authorization_header.token() {
             None => Err(on_no_login()),
             Some(_) => {
-                insert_rule_set(&context.connection.lock()?.0, &rule_set_input)?;
-
-                Ok(rule_set_input.name)
-            }
-        }
-    }
-
-    pub fn create_group(group_input: GroupInput, context: &GraphQLContext) -> FieldResult<Group> {
-        match context.authorization_header.token() {
-            None => Err(on_no_login()),
-            Some(_) => Ok(insert_group(&context.connection.lock()?.0, group_input)?)
-        }
-    }
-
-    pub fn create_player(new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
-        match context.authorization_header.token() {
-            None => Err(on_no_login()),
-            Some(_) => {
-                insert_player(&context.connection.lock()?.0, &new_player)?;
-
-                Ok(new_player.nickname)
-            }
-        }
-    }
-
-    pub fn add_player_to_group(player_name: String, group_name: String, new_state: bool, context: &GraphQLContext) -> FieldResult<bool> {
-        match context.authorization_header.token() {
-            None => Err(on_no_login()),
-            Some(_) => Ok(upsert_group_membership(&context.connection.lock()?.0, group_name, player_name, new_state)?)
-        }
-    }
-
-    pub fn new_session(group_name: String, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
-        let creator_username = context.authorization_header.token().ok_or_else(on_no_login)?.claims.username();
-
-        Ok(insert_session(
-            &context.connection.lock()?.0,
-            group_name,
-            creator_username.to_string(),
-            session_input
-        )?)
-    }
-
-    pub fn end_session(group_name: String, session_id: i32, context: &GraphQLContext) -> FieldResult<bool> {
-        Ok(update_end_session(&context.connection.lock()?.0, &group_name, &session_id)?)
-    }
-
-    pub fn new_game(group_name: String, session_id: i32, game_input: GameInput, context: &GraphQLContext) -> FieldResult<Game> {
-        match context.authorization_header.token() {
-            None => Err(on_no_login()),
-            Some(_) => {
-                let connection = &context.connection.lock()?.0;
-
                 let GameInput {
                     acting_player_nickname,
                     game_type,
@@ -133,29 +133,34 @@ impl Mutations {
                     players_having_won_nicknames
                 } = game_input;
 
-                connection
-                    .transaction(|| {
-                        let next_game_id = select_max_game_id(connection, &group_name, &session_id)?.map(|id| id + 1).unwrap_or(1);
+                context
+                    .connection
+                    .run(move |connection| {
+                        connection
+                            .transaction(|| {
+                                let next_game_id = select_max_game_id(connection, &group_name, &session_id)?.map(|id| id + 1).unwrap_or(1);
 
-                        let game = Game::new(
-                            next_game_id,
-                            session_id,
-                            group_name,
-                            acting_player_nickname,
-                            game_type,
-                            suit,
-                            tout,
-                            is_doubled,
-                            laufende_count,
-                            schneider_schwarz,
-                            players_having_put_nicknames,
-                            kontra,
-                            players_having_won_nicknames
-                        );
+                                let game = Game::new(
+                                    next_game_id,
+                                    session_id,
+                                    group_name,
+                                    acting_player_nickname,
+                                    game_type,
+                                    suit,
+                                    tout,
+                                    is_doubled,
+                                    laufende_count,
+                                    schneider_schwarz,
+                                    players_having_put_nicknames,
+                                    kontra,
+                                    players_having_won_nicknames
+                                );
 
-                        upsert_game(connection, &game)
+                                upsert_game(connection, &game)
+                            })
+                            .map_err(graphql_on_db_error)
                     })
-                    .map_err(graphql_on_db_error)
+                    .await
             }
         }
     }

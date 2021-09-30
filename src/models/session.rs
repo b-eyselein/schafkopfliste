@@ -1,5 +1,5 @@
 use diesel::{prelude::*, PgConnection, QueryResult};
-use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject, Value};
+use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
 use crate::models::game::{select_games_for_session, Game};
@@ -97,30 +97,47 @@ impl Session {
         format!("{}.{}.{}", self.date_day_of_month, self.date_month, self.date_year)
     }
 
-    pub fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
-        let connection_mutex = context.connection.lock()?;
+    pub async fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
+        let session_id = self.id.clone();
+        let group_name = self.group_name.clone();
 
-        select_games_for_session(&connection_mutex.0, &self.id, &self.group_name).map_err(graphql_on_db_error)
+        Ok(context
+            .connection
+            .run(move |c| select_games_for_session(&c, &session_id, &group_name).map_err(graphql_on_db_error))
+            .await?)
     }
 
-    pub fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
-        select_rule_set_for_group(&context.connection.lock()?.0, &self.group_name)?.ok_or_else(|| FieldError::new("No rule set found!", Value::null()))
+    pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
+        let group_name = self.group_name.clone();
+
+        Ok(context
+            .connection
+            .run(move |c| select_rule_set_for_group(&c, &group_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
+            .await?)
     }
 
-    pub fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        Ok(select_player_by_nickname(&context.connection.lock()?.0, &self.first_player_nickname)?)
+    pub async fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let first_player_nickname = self.first_player_nickname.clone();
+
+        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &first_player_nickname)).await?)
     }
 
-    pub fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        Ok(select_player_by_nickname(&context.connection.lock()?.0, &self.second_player_nickname)?)
+    pub async fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let second_player_nickname = self.second_player_nickname.clone();
+
+        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &second_player_nickname)).await?)
     }
 
-    pub fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        Ok(select_player_by_nickname(&context.connection.lock()?.0, &self.third_player_nickname)?)
+    pub async fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let third_player_nickname = self.third_player_nickname.clone();
+
+        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &third_player_nickname)).await?)
     }
 
-    pub fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        Ok(select_player_by_nickname(&context.connection.lock()?.0, &self.fourth_player_nickname)?)
+    pub async fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let fourth_player_nickname = self.fourth_player_nickname.clone();
+
+        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &fourth_player_nickname)).await?)
     }
 }
 

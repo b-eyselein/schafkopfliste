@@ -40,10 +40,14 @@ impl PlayerInGroup {
         &self.player_nickname
     }
 
-    pub fn name(&self, context: &GraphQLContext) -> FieldResult<String> {
+    pub async fn name(&self, context: &GraphQLContext) -> FieldResult<String> {
         // FIXME: remove this query!
-        Ok(select_player_by_nickname(&context.connection.lock()?.0, &self.player_nickname)
-            .map(|player| format!("{} {}", player.first_name, player.last_name))?)
+        let player_nickname = self.player_nickname.clone();
+
+        Ok(context
+            .connection
+            .run(move |c| select_player_by_nickname(&c, &player_nickname).map(|player| format!("{} {}", player.first_name, player.last_name)))
+            .await?)
     }
 
     pub fn balance(&self) -> &i32 {
