@@ -54,23 +54,23 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
 }
 
 #[get("/graphql?<request>")]
-fn route_get_graphql_handler(
+async fn route_get_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
     schema: &State<Schema>,
 ) -> GraphQLResponse {
-    request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
+    request.execute(&schema, &GraphQLContext::new(connection, authorization_header)).await
 }
 
 #[post("/graphql", data = "<request>")]
-fn route_post_graphql_handler(
+async fn route_post_graphql_handler(
     connection: DbConn,
     authorization_header: AuthorizationHeader,
     request: GraphQLRequest,
     schema: &State<Schema>,
 ) -> GraphQLResponse {
-    request.execute_sync(&schema, &GraphQLContext::new(connection, authorization_header))
+    request.execute(&schema, &GraphQLContext::new(connection, authorization_header)).await
 }
 
 #[get("/<file..>", rank = 2)]

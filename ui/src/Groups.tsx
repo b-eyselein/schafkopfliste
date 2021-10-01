@@ -4,7 +4,7 @@ import {Route, Switch} from 'react-router';
 import {GroupListQuery, useGroupListQuery} from './graphql';
 import {useTranslation} from 'react-i18next';
 import {WithQuery} from './WithQuery';
-import {createNewUrlFragment, groupsBaseUrl} from './urls';
+import {groupsBaseUrl} from './urls';
 import {GroupForm} from './GroupForm';
 import {GroupBase} from './GroupOverview';
 import {useSelector} from 'react-redux';
@@ -17,7 +17,6 @@ export function GroupsBase(): JSX.Element {
   return (
     <Switch>
       <Route path={`${url}`} exact component={GroupsList}/>
-      <Route path={`${url}/${createNewUrlFragment}`} exact component={GroupForm}/>
       <Route path={`${url}/:groupName`} component={GroupBase}/>
     </Switch>
   );
@@ -62,7 +61,7 @@ function GroupsList(): JSX.Element {
       <WithQuery query={groupListQuery} render={render}/>
 
       {currentUser && <div className="my-3">
-        <Link to={`${groupsBaseUrl}/${createNewUrlFragment}`} className="button is-link is-fullwidth">{t('createNewGroup')}</Link>
+        <GroupForm/>
       </div>}
     </div>
   );

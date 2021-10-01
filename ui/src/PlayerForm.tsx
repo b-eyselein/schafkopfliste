@@ -25,13 +25,13 @@ export function PlayerForm(): JSX.Element {
 
   function onSubmit(playerInput: PlayerInput, {resetForm}: FormikHelpers<PlayerInput>): void {
     createPlayer({variables: {playerInput}})
-      .then(()=> resetForm())
+      .then(() => resetForm())
       .catch((error) => console.error(error));
   }
 
   return (
-    <div className="container">
-      <h1 className="title is-3 has-text-centered">{t('createNewPlayer')}</h1>
+    <>
+      <h2 className="subtitle is-3 has-text-centered">{t('createNewPlayer')}</h2>
 
       <Formik initialValues={initialValues} validationSchema={playerInputSchema} onSubmit={onSubmit}>
         {({touched, errors}) =>
@@ -75,6 +75,6 @@ export function PlayerForm(): JSX.Element {
         }
       </Formik>
 
-    </div>
+    </>
   );
 }

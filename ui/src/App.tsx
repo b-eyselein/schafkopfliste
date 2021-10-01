@@ -10,7 +10,7 @@ import {currentUserSelector} from './store/store';
 import {StoreAction, userLogoutAction} from './store/actions';
 import {groupsBaseUrl, homeUrl, loginUrl, playersBaseUrl, registerUrl, ruleSetsBaseUrl} from './urls';
 import {RuleSetsBase} from './RuleSets';
-import {PlayersBase} from './Players';
+import {PlayersList} from './PlayersList';
 import {GroupsBase} from './Groups';
 
 export function App(): JSX.Element {
@@ -68,7 +68,7 @@ export function App(): JSX.Element {
         <Route path={loginUrl} component={LoginForm}/>
         <Route path={registerUrl} component={RegisterForm}/>
         <Route path={ruleSetsBaseUrl} component={RuleSetsBase}/>
-        <Route path={playersBaseUrl} component={PlayersBase}/>
+        <Route path={playersBaseUrl} component={PlayersList}/>
         <Route path={groupsBaseUrl} component={GroupsBase}/>
       </Switch>
     </>

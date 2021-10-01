@@ -1,27 +1,15 @@
 import React from 'react';
-import {Link, useRouteMatch} from 'react-router-dom';
-import {Route, Switch} from 'react-router';
 import {useTranslation} from 'react-i18next';
 import {PlayerListQuery, usePlayerListQuery} from './graphql';
 import {WithQuery} from './WithQuery';
-import {createNewUrlFragment, playersBaseUrl} from './urls';
 import {PlayerForm} from './PlayerForm';
+import {useSelector} from 'react-redux';
+import {currentUserSelector} from './store/store';
 
-export function PlayersBase(): JSX.Element {
+export function PlayersList(): JSX.Element {
 
-  const {url} = useRouteMatch();
-
-  return (
-    <Switch>
-      <Route path={`${url}/`} exact component={PlayersList}/>
-      <Route path={`${url}/${createNewUrlFragment}`} component={PlayerForm}/>
-    </Switch>
-  );
-}
-
-function PlayersList(): JSX.Element {
   const {t} = useTranslation('common');
-
+  const currentUser = useSelector(currentUserSelector);
   const playerListQuery = usePlayerListQuery();
 
   function render({players}: PlayerListQuery): JSX.Element {
@@ -56,7 +44,9 @@ function PlayersList(): JSX.Element {
 
       <WithQuery query={playerListQuery} render={render}/>
 
-      <Link to={`${playersBaseUrl}/${createNewUrlFragment}`} className="button is-link is-fullwidth">{t('createNewPlayer')}</Link>
+      {currentUser && <div className="my-3">
+        <PlayerForm/>
+      </div>}
     </div>
   );
 }

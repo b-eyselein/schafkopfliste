@@ -82,10 +82,10 @@ export function GroupForm(): JSX.Element {
   }
 
   return (
-    <div className="container">
-      <h1 className="title is-3 has-text-centered">{t('createNewGroup')}</h1>
+    <>
+      <h2 className="subtitle is-3 has-text-centered">{t('createNewGroup')}</h2>
 
       <WithQuery query={ruleSetListQuery} render={render}/>
-    </div>
+    </>
   );
 }
