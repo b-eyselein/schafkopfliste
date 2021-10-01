@@ -18,14 +18,21 @@ const playerInputSchema: yup.SchemaOf<PlayerInput> = yup.object()
   })
   .required();
 
-export function PlayerForm(): JSX.Element {
+interface IProps {
+  onPlayerCreated: () => void;
+}
+
+export function PlayerForm({onPlayerCreated}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [createPlayer, {data, loading, error}] = usePlayerCreationMutation();
 
   function onSubmit(playerInput: PlayerInput, {resetForm}: FormikHelpers<PlayerInput>): void {
     createPlayer({variables: {playerInput}})
-      .then(() => resetForm())
+      .then(() => {
+        resetForm();
+        onPlayerCreated();
+      })
       .catch((error) => console.error(error));
   }
 

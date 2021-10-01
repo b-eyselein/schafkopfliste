@@ -17,7 +17,11 @@ const groupInputSchema: yup.SchemaOf<GroupInput> = yup.object()
   })
   .required();
 
-export function GroupForm(): JSX.Element {
+interface IProps {
+  onGroupCreated: () => void;
+}
+
+export function GroupForm({onGroupCreated}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const ruleSetListQuery = useRuleSetListQuery();
@@ -38,7 +42,10 @@ export function GroupForm(): JSX.Element {
 
     function onSubmit(groupInput: GroupInput, {resetForm}: FormikHelpers<GroupInput>): void {
       createGroup({variables: groupInput})
-        .then(() => resetForm())
+        .then(() => {
+          resetForm();
+          onGroupCreated();
+        })
         .catch((error) => console.error(error));
     }
 

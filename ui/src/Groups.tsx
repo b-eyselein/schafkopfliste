@@ -61,7 +61,7 @@ function GroupsList(): JSX.Element {
       <WithQuery query={groupListQuery} render={render}/>
 
       {currentUser && <div className="my-3">
-        <GroupForm/>
+        <GroupForm onGroupCreated={groupListQuery.refetch}/>
       </div>}
     </div>
   );

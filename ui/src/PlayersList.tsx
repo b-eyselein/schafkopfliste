@@ -45,7 +45,7 @@ export function PlayersList(): JSX.Element {
       <WithQuery query={playerListQuery} render={render}/>
 
       {currentUser && <div className="my-3">
-        <PlayerForm/>
+        <PlayerForm onPlayerCreated={playerListQuery.refetch}/>
       </div>}
     </div>
   );
