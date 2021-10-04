@@ -1,9 +1,11 @@
+use diesel::prelude::*;
+use juniper::{graphql_object, FieldResult, GraphQLInputObject};
+
 use crate::graphql::mutation::on_no_login;
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
-use crate::models::game::game::{select_max_game_id, upsert_game, Game, GameInput};
+use crate::models::game::game::{select_max_game_id, upsert_game, Game};
+use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use crate::models::session::update_end_session;
-use diesel::prelude::*;
-use juniper::{graphql_object, FieldResult};
 
 pub struct SessionMutations {
     group_id: i32,
@@ -14,6 +16,22 @@ impl SessionMutations {
     pub fn new(group_id: i32, session_id: i32) -> Self {
         Self { group_id, session_id }
     }
+}
+
+#[derive(Debug, GraphQLInputObject)]
+pub struct GameInput {
+    pub acting_player_nickname: String,
+    pub game_type: GameType,
+    pub suit: Option<BavarianSuit>,
+    pub tout: bool,
+
+    pub is_doubled: bool,
+    pub laufende_count: i32,
+    pub schneider_schwarz: Option<SchneiderSchwarz>,
+
+    pub players_having_put_nicknames: Vec<String>,
+    pub kontra: Option<KontraType>,
+    pub players_having_won_nicknames: Vec<String>,
 }
 
 #[graphql_object(context = GraphQLContext)]

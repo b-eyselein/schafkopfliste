@@ -1,6 +1,6 @@
 use diesel::dsl::max;
-use diesel::{pg::PgConnection, prelude::*, result::QueryResult};
-use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
+use diesel::prelude::*;
+use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::graphql::GraphQLContext;
 use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
@@ -13,22 +13,6 @@ pub struct Game {
     pub session_id: i32,
     pub id: i32,
 
-    pub acting_player_nickname: String,
-    pub game_type: GameType,
-    pub suit: Option<BavarianSuit>,
-    pub tout: bool,
-
-    pub is_doubled: bool,
-    pub laufende_count: i32,
-    pub schneider_schwarz: Option<SchneiderSchwarz>,
-
-    pub players_having_put_nicknames: Vec<String>,
-    pub kontra: Option<KontraType>,
-    pub players_having_won_nicknames: Vec<String>,
-}
-
-#[derive(Debug, GraphQLInputObject)]
-pub struct GameInput {
     pub acting_player_nickname: String,
     pub game_type: GameType,
     pub suit: Option<BavarianSuit>,
@@ -230,14 +214,6 @@ pub fn select_max_game_id(conn: &PgConnection, the_group_id: &i32, the_session_i
         .select(max(id))
         .first(conn)
 }
-
-/*
-pub fn select_games_for_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Vec<Game>> {
-    use crate::schema::games::dsl::*;
-
-    games.filter(group_id.eq(the_group_id)).load(conn)
-}
- */
 
 pub fn select_games_for_session(conn: &PgConnection, the_group_id: &i32, the_session_id: &i32) -> QueryResult<Vec<Game>> {
     use crate::schema::games::dsl::*;

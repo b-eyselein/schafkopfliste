@@ -1,55 +1,13 @@
 use diesel::prelude::*;
-use juniper::{GraphQLInputObject, GraphQLObject};
-use serde::{Deserialize, Serialize};
+use juniper::GraphQLObject;
 
-use crate::schema::users;
-
-// FIXME: remove (De)Serialize!
-
-#[derive(Insertable, Queryable, GraphQLObject)]
+#[derive(Debug, Queryable)]
 pub struct User {
     pub username: String,
-    #[graphql(skip)]
     pub password_hash: String,
 }
 
-impl User {
-    pub fn new(username: String, password_hash: String) -> User {
-        User { username, password_hash }
-    }
-}
-
-/*
-#[graphql_object(context = GraphQLContext)]
-impl User {
-    pub fn username(&self) -> &String {
-        &self.username
-    }
-}
- */
-
-#[derive(Debug, Deserialize, GraphQLInputObject)]
-#[serde(rename_all = "camelCase")]
-pub struct Credentials {
-    pub username: String,
-    pub password: String,
-}
-
-#[derive(Debug, Deserialize, GraphQLInputObject)]
-#[serde(rename_all = "camelCase")]
-pub struct RegisterUserInput {
-    pub username: String,
-    pub password: String,
-    pub password_repeat: String,
-}
-
-impl RegisterUserInput {
-    pub fn is_valid(&self) -> bool {
-        !self.username.is_empty() && !self.password.is_empty() && !self.password_repeat.is_empty() && self.password == self.password_repeat
-    }
-}
-
-#[derive(Serialize, GraphQLObject)]
+#[derive(GraphQLObject)]
 pub struct UserWithToken {
     pub username: String,
     pub token: String,

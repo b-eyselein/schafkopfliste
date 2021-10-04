@@ -121,7 +121,7 @@ pub fn select_rule_set_for_session(conn: &PgConnection, the_group_id: &i32, the_
     sessions::table
         .find((the_group_id, the_session_id))
         .inner_join(rule_sets::table.on(rule_sets::group_id.eq(sessions::group_id).and(rule_sets::name.eq(sessions::rule_set_name))))
-        .select((rule_sets::all_columns))
+        .select(rule_sets::all_columns)
         .first(conn)
         .optional()
 }

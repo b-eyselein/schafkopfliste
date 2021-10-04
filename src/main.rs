@@ -59,7 +59,7 @@ async fn route_get_graphql_handler(
     request: GraphQLRequest,
     schema: &State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(&schema, &GraphQLContext::new(connection, authorization_header)).await
+    request.execute(schema, &GraphQLContext::new(connection, authorization_header)).await
 }
 
 #[post("/graphql", data = "<request>")]
@@ -69,7 +69,7 @@ async fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: &State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(&schema, &GraphQLContext::new(connection, authorization_header)).await
+    request.execute(schema, &GraphQLContext::new(connection, authorization_header)).await
 }
 
 #[get("/<file..>", rank = 2)]

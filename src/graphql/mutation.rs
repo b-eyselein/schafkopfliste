@@ -1,17 +1,36 @@
 use bcrypt::{hash, verify, DEFAULT_COST};
-use juniper::{graphql_object, FieldError, FieldResult};
+use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::group_mutations::GroupMutations;
 use crate::jwt_helpers::generate_token;
 use crate::models::group::Group;
 use crate::models::group::{insert_group, select_group_by_id};
-use crate::models::user::{insert_user, user_by_username, Credentials, RegisterUserInput, User, UserWithToken};
+use crate::models::user::{insert_user, user_by_username, User, UserWithToken};
 
 pub struct Mutations;
 
 pub fn on_no_login() -> FieldError {
     FieldError::from("User is not logged in!")
+}
+
+#[derive(Debug, GraphQLInputObject)]
+pub struct Credentials {
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Debug, GraphQLInputObject)]
+pub struct RegisterUserInput {
+    pub username: String,
+    pub password: String,
+    pub password_repeat: String,
+}
+
+impl RegisterUserInput {
+    pub fn is_valid(&self) -> bool {
+        !self.username.is_empty() && !self.password.is_empty() && !self.password_repeat.is_empty() && self.password == self.password_repeat
+    }
 }
 
 #[graphql_object(Context = GraphQLContext)]

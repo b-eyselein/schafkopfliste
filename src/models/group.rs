@@ -29,13 +29,6 @@ impl Group {
         &self.name
     }
 
-    /*
-    pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        let rule_set_name = self.rule_set_name.clone();
-        Ok(context.connection.run(move |c| select_rule_set_by_id(&c, &rule_set_name)).await?)
-    }
-     */
-
     pub async fn rule_sets(&self, context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
         let group_id = self.id.clone();
 
