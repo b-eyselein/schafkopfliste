@@ -3,8 +3,8 @@ use juniper::{graphql_object, FieldResult, GraphQLInputObject};
 
 use crate::graphql::mutation::on_no_login;
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
-use crate::models::game::game::{select_max_game_id, upsert_game, Game};
-use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
+use crate::models::game::{select_max_game_id, upsert_game, Game};
+use crate::models::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use crate::models::session::update_end_session;
 
 pub struct SessionMutations {

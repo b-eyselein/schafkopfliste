@@ -8,4 +8,5 @@ pub mod rule_set;
 
 pub mod session;
 
+pub mod game_enums;
 pub mod user;

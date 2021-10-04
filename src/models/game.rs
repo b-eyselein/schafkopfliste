@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::graphql::GraphQLContext;
-use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
+use crate::models::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
 use crate::models::rule_set::{select_rule_set_for_session, CountLaufende, RuleSet};
 use crate::schema::games;
 

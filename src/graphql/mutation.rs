@@ -1,12 +1,12 @@
-use bcrypt::{DEFAULT_COST, hash, verify};
-use juniper::{FieldError, FieldResult, graphql_object, GraphQLInputObject};
+use bcrypt::{hash, verify, DEFAULT_COST};
+use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::group_mutations::GroupMutations;
 use crate::jwt_helpers::generate_token;
-use crate::models::group::{insert_group, select_group_by_id};
 use crate::models::group::Group;
-use crate::models::user::{insert_user, User, user_by_username, UserWithToken};
+use crate::models::group::{insert_group, select_group_by_id};
+use crate::models::user::{insert_user, user_by_username, User, UserWithToken};
 
 pub struct Mutations;
 
