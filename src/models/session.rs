@@ -45,65 +45,65 @@ impl Session {
     }
 
     pub async fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
-        let session_id = self.id.clone();
-        let group_id = self.group_id.clone();
+        let session_id = self.id;
+        let group_id = self.group_id;
 
-        Ok(context
+        context
             .connection
-            .run(move |c| select_games_for_session(&c, &group_id, &session_id).map_err(graphql_on_db_error))
-            .await?)
+            .run(move |c| select_games_for_session(c, &group_id, &session_id).map_err(graphql_on_db_error))
+            .await
     }
 
     pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
         let rule_set_name = self.rule_set_name.clone();
 
-        Ok(context
+        context
             .connection
-            .run(move |c| select_rule_set_by_id(&c, &group_id, &rule_set_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
-            .await?)
+            .run(move |c| select_rule_set_by_id(c, &group_id, &rule_set_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
+            .await
     }
 
     pub async fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
         let first_player_nickname = self.first_player_nickname.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_player_by_nickname(&c, &group_id, &first_player_nickname))
+            .run(move |c| select_player_by_nickname(c, &group_id, &first_player_nickname))
             .await?
             .unwrap())
     }
 
     pub async fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
         let second_player_nickname = self.second_player_nickname.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_player_by_nickname(&c, &group_id, &second_player_nickname))
+            .run(move |c| select_player_by_nickname(c, &group_id, &second_player_nickname))
             .await?
             .unwrap())
     }
 
     pub async fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
         let third_player_nickname = self.third_player_nickname.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_player_by_nickname(&c, &group_id, &third_player_nickname))
+            .run(move |c| select_player_by_nickname(c, &group_id, &third_player_nickname))
             .await?
             .unwrap())
     }
 
     pub async fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
         let fourth_player_nickname = self.fourth_player_nickname.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_player_by_nickname(&c, &group_id, &fourth_player_nickname))
+            .run(move |c| select_player_by_nickname(c, &group_id, &fourth_player_nickname))
             .await?
             .unwrap())
     }
@@ -122,6 +122,7 @@ fn select_max_session_id(conn: &PgConnection, the_group_id: &i32) -> QueryResult
         .map(|maybe_max| maybe_max.unwrap_or(0))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn insert_session(
     conn: &PgConnection,
     the_group_id: i32,

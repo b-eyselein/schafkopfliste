@@ -30,44 +30,44 @@ impl Group {
     }
 
     pub async fn rule_sets(&self, context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_rule_sets(&c, &group_id)).await?)
+        Ok(context.connection.run(move |c| select_rule_sets(c, &group_id)).await?)
     }
 
     pub async fn rule_set(&self, name: String, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_rule_set_by_id(&c, &group_id, &name)).await?)
+        Ok(context.connection.run(move |c| select_rule_set_by_id(c, &group_id, &name)).await?)
     }
 
     pub async fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
         let count = context
             .connection
-            .run(move |c| select_player_count_for_group(&c, &group_id).map_err(graphql_on_db_error))
+            .run(move |c| select_player_count_for_group(c, &group_id).map_err(graphql_on_db_error))
             .await?;
 
         Ok(i32::try_from(count)?)
     }
 
     pub async fn players(&self, context: &GraphQLContext) -> FieldResult<Vec<Player>> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_players_in_group(&c, &group_id)).await?)
+        Ok(context.connection.run(move |c| select_players_in_group(c, &group_id)).await?)
     }
 
     pub async fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_sessions_for_group(&c, &group_id)).await?)
+        Ok(context.connection.run(move |c| select_sessions_for_group(c, &group_id)).await?)
     }
 
     pub async fn session(&self, id: i32, context: &GraphQLContext) -> FieldResult<Option<Session>> {
-        let group_id = self.id.clone();
+        let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_session_by_id(&c, &group_id, &id)).await?)
+        Ok(context.connection.run(move |c| select_session_by_id(c, &group_id, &id)).await?)
     }
 }
 

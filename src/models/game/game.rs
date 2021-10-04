@@ -28,6 +28,7 @@ pub struct Game {
 }
 
 impl Game {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         group_id: i32,
         session_id: i32,
@@ -178,8 +179,8 @@ impl Game {
 
     #[graphql(name = "price")]
     pub async fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        let group_id = self.group_id.clone();
-        let session_id = self.session_id.clone();
+        let group_id = self.group_id;
+        let session_id = self.session_id;
 
         let rule_set = context
             .connection

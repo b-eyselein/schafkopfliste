@@ -14,15 +14,15 @@ pub fn graphql_on_db_error(db_error: DbError) -> FieldError {
 #[graphql_object(Context = GraphQLContext)]
 impl QueryRoot {
     pub async fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
-        Ok(context.connection.run(move |c| select_groups(&c)).await?)
+        Ok(context.connection.run(move |c| select_groups(c)).await?)
     }
 
     pub async fn maybe_group(group_id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {
-        Ok(context.connection.run(move |c| select_group_by_id(&c, &group_id)).await?)
+        Ok(context.connection.run(move |c| select_group_by_id(c, &group_id)).await?)
     }
 
     pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<Group> {
-        match context.connection.run(move |c| select_group_by_id(&c, &group_id)).await? {
+        match context.connection.run(move |c| select_group_by_id(c, &group_id)).await? {
             None => Err(FieldError::from("No such group!")),
             Some(group) => Ok(group),
         }

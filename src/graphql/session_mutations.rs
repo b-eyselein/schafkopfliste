@@ -37,17 +37,17 @@ pub struct GameInput {
 #[graphql_object(context = GraphQLContext)]
 impl SessionMutations {
     pub async fn end_session(&self, context: &GraphQLContext) -> FieldResult<bool> {
-        let group_id = self.group_id.clone();
-        let session_id = self.session_id.clone();
+        let group_id = self.group_id;
+        let session_id = self.session_id;
 
         // FIXME: update values...
 
-        Ok(context.connection.run(move |c| update_end_session(&c, &group_id, &session_id)).await?)
+        Ok(context.connection.run(move |c| update_end_session(c, &group_id, &session_id)).await?)
     }
 
     pub async fn new_game(&self, game_input: GameInput, context: &GraphQLContext) -> FieldResult<Game> {
-        let group_id = self.group_id.clone();
-        let session_id = self.session_id.clone();
+        let group_id = self.group_id;
+        let session_id = self.session_id;
 
         match context.authorization_header.username() {
             None => Err(on_no_login()),

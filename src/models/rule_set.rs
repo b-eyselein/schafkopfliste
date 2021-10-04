@@ -61,7 +61,7 @@ impl RuleSet {
 }
 
 // Queries
-
+#[allow(clippy::too_many_arguments)]
 pub fn insert_rule_set(
     conn: &PgConnection,
     the_group_id: &i32,

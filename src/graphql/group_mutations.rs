@@ -62,7 +62,7 @@ impl GroupMutations {
     pub async fn create_rule_set(&self, rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.username() {
             Some(username) if username == self.owner_username => {
-                let group_id = self.group_id.clone();
+                let group_id = self.group_id;
 
                 let RuleSetInput {
                     name,
@@ -84,7 +84,7 @@ impl GroupMutations {
                     .connection
                     .run(move |c| {
                         insert_rule_set(
-                            &c,
+                            c,
                             &group_id,
                             &name,
                             &base_price,
@@ -110,7 +110,7 @@ impl GroupMutations {
     pub async fn create_player(&self, new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.username() {
             Some(username) if username == self.owner_username => {
-                let group_id = self.group_id.clone();
+                let group_id = self.group_id;
 
                 let PlayerInput {
                     nickname,
@@ -120,7 +120,7 @@ impl GroupMutations {
 
                 Ok(context
                     .connection
-                    .run(move |c| insert_player(&c, &group_id, &nickname, &first_name, &last_name))
+                    .run(move |c| insert_player(c, &group_id, &nickname, &first_name, &last_name))
                     .await?)
             }
             _ => Err(on_no_login()),
@@ -130,9 +130,9 @@ impl GroupMutations {
     pub async fn new_session(&self, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
         match context.authorization_header.username() {
             Some(username) => {
-                let group_id = self.group_id.clone();
+                let group_id = self.group_id;
 
-                let creator_username = if username == &self.owner_username { None } else { Some(username.to_string()) };
+                let creator_username = if username == self.owner_username { None } else { Some(username.to_string()) };
 
                 // FIXME: check if user is owner of group...
 
@@ -150,7 +150,7 @@ impl GroupMutations {
                     .connection
                     .run(move |c| {
                         insert_session(
-                            &c,
+                            c,
                             group_id,
                             &date,
                             &time,
@@ -169,9 +169,9 @@ impl GroupMutations {
     }
 
     pub async fn session(&self, session_id: i32, context: &GraphQLContext) -> FieldResult<SessionMutations> {
-        let group_id = self.group_id.clone();
+        let group_id = self.group_id;
 
-        match context.connection.run(move |c| select_session_by_id(&c, &group_id, &session_id)).await? {
+        match context.connection.run(move |c| select_session_by_id(c, &group_id, &session_id)).await? {
             None => Err(FieldError::from("No such session!")),
             Some(session) => {
                 let Session { group_id, id, .. } = session;

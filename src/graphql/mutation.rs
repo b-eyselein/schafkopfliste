@@ -1,12 +1,12 @@
-use bcrypt::{hash, verify, DEFAULT_COST};
-use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
+use bcrypt::{DEFAULT_COST, hash, verify};
+use juniper::{FieldError, FieldResult, graphql_object, GraphQLInputObject};
 
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::group_mutations::GroupMutations;
 use crate::jwt_helpers::generate_token;
-use crate::models::group::Group;
 use crate::models::group::{insert_group, select_group_by_id};
-use crate::models::user::{insert_user, user_by_username, User, UserWithToken};
+use crate::models::group::Group;
+use crate::models::user::{insert_user, User, user_by_username, UserWithToken};
 
 pub struct Mutations;
 
@@ -44,11 +44,11 @@ impl Mutations {
 
         let pw_hash = hash(password, DEFAULT_COST)?;
 
-        Ok(context
+        context
             .connection
-            .run(move |c| insert_user(&c, &username, &pw_hash))
+            .run(move |c| insert_user(c, &username, &pw_hash))
             .await
-            .map_err(|_error| FieldError::from("Could not create user!"))?)
+            .map_err(|_error| FieldError::from("Could not create user!"))
     }
 
     pub async fn login(credentials: Credentials, context: &GraphQLContext) -> FieldResult<UserWithToken> {
@@ -56,7 +56,7 @@ impl Mutations {
 
         let on_login_error = || Err(FieldError::from("Invalid combination of username and password"));
 
-        match context.connection.run(move |c| user_by_username(&c, &username)).await? {
+        match context.connection.run(move |c| user_by_username(c, &username)).await? {
             None => on_login_error(),
             Some(user) => {
                 let User { username, password_hash } = user;
@@ -75,13 +75,13 @@ impl Mutations {
             None => Err(on_no_login()),
             Some(username) => {
                 let username = username.to_string();
-                Ok(context.connection.run(move |c| insert_group(&c, &username, &name)).await?)
+                Ok(context.connection.run(move |c| insert_group(c, &username, &name)).await?)
             }
         }
     }
 
     pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<GroupMutations> {
-        match context.connection.run(move |c| select_group_by_id(&c, &group_id)).await? {
+        match context.connection.run(move |c| select_group_by_id(c, &group_id)).await? {
             None => Err(FieldError::from("No such group!")),
             Some(group) => {
                 let Group { id, owner_username, .. } = group;
