@@ -9,7 +9,7 @@ import BayHearts from './bay_herz.png';
 import BayBells from './bay_schellen.png';
 
 interface IProps {
-  groupName: string;
+  groupId: number;
   sessionId: number;
   session: SessionFragment;
   onNewGame: () => void;
@@ -67,7 +67,7 @@ const suitValues: [BavarianSuit, any][] = [
   [BavarianSuit.Bells, BayBells]
 ];
 
-export function GameForm({groupName, sessionId, session, onNewGame}: IProps): JSX.Element {
+export function GameForm({groupId, sessionId, session, onNewGame}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [state, setState] = useState<IState>(initialState);
@@ -160,7 +160,7 @@ export function GameForm({groupName, sessionId, session, onNewGame}: IProps): JS
       laufendeCount
     };
 
-    createGame({variables: {groupName, sessionId, gameInput}})
+    createGame({variables: {groupId, sessionId, gameInput}})
       .then(() => {
         onNewGame();
         setState((state) => ({
@@ -174,7 +174,7 @@ export function GameForm({groupName, sessionId, session, onNewGame}: IProps): JS
 
   function onEndSession(): void {
     if (confirm('Wollen Sie die Sitzung wirklich beenden?\nAchtung: Sie können danach keine weiteren Spiele mehr eintragen!')) {
-      endSession({variables: {groupName, sessionId}})
+      endSession({variables: {groupId, sessionId}})
         .then(onNewGame)
         .catch((error) => console.error(error));
     }

@@ -1,22 +1,22 @@
+use chrono::{Datelike, NaiveDate, NaiveTime};
 use diesel::{prelude::*, PgConnection, QueryResult};
-use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
+use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::graphql::{graphql_on_db_error, GraphQLContext};
-use crate::models::game::{select_games_for_session, Game};
+use crate::models::game::game::{select_games_for_session, Game};
 use crate::models::player::{select_player_by_nickname, Player};
-use crate::models::rule_set::{select_rule_set_for_group, RuleSet};
+use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
 use crate::schema::sessions;
 
 #[derive(Debug, Queryable, Insertable)]
 pub struct Session {
+    pub group_id: i32,
     pub id: i32,
-    pub group_name: String,
 
-    pub date_year: i32,
-    pub date_month: i32,
-    pub date_day_of_month: i32,
-    pub time_hours: i32,
-    pub time_minutes: i32,
+    pub date: NaiveDate,
+    pub time: NaiveTime,
+
+    rule_set_name: String,
 
     pub has_ended: bool,
 
@@ -25,63 +25,10 @@ pub struct Session {
     pub third_player_nickname: String,
     pub fourth_player_nickname: String,
 
-    pub creator_username: String,
-}
-
-impl Session {
-    pub fn from_creatable_session(id: i32, group_name: String, creator_username: String, cs: SessionInput) -> Session {
-        let SessionInput {
-            date_year,
-            date_month,
-            date_day_of_month,
-            time_hours,
-            time_minutes,
-            first_player_nickname,
-            second_player_nickname,
-            third_player_nickname,
-            fourth_player_nickname,
-        } = cs;
-
-        Session {
-            id,
-            group_name,
-            date_year,
-            date_month,
-            date_day_of_month,
-            time_hours,
-            time_minutes,
-            has_ended: false,
-            first_player_nickname,
-            second_player_nickname,
-            third_player_nickname,
-            fourth_player_nickname,
-            creator_username,
-        }
-    }
-
-    pub fn player_has_partaken(&self, player_nickname: &str) -> bool {
-        self.first_player_nickname == *player_nickname
-            || self.second_player_nickname == *player_nickname
-            || self.third_player_nickname == *player_nickname
-            || self.fourth_player_nickname == *player_nickname
-    }
+    pub other_creator_username: Option<String>,
 }
 
 // GraphQL
-
-#[derive(Debug, GraphQLInputObject)]
-pub struct SessionInput {
-    date_year: i32,
-    date_month: i32,
-    date_day_of_month: i32,
-    time_hours: i32,
-    time_minutes: i32,
-
-    first_player_nickname: String,
-    second_player_nickname: String,
-    third_player_nickname: String,
-    fourth_player_nickname: String,
-}
 
 #[graphql_object(context = GraphQLContext)]
 impl Session {
@@ -94,70 +41,144 @@ impl Session {
     }
 
     pub fn date(&self) -> String {
-        format!("{}.{}.{}", self.date_day_of_month, self.date_month, self.date_year)
+        format!("{}.{}.{}", self.date.day0(), self.date.month0(), self.date.year())
     }
 
     pub async fn games(&self, context: &GraphQLContext) -> FieldResult<Vec<Game>> {
         let session_id = self.id.clone();
-        let group_name = self.group_name.clone();
+        let group_id = self.group_id.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_games_for_session(&c, &session_id, &group_name).map_err(graphql_on_db_error))
+            .run(move |c| select_games_for_session(&c, &group_id, &session_id).map_err(graphql_on_db_error))
             .await?)
     }
 
     pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
-        let group_name = self.group_name.clone();
+        let group_id = self.group_id.clone();
+        let rule_set_name = self.rule_set_name.clone();
 
         Ok(context
             .connection
-            .run(move |c| select_rule_set_for_group(&c, &group_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
+            .run(move |c| select_rule_set_by_id(&c, &group_id, &rule_set_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
             .await?)
     }
 
     pub async fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let group_id = self.group_id.clone();
         let first_player_nickname = self.first_player_nickname.clone();
 
-        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &first_player_nickname)).await?)
+        Ok(context
+            .connection
+            .run(move |c| select_player_by_nickname(&c, &group_id, &first_player_nickname))
+            .await?
+            .unwrap())
     }
 
     pub async fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let group_id = self.group_id.clone();
         let second_player_nickname = self.second_player_nickname.clone();
 
-        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &second_player_nickname)).await?)
+        Ok(context
+            .connection
+            .run(move |c| select_player_by_nickname(&c, &group_id, &second_player_nickname))
+            .await?
+            .unwrap())
     }
 
     pub async fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let group_id = self.group_id.clone();
         let third_player_nickname = self.third_player_nickname.clone();
 
-        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &third_player_nickname)).await?)
+        Ok(context
+            .connection
+            .run(move |c| select_player_by_nickname(&c, &group_id, &third_player_nickname))
+            .await?
+            .unwrap())
     }
 
     pub async fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
+        let group_id = self.group_id.clone();
         let fourth_player_nickname = self.fourth_player_nickname.clone();
 
-        Ok(context.connection.run(move |c| select_player_by_nickname(&c, &fourth_player_nickname)).await?)
+        Ok(context
+            .connection
+            .run(move |c| select_player_by_nickname(&c, &group_id, &fourth_player_nickname))
+            .await?
+            .unwrap())
     }
 }
 
 // Queries
 
-fn select_max_session_id(conn: &PgConnection, the_group_name: &str) -> QueryResult<i32> {
+fn select_max_session_id(conn: &PgConnection, the_group_id: &i32) -> QueryResult<i32> {
     use crate::schema::sessions::dsl::*;
     use diesel::dsl::max;
 
     sessions
-        .filter(group_name.eq(the_group_name))
+        .filter(group_id.eq(the_group_id))
         .select(max(id))
         .first::<Option<i32>>(conn)
         .map(|maybe_max| maybe_max.unwrap_or(0))
 }
 
-pub fn insert_session(conn: &PgConnection, the_group_name: String, the_creator_username: String, session_input: SessionInput) -> QueryResult<i32> {
-    let new_id = select_max_session_id(conn, &the_group_name)? + 1;
+pub fn insert_session(
+    conn: &PgConnection,
+    the_group_id: i32,
+    the_date: &NaiveDate,
+    the_time: &NaiveTime,
+    the_rule_set_name: &str,
+    the_first_player_nickname: &str,
+    the_second_player_nickname: &str,
+    the_third_player_nickname: &str,
+    the_fourth_player_nickname: &str,
+    the_other_creator_username: Option<String>,
+) -> QueryResult<i32> {
+    use crate::schema::sessions::dsl::*;
 
-    let session = Session::from_creatable_session(new_id, the_group_name, the_creator_username, session_input);
+    let new_id = select_max_session_id(conn, &the_group_id)? + 1;
 
-    diesel::insert_into(sessions::table).values(session).returning(sessions::id).get_result(conn)
+    diesel::insert_into(sessions)
+        .values((
+            group_id.eq(the_group_id),
+            id.eq(new_id),
+            date.eq(the_date),
+            time.eq(the_time),
+            rule_set_name.eq(the_rule_set_name),
+            first_player_nickname.eq(the_first_player_nickname),
+            second_player_nickname.eq(the_second_player_nickname),
+            third_player_nickname.eq(the_third_player_nickname),
+            fourth_player_nickname.eq(the_fourth_player_nickname),
+            other_creator_username.eq(the_other_creator_username),
+        ))
+        .returning(id)
+        .get_result(conn)
+}
+
+pub fn select_sessions_for_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Vec<Session>> {
+    use crate::schema::sessions::dsl::*;
+
+    sessions.filter(group_id.eq(the_group_id)).order_by(id).load(conn)
+}
+
+pub fn select_session_by_id(conn: &PgConnection, the_group_id: &i32, the_id: &i32) -> QueryResult<Option<Session>> {
+    use crate::schema::sessions::dsl::*;
+
+    sessions.find((the_group_id, the_id)).first(conn).optional()
+}
+
+/*
+pub fn select_session_has_ended(conn: &PgConnection, the_group_name: &str, the_id: &i32) -> QueryResult<bool> {
+use crate::schema::sessions::dsl::*;
+
+    sessions.find((the_id, the_group_name)).select(has_ended).first(conn)
+}
+ */
+
+pub fn update_end_session(conn: &PgConnection, the_group_id: &i32, the_session_id: &i32) -> QueryResult<bool> {
+    use crate::schema::sessions::dsl::*;
+
+    let source = sessions.filter(group_id.eq(the_group_id)).filter(id.eq(the_session_id));
+
+    diesel::update(source).set(has_ended.eq(true)).returning(has_ended).get_result(conn)
 }

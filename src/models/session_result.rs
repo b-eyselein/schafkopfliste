@@ -1,4 +1,4 @@
-use diesel::{self, prelude::*, result::QueryResult, PgConnection};
+use diesel::prelude::*;
 use serde::Serialize;
 
 use crate::schema::session_results;
@@ -11,6 +11,7 @@ pub struct SessionResult {
     result: i32,
 }
 
+/*
 pub fn select_session_results(conn: &PgConnection) -> QueryResult<Vec<SessionResult>> {
     session_results::table.load(conn)
 }
@@ -24,6 +25,7 @@ pub fn select_session_results_for_session(conn: &PgConnection, the_session_id: i
         .load(conn)
 }
 
+
 pub fn upsert_session_result(conn: &PgConnection, the_session_result: SessionResult) -> QueryResult<SessionResult> {
     use crate::schema::session_results::dsl::*;
 
@@ -34,3 +36,4 @@ pub fn upsert_session_result(conn: &PgConnection, the_session_result: SessionRes
         .set(result.eq(the_session_result.result))
         .get_result(conn)
 }
+ */

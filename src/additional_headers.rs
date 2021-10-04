@@ -11,8 +11,8 @@ use crate::jwt_helpers::{decode_token, Claims};
 pub struct AuthorizationHeader(Option<TokenData<Claims>>);
 
 impl AuthorizationHeader {
-    pub fn token(&self) -> Option<&TokenData<Claims>> {
-        self.0.as_ref()
+    pub fn username(&self) -> Option<&str> {
+        return self.0.as_ref().map(|token| token.claims.username());
     }
 }
 

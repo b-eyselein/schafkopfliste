@@ -1,126 +1,134 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {GroupQuery, useGroupQuery} from './graphql';
-import {Link, Redirect, useRouteMatch} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {WithQuery} from './WithQuery';
 import {useTranslation} from 'react-i18next';
-import {createNewUrlFragment, groupsBaseUrl, playersUrlFragment, sessionsUrlFragment} from './urls';
-import {useSelector} from 'react-redux';
-import {currentUserSelector} from './store/store';
+import {groupsBaseUrl, sessionsUrlFragment} from './urls';
+import {PlayerTable} from './PlayerTable';
 import classNames from 'classnames';
-import {Route, Switch} from 'react-router';
-import {PlayersInGroup} from './PlayersInGroup';
+import {RuleSetCard} from './RuleSetCard';
+import update from 'immutability-helper';
+import {RuleSetForm} from './RuleSetForm';
+import {PlayerForm} from './PlayerForm';
 import {NewSessionFormContainer} from './sessions/NewSessionForm';
-import {Session} from './sessions/Session';
-
-export function GroupBase(): JSX.Element {
-
-  const {url, params: {groupName}} = useRouteMatch<{ groupName: string }>();
-
-  return (
-    <Switch>
-      <Route path={`${url}/`} exact render={() => <GroupOverview name={groupName}/>}/>
-      <Route path={`${url}/${playersUrlFragment}`} exact render={() => <PlayersInGroup groupName={groupName}/>}/>
-      <Route path={`${url}/${sessionsUrlFragment}/${createNewUrlFragment}`} exact render={() => <NewSessionFormContainer groupName={groupName}/>}/>
-      <Route path={`${url}/${sessionsUrlFragment}/:sessionId`} exact render={() => <Session groupName={groupName}/>}/>
-    </Switch>
-  );
-
-}
 
 interface IProps {
-  name: string;
+  groupId: number;
+  groupName: string;
 }
 
-function GroupOverview({name}: IProps): JSX.Element {
+interface IState {
+  addRuleSet: boolean;
+  addPlayer: boolean;
+  addSession: boolean;
+}
+
+export function GroupOverview({groupId, groupName}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
-  const currentUser = useSelector(currentUserSelector);
-
-  const groupQuery = useGroupQuery({variables: {name}});
+  const groupQuery = useGroupQuery({variables: {groupId}});
+  const [state, setState] = useState<IState>({addRuleSet: false, addPlayer: false, addSession: false});
 
   function render({group}: GroupQuery): JSX.Element {
-    if (!group) {
-      return <Redirect to={groupsBaseUrl}/>;
-    }
+    const {ruleSets, players, sessions} = group;
 
-    const {players, sessions} = group;
-
+    /*
     function recalculateStatistics(): void {
       console.info('TODO!');
+    }
+     */
+
+    function onRuleSetCreationCancel(): void {
+      setState((state) => update(state, {addRuleSet: {$set: false}}));
+    }
+
+    function onRuleSetCreated(): void {
+      onRuleSetCreationCancel();
+      groupQuery.refetch();
+    }
+
+    function onPlayerCreationCancel(): void {
+      setState((state) => update(state, {addPlayer: {$set: false}}));
+    }
+
+    function onPlayerCreated(): void {
+      groupQuery.refetch();
+    }
+
+    function onSessionCreationCancel(): void {
+      setState((state) => update((state), {addSession: {$set: false}}));
+    }
+
+    function onSessionCreation(): void {
+      onSessionCreationCancel();
+      groupQuery.refetch();
     }
 
     return (
       <>
-        <div className="columns is-multiline">
-          <div className="column is-three-fifths-desktop is-full-tablet">
-            <h2 className="subtitle is-3 has-text-centered">Mitglieder</h2>
+        <section className="my-4">
+          <h2 className="subtitle is-3">{t('ruleSet_plural')}</h2>
 
-            {players.length === 0
-              ? <div className="notification is-danger has-text-centered">{t('noPlayersFound')}</div>
-              : <div className="table-container">
-                <table className="table is-striped is-bordered is-fullwidth">
-                  <thead>
-                    <tr>
-                      <th className="has-text-centered">Spieler</th>
-                      <th className="has-text-centered">Saldo</th>
-                      <th className="has-text-centered"># Spiele <br/> (gesamt)</th>
-                      <th className="has-text-centered">Saldo / Spiele</th>
-                      <th className="has-text-centered"># Leger</th>
-                      <th className="has-text-centered"># Anzahl <br/> (gespielt)</th>
-                      <th className="has-text-centered"># Siege</th>
-                      <th className="has-text-centered">% Siege</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {players.map((player) /* *ngFor="let player of getPlayersOrderedByBalance()" */ =>
-                      <tr key={player.nickname}>
-                        <td className="has-text-centered">{player.name}</td>
-                        <td className={classNames('has-text-centered', player.balance < 0 ? 'has-text-danger' : 'has-text-success')}>
-                          {player.balance}
-                        </td>
-                        <td className="has-text-centered">{player.gameCount}</td>
-                        <td className="has-text-centered">{player.gameCount > 0 ? player.balance / player.gameCount : '--' /*| number:'1.2-2'*/}</td>
-                        <td className="has-text-centered">{player.putCount}</td>
-                        <td className="has-text-centered">{player.playedGames}</td>
-                        <td className="has-text-centered">{player.winCount}</td>
-                        <td className="has-text-centered">{player.gameCount > 0 ? (player.winCount / player.gameCount) : '--' /*| percent*/}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>}
-
-            {currentUser && <div className="buttons">
-              <Link className="button is-link is-fullwidth has-text-centered" to={`${groupsBaseUrl}/${name}/${playersUrlFragment}`}>+</Link>
-              {currentUser.isAdmin &&
-              <button className="button is-danger is-fullwidth has-text-centered" onClick={recalculateStatistics}>Statistiken neu berechnen</button>}
+          {ruleSets.length === 0
+            ? <div className="notification is-primary has-text-centered">{t('noRuleSetsFound')}</div>
+            : <div className="columns is-multiline">
+              {ruleSets.map((ruleSet) => <div className="column is-one-third" key={ruleSet.name}>
+                <RuleSetCard ruleSet={ruleSet}/>
+              </div>)}
             </div>}
-          </div>
 
-          <div className="column">
-            <h2 className="subtitle is-3 has-text-centered">Sitzungen</h2>
+          {state.addRuleSet
+            ? <RuleSetForm groupId={groupId} onCreation={onRuleSetCreated} onCancel={onRuleSetCreationCancel}/>
+            : <button type="button" className="button is-link is-fullwidth" onClick={() => setState((state) => update(state, {addRuleSet: {$set: true}}))}>
+              {t('addRuleSet')}
+            </button>}
+        </section>
 
-            <div className="columns is-multiline">
-              {sessions && sessions.map(({id, hasEnded}) =>
-                <div className="column is-one-fifth-desktop" key={id}>
-                  <Link className={classNames('button', 'is-fullwidth', {'is-primary': !hasEnded})}
-                        to={`${groupsBaseUrl}/${name}/${sessionsUrlFragment}/${id}`}>{id}</Link>
-                </div>
-              )}
-              {currentUser && <div className="column is-one-fifth-desktop">
-                <Link className="button is-link is-fullwidth" to={`${groupsBaseUrl}/${name}/${sessionsUrlFragment}/${createNewUrlFragment}`}>+</Link>
-              </div>}
-            </div>
-          </div>
-        </div>
+        <section className="my-4">
+          <h2 className="subtitle is-3">{t('player_plural')}</h2>
 
+          {players.length === 0
+            ? <div className="notification is-primary has-text-centered">{t('noPlayersFound')}</div>
+            : <PlayerTable players={players}/>}
+
+          {state.addPlayer
+            ? <PlayerForm groupId={groupId} onCreation={onPlayerCreated} onCancel={onPlayerCreationCancel}/>
+            : <button type="button" className="button is-link is-fullwidth" onClick={() => setState((state) => update(state, {addPlayer: {$set: true}}))}>
+              {t('addPlayer')}
+            </button>}
+
+          {/*players.length > 0 && <div className="my-3">
+            <button className="button is-warning is-fullwidth has-text-centered" onClick={recalculateStatistics}>
+              {t('recalculateStatistics')}
+            </button>
+          </div>*/}
+        </section>
+
+        <section className="my-4">
+          <h2 className="subtitle is-3">{t('session_plural')}</h2>
+
+          {sessions.length === 0
+            ? <div className="notification is-primary has-text-centered">{t('noSessionsFound')}</div>
+            : <div className="columns is-multiline">
+              {sessions.map(({id, hasEnded}) => <div className="column is-one-fifth-desktop" key={id}>
+                <Link className={classNames('button', 'is-fullwidth', {'is-primary': !hasEnded})}
+                      to={`${groupsBaseUrl}/${groupId}/${sessionsUrlFragment}/${id}`}>{id}</Link>
+              </div>)}
+            </div>}
+
+          {state.addSession
+            ? <NewSessionFormContainer groupId={groupId} onCreation={onSessionCreation} onCancel={onSessionCreationCancel}/>
+            : <button type="button" className="button is-link is-fullwidth" onClick={() => setState((state) => update(state, {addSession: {$set: true}}))}>
+              {t('addSession')}
+            </button>}
+        </section>
       </>
     );
   }
 
   return (
     <div className="container">
-      <h1 className="title is-3 has-text-centered">{t('group')} {name}</h1>
+      <h1 className="title is-3 has-text-centered">{t('group')} {groupName}</h1>
 
       <WithQuery query={groupQuery} render={render}/>
     </div>

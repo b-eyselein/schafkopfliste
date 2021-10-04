@@ -1,41 +1,32 @@
-use diesel::{prelude::*, PgConnection, QueryResult};
-use juniper::{graphql_object, GraphQLInputObject, GraphQLObject};
+use diesel::prelude::*;
+use juniper::{GraphQLInputObject, GraphQLObject};
 use serde::{Deserialize, Serialize};
 
 use crate::schema::users;
-use crate::GraphQLContext;
 
 // FIXME: remove (De)Serialize!
 
-#[derive(Insertable, Queryable)]
+#[derive(Insertable, Queryable, GraphQLObject)]
 pub struct User {
     pub username: String,
+    #[graphql(skip)]
     pub password_hash: String,
-    pub is_admin: bool,
-    pub player_nickname: Option<String>,
 }
 
 impl User {
     pub fn new(username: String, password_hash: String) -> User {
-        User {
-            username,
-            password_hash,
-            is_admin: false,
-            player_nickname: None,
-        }
+        User { username, password_hash }
     }
 }
 
+/*
 #[graphql_object(context = GraphQLContext)]
 impl User {
     pub fn username(&self) -> &String {
         &self.username
     }
-
-    pub fn is_admin(&self) -> &bool {
-        &self.is_admin
-    }
 }
+ */
 
 #[derive(Debug, Deserialize, GraphQLInputObject)]
 #[serde(rename_all = "camelCase")]
@@ -61,19 +52,12 @@ impl RegisterUserInput {
 #[derive(Serialize, GraphQLObject)]
 pub struct UserWithToken {
     pub username: String,
-    pub is_admin: bool,
-    pub player_nickname: Option<String>,
     pub token: String,
 }
 
 impl UserWithToken {
-    pub fn new(username: String, is_admin: bool, player_nickname: Option<String>, token: String) -> UserWithToken {
-        UserWithToken {
-            username,
-            is_admin,
-            player_nickname,
-            token,
-        }
+    pub fn new(username: String, token: String) -> UserWithToken {
+        UserWithToken { username, token }
     }
 }
 

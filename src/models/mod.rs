@@ -8,12 +8,8 @@ pub mod group_with_player_count;
 
 pub mod player;
 
-pub mod player_in_group;
-
 pub mod rule_set;
 
 pub mod session;
-
-pub mod session_result;
 
 pub mod user;

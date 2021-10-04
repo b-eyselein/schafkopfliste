@@ -1,21 +1,25 @@
 import {Field, Form, Formik, FormikHelpers} from 'formik';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {GroupInput, RuleSetListQuery, useGroupCreationMutation, useRuleSetListQuery} from './graphql';
-import {WithQuery} from './WithQuery';
+import {useGroupCreationMutation} from './graphql';
 import * as yup from 'yup';
 import classNames from 'classnames';
 import {useSelector} from 'react-redux';
 import {currentUserSelector} from './store/store';
 import {Redirect} from 'react-router-dom';
-import {groupsBaseUrl} from './urls';
+import {loginUrl} from './urls';
+
+interface GroupInput {
+  name: string;
+}
 
 const groupInputSchema: yup.SchemaOf<GroupInput> = yup.object()
-  .shape({
-    name: yup.string().min(2).required(),
-    ruleSetName: yup.string().min(2).required()
-  })
+  .shape({name: yup.string().min(2).required()})
   .required();
+
+const initialValues: GroupInput = {
+  name: '',
+};
 
 interface IProps {
   onGroupCreated: () => void;
@@ -24,32 +28,26 @@ interface IProps {
 export function GroupForm({onGroupCreated}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
-  const ruleSetListQuery = useRuleSetListQuery();
   const [createGroup, {data, loading, error}] = useGroupCreationMutation();
 
-  const currentUser = useSelector(currentUserSelector);
-
-  if (!currentUser) {
-    return <Redirect to={groupsBaseUrl}/>;
+  if (!useSelector(currentUserSelector)) {
+    return <Redirect to={loginUrl}/>;
   }
 
-  function render({ruleSets}: RuleSetListQuery): JSX.Element {
+  function onSubmit(groupInput: GroupInput, {resetForm}: FormikHelpers<GroupInput>): void {
+    createGroup({variables: groupInput})
+      .then(() => {
+        resetForm();
+        onGroupCreated();
+      })
+      .catch((error) => console.error(error));
+  }
 
-    const initialValues: GroupInput = {
-      name: '',
-      ruleSetName: ruleSets.length > 0 ? ruleSets[0].name : ''
-    };
+  return (
+    <>
+      <h2 className="subtitle is-3 has-text-centered">{t('createNewGroup')}</h2>
 
-    function onSubmit(groupInput: GroupInput, {resetForm}: FormikHelpers<GroupInput>): void {
-      createGroup({variables: groupInput})
-        .then(() => {
-          resetForm();
-          onGroupCreated();
-        })
-        .catch((error) => console.error(error));
-    }
 
-    return (
       <Formik initialValues={initialValues} validationSchema={groupInputSchema} onSubmit={onSubmit}>
         {({touched, errors}) =>
           <Form>
@@ -62,20 +60,9 @@ export function GroupForm({onGroupCreated}: IProps): JSX.Element {
               </div>
             </div>
 
-            <div className="field">
-              <label htmlFor="ruleSetName" className="label">{t('ruleSet')}:</label>
-              <div className="control">
-                <div className="select is-fullwidth">
-                  <Field as="select" name="ruleSetName" id="ruleSetName">
-                    {ruleSets.map(({name}) => <option key={name}>{name}</option>)}
-                  </Field>
-                </div>
-              </div>
-            </div>
-
             {error && <div className="notifications is-danger has-text-centered">{error.message}</div>}
 
-            {data && <div className="notification is-success has-text-centered">{t('groupSuccessfullyCreated_{{name}}', {name: data.createGroup.name})}</div>}
+            {data && <div className="notification is-success has-text-centered">{t('groupSuccessfullyCreated_{{id}}', {id: data.createGroup})}</div>}
 
             <div className="my-3">
               <button type="submit" className={classNames('button', 'is-link', 'is-fullwidth', {'is-loading': loading})} disabled={loading}>
@@ -85,14 +72,7 @@ export function GroupForm({onGroupCreated}: IProps): JSX.Element {
           </Form>
         }
       </Formik>
-    );
-  }
 
-  return (
-    <>
-      <h2 className="subtitle is-3 has-text-centered">{t('createNewGroup')}</h2>
-
-      <WithQuery query={ruleSetListQuery} render={render}/>
     </>
   );
 }

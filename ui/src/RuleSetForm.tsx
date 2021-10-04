@@ -4,13 +4,9 @@ import {useTranslation} from 'react-i18next';
 import {CountLaufende, RuleSetInput, useNewRuleSetMutation} from './graphql';
 import classNames from 'classnames';
 import * as yup from 'yup';
-import {useSelector} from 'react-redux';
-import {currentUserSelector} from './store/store';
-import {Redirect} from 'react-router-dom';
-import {ruleSetsBaseUrl} from './urls';
 
 const initialValues: RuleSetInput = {
-  name: '',
+  name: 'default',
   basePrice: 5,
   soloPrice: 15,
   countLaufende: CountLaufende.Always,
@@ -45,25 +41,26 @@ const ruleSetInputSchema: yup.SchemaOf<RuleSetInput> = yup.object()
   })
   .required();
 
-export function RuleSetForm(): JSX.Element {
+interface IProps {
+  groupId: number;
+  onCreation: () => void;
+  onCancel: () => void;
+}
+
+export function RuleSetForm({groupId, onCreation, onCancel}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [createRuleSet, {data, loading, error}] = useNewRuleSetMutation();
 
-  const currentUser = useSelector(currentUserSelector);
-
-  if (!currentUser) {
-    return <Redirect to={ruleSetsBaseUrl}/>;
-  }
-
   function onSubmit(ruleSetInput: RuleSetInput): void {
-    createRuleSet({variables: {ruleSetInput}})
+    createRuleSet({variables: {groupId, ruleSetInput}})
+      .then(onCreation)
       .catch((error) => console.error(error));
   }
 
   return (
-    <div className="container">
-      <h1 className="title is-3 has-text-centered">{t('createNewRuleSet')}</h1>
+    <div className="box">
+      <h3 className="subtitle is-4 has-text-centered">{t('createNewRuleSet')}</h3>
 
       <Formik initialValues={initialValues} validationSchema={ruleSetInputSchema} onSubmit={onSubmit}>
         {({touched, errors}) =>
@@ -142,56 +139,76 @@ export function RuleSetForm(): JSX.Element {
               </div>
             </div>
 
-            <div className="field">
-              <label htmlFor="hochzeitAllowed" className="checkbox">
-                <Field type="checkbox" name="hochzeitAllowed" id="hochzeitAllowed"/> {t('hochzeit')}
-              </label>
-            </div>
+            <div className="columns is-multiline">
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="hochzeitAllowed" className="checkbox">
+                    <Field type="checkbox" name="hochzeitAllowed" id="hochzeitAllowed"/> {t('hochzeit')}
+                  </label>
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="bettelAllowed" className="checkbox">
-                <Field type="checkbox" name="bettelAllowed" id="bettelAllowed"/> {t('bettel')}
-              </label>
-            </div>
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="bettelAllowed" className="checkbox">
+                    <Field type="checkbox" name="bettelAllowed" id="bettelAllowed"/> {t('bettel')}
+                  </label>
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="ramschAllowed" className="checkbox">
-                <Field type="checkbox" name="ramschAllowed" id="ramschAllowed"/> {t('ramsch')}
-              </label>
-            </div>
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="ramschAllowed" className="checkbox">
+                    <Field type="checkbox" name="ramschAllowed" id="ramschAllowed"/> {t('ramsch')}
+                  </label>
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="geierAllowed" className="checkbox">
-                <Field type="checkbox" name="geierAllowed" id="geierAllowed"/> {t('geier')}
-              </label>
-            </div>
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="geierAllowed" className="checkbox">
+                    <Field type="checkbox" name="geierAllowed" id="geierAllowed"/> {t('geier')}
+                  </label>
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="farbWenzAllowed" className="checkbox">
-                <Field type="checkbox" name="farbWenzAllowed" id="farbWenzAllowed"/> {t('farbWenz')}
-              </label>
-            </div>
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="farbWenzAllowed" className="checkbox">
+                    <Field type="checkbox" name="farbWenzAllowed" id="farbWenzAllowed"/> {t('farbWenz')}
+                  </label>
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="farbGeierAllowed" className="checkbox">
-                <Field type="checkbox" name="farbGeierAllowed" id="farbGeierAllowed"/> {t('farbGeier')}
-              </label>
+              <div className="column">
+                <div className="field">
+                  <label htmlFor="farbGeierAllowed" className="checkbox">
+                    <Field type="checkbox" name="farbGeierAllowed" id="farbGeierAllowed"/> {t('farbGeier')}
+                  </label>
+                </div>
+              </div>
             </div>
 
             {error && <div className="notification is-danger has-text-centered">{error.message}</div>}
 
-            {data && <div className="notification is-success has-text-centered">{t('ruleSetCreated_{{name}}', {name: data.createRuleSet})}</div>}
+            {data && <div className="notification is-success has-text-centered">{t('ruleSetCreated_{{name}}', {name: data.group.createRuleSet})}</div>}
 
             <div className="my-3">
-              <button type="submit" className={classNames('button', 'is-link', 'is-fullwidth', {'is-loading': loading})} disabled={loading}>
-                {t('createNewRuleSet')}
-              </button>
+              <div className="columns">
+                <div className="column">
+                  <button type="button" className="button is-warning is-fullwidth" onClick={onCancel}>{t('cancel')}</button>
+                </div>
+                <div className="column">
+                  <button type="submit" className={classNames('button', 'is-link', 'is-fullwidth', {'is-loading': loading})} disabled={loading}>
+                    {t('createNewRuleSet')}
+                  </button>
+                </div>
+
+              </div>
             </div>
           </Form>
         }
       </Formik>
-
-
     </div>
   );
 }

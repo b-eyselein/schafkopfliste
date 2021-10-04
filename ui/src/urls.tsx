@@ -8,9 +8,12 @@ export const registerUrl = '/registerForm';
 
 export const ruleSetsBaseUrl = '/ruleSets';
 
-export const playersBaseUrl = '/players';
-
 export const groupsBaseUrl = '/groups';
+
+
+export const groupsUrlFragment = 'groups';
+
+export const ruleSetsUrlFragment = 'ruleSets';
 
 export const createNewUrlFragment = 'createNew';
 

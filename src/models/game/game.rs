@@ -4,14 +4,14 @@ use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::GraphQLContext;
 use crate::models::game::game_enums::{BavarianSuit, GameType, KontraType, SchneiderSchwarz};
-use crate::models::rule_set::{select_rule_set_for_group, CountLaufende, RuleSet};
+use crate::models::rule_set::{select_rule_set_for_session, CountLaufende, RuleSet};
 use crate::schema::games;
 
 #[derive(Clone, Queryable, Insertable, AsChangeset)]
 pub struct Game {
-    pub id: i32,
+    pub group_id: i32,
     pub session_id: i32,
-    pub group_name: String,
+    pub id: i32,
 
     pub acting_player_nickname: String,
     pub game_type: GameType,
@@ -45,9 +45,9 @@ pub struct GameInput {
 
 impl Game {
     pub fn new(
-        id: i32,
+        group_id: i32,
         session_id: i32,
-        group_name: String,
+        id: i32,
         acting_player_nickname: String,
         game_type: GameType,
         suit: Option<BavarianSuit>,
@@ -60,9 +60,9 @@ impl Game {
         players_having_won_nicknames: Vec<String>,
     ) -> Self {
         Self {
-            id,
+            group_id,
             session_id,
-            group_name,
+            id,
             acting_player_nickname,
             game_type,
             suit,
@@ -194,11 +194,12 @@ impl Game {
 
     #[graphql(name = "price")]
     pub async fn graphql_price(&self, context: &GraphQLContext) -> FieldResult<i32> {
-        let group_name = self.group_name.clone();
+        let group_id = self.group_id.clone();
+        let session_id = self.session_id.clone();
 
         let rule_set = context
             .connection
-            .run(move |c| select_rule_set_for_group(c, &group_name))
+            .run(move |c| select_rule_set_for_session(c, &group_id, &session_id))
             .await?
             .ok_or_else(|| FieldError::from("Could not find rule set!"))?;
 
@@ -213,35 +214,37 @@ pub fn upsert_game(conn: &PgConnection, the_game: &Game) -> QueryResult<Game> {
 
     diesel::insert_into(games)
         .values(the_game)
-        .on_conflict((id, session_id, group_name))
+        .on_conflict((id, session_id, group_id))
         .do_update()
         .set(the_game)
         //.returning(games::all_columns)
         .get_result(conn)
 }
 
-pub fn select_max_game_id(conn: &PgConnection, the_group_name: &str, the_session_id: &i32) -> QueryResult<Option<i32>> {
+pub fn select_max_game_id(conn: &PgConnection, the_group_id: &i32, the_session_id: &i32) -> QueryResult<Option<i32>> {
     use crate::schema::games::dsl::*;
 
     games
-        .filter(group_name.eq(the_group_name))
+        .filter(group_id.eq(the_group_id))
         .filter(session_id.eq(the_session_id))
         .select(max(id))
         .first(conn)
 }
 
-pub fn select_games_for_group(conn: &PgConnection, the_group_name: &str) -> QueryResult<Vec<Game>> {
+/*
+pub fn select_games_for_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Vec<Game>> {
     use crate::schema::games::dsl::*;
 
-    games.filter(group_name.eq(the_group_name)).load(conn)
+    games.filter(group_id.eq(the_group_id)).load(conn)
 }
+ */
 
-pub fn select_games_for_session(conn: &PgConnection, the_session_id: &i32, the_group_name: &str) -> QueryResult<Vec<Game>> {
+pub fn select_games_for_session(conn: &PgConnection, the_group_id: &i32, the_session_id: &i32) -> QueryResult<Vec<Game>> {
     use crate::schema::games::dsl::*;
 
     games
+        .filter(group_id.eq(the_group_id))
         .filter(session_id.eq(the_session_id))
-        .filter(group_name.eq(the_group_name))
         .order_by(id)
         .load(conn)
 }
@@ -253,9 +256,9 @@ mod tests {
     #[test]
     fn test_laufende_price() {
         let base_game = Game {
-            id: 0,
+            group_id: 0,
             session_id: 0,
-            group_name: "".to_string(),
+            id: 0,
             acting_player_nickname: "".to_string(),
             game_type: GameType::Ruf,
             suit: None,
@@ -268,9 +271,9 @@ mod tests {
             players_having_won_nicknames: vec![],
         };
 
-        let rs_laufende_never = RuleSet::new(1, 5, CountLaufende::Never);
-        let rs_laufende_only_losers = RuleSet::new(2, 5, CountLaufende::OnlyLosers);
-        let rs_laufende_always = RuleSet::new(3, 5, CountLaufende::Always);
+        let rs_laufende_never = RuleSet::new(0, 1, 5, CountLaufende::Never);
+        let rs_laufende_only_losers = RuleSet::new(0, 2, 5, CountLaufende::OnlyLosers);
+        let rs_laufende_always = RuleSet::new(0, 3, 5, CountLaufende::Always);
 
         let internal_test = |laufende_count, price_only_losers, price_always| {
             let game = Game {

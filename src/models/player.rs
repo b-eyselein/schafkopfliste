@@ -1,84 +1,54 @@
-use diesel::{prelude::*, PgConnection, QueryResult};
-use juniper::{graphql_object, FieldResult, GraphQLInputObject};
+use diesel::prelude::*;
+use juniper::GraphQLObject;
 
-use crate::models::player_in_group::select_group_membership_for_player;
-use crate::schema::players;
-use crate::GraphQLContext;
-
-#[derive(Debug, Queryable)]
+#[derive(Debug, Queryable, GraphQLObject)]
 pub struct Player {
-    nickname: String,
-    pub first_name: String,
-    pub last_name: String,
-    picture_name: Option<String>,
-}
-
-impl Player {
-    pub fn new(nickname: String, first_name: String, last_name: String) -> Player {
-        Player {
-            nickname,
-            first_name,
-            last_name,
-            picture_name: None,
-        }
-    }
-}
-
-// GraphQL
-
-#[derive(Debug, Insertable, GraphQLInputObject)]
-#[table_name = "players"]
-pub struct PlayerInput {
+    #[graphql(skip)]
+    pub group_id: i32,
     pub nickname: String,
     pub first_name: String,
     pub last_name: String,
-    pub picture_name: Option<String>,
-}
-
-#[graphql_object(Context = GraphQLContext)]
-impl Player {
-    pub fn nickname(&self) -> &String {
-        &self.nickname
-    }
-
-    pub fn first_name(&self) -> &String {
-        &self.first_name
-    }
-
-    pub fn last_name(&self) -> &String {
-        &self.last_name
-    }
-
-    pub fn picture_name(&self) -> &Option<String> {
-        &self.picture_name
-    }
-
-    pub async fn is_member_in_group(&self, group_name: String, context: &GraphQLContext) -> FieldResult<bool> {
-        let nickname = self.nickname.clone();
-
-        Ok(context
-            .connection
-            .run(move |c| select_group_membership_for_player(&c, &nickname, &group_name))
-            .await?)
-    }
+    pub balance: i32,
+    pub game_count: i32,
+    pub put_count: i32,
+    pub played_games: i32,
+    pub win_count: i32,
 }
 
 // Queries
 
-pub fn select_players(conn: &PgConnection) -> QueryResult<Vec<Player>> {
+pub fn select_player_count_for_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<i64> {
     use crate::schema::players::dsl::*;
 
-    players.load(conn)
+    players.filter(group_id.eq(the_group_id)).count().first(conn)
 }
 
-pub fn select_player_by_nickname(conn: &PgConnection, the_nickname: &str) -> QueryResult<Player> {
+pub fn select_players_in_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Vec<Player>> {
     use crate::schema::players::dsl::*;
 
-    players.filter(nickname.eq(the_nickname)).first(conn)
+    players.filter(group_id.eq(the_group_id)).load(conn)
 }
 
-pub fn insert_player(conn: &PgConnection, player_input: &PlayerInput) -> QueryResult<String> {
+pub fn select_player_by_nickname(conn: &PgConnection, the_group_id: &i32, the_nickname: &str) -> QueryResult<Option<Player>> {
     use crate::schema::players::dsl::*;
 
-    diesel::insert_into(players).values(player_input).returning(nickname).get_result(conn)
+    players
+        .filter(group_id.eq(the_group_id))
+        .filter(nickname.eq(the_nickname))
+        .first(conn)
+        .optional()
+}
+
+pub fn insert_player(conn: &PgConnection, the_group_id: &i32, the_nickname: &str, the_first_name: &str, the_last_name: &str) -> QueryResult<String> {
+    use crate::schema::players::dsl::*;
+
+    diesel::insert_into(players)
+        .values((
+            group_id.eq(the_group_id),
+            nickname.eq(the_nickname),
+            first_name.eq(the_first_name),
+            last_name.eq(the_last_name),
+        ))
+        .returning(nickname)
+        .get_result(conn)
 }

@@ -1,13 +1,8 @@
 use diesel::result::Error as DbError;
 use juniper::{graphql_object, FieldError, FieldResult};
 
-use crate::daos::group_dao::{select_group_by_name, select_groups};
-use crate::daos::session_dao::select_session_by_id;
 use crate::graphql::context::GraphQLContext;
-use crate::models::group::Group;
-use crate::models::player::{select_players, Player};
-use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
-use crate::models::session::Session;
+use crate::models::group::{select_group_by_id, select_groups, select_groups_for_username, Group};
 
 pub struct QueryRoot;
 
@@ -18,27 +13,28 @@ pub fn graphql_on_db_error(db_error: DbError) -> FieldError {
 
 #[graphql_object(Context = GraphQLContext)]
 impl QueryRoot {
-    pub async fn rule_sets(context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
-        Ok(context.connection.run(|c| select_rule_sets(&c)).await?)
-    }
-
-    pub async fn rule_set(name: String, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
-        Ok(context.connection.run(move |c| select_rule_set_by_id(&c, &name)).await?)
-    }
-
-    pub async fn players(context: &GraphQLContext) -> FieldResult<Vec<Player>> {
-        Ok(context.connection.run(move |c| select_players(&c)).await?)
-    }
-
     pub async fn groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
         Ok(context.connection.run(move |c| select_groups(&c)).await?)
     }
 
-    pub async fn group(name: String, context: &GraphQLContext) -> FieldResult<Option<Group>> {
-        Ok(context.connection.run(move |c| select_group_by_name(&c, &name)).await?)
+    pub async fn maybe_group(group_id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {
+        Ok(context.connection.run(move |c| select_group_by_id(&c, &group_id)).await?)
     }
 
-    pub async fn session(id: i32, group_name: String, context: &GraphQLContext) -> FieldResult<Option<Session>> {
-        Ok(context.connection.run(move |c| select_session_by_id(&c, &group_name, &id)).await?)
+    pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<Group> {
+        match context.connection.run(move |c| select_group_by_id(&c, &group_id)).await? {
+            None => Err(FieldError::from("No such group!")),
+            Some(group) => Ok(group),
+        }
+    }
+
+    pub async fn my_groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
+        match context.authorization_header.username() {
+            None => Err(FieldError::from("No login provided!")),
+            Some(username) => {
+                let username = username.to_string();
+                Ok(context.connection.run(move |c| select_groups_for_username(c, &username)).await?)
+            }
+        }
     }
 }

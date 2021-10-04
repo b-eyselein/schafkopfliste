@@ -33,8 +33,6 @@ pub fn decode_token(token: &str) -> jsonwebtoken::errors::Result<TokenData<Claim
     decode::<Claims>(token, &DecodingKey::from_secret(SECRET.as_ref()), &validation)
 }
 
-pub fn generate_token(username: String, is_admin: bool, player_abbreviation: Option<String>) -> Result<UserWithToken, JwtError> {
-    let token = encode_token(&Claims::new(username.clone()))?;
-
-    Ok(UserWithToken::new(username, is_admin, player_abbreviation, token))
+pub fn generate_token(username: String) -> Result<UserWithToken, JwtError> {
+    Ok(UserWithToken::new(username.clone(), encode_token(&Claims::new(username))?))
 }

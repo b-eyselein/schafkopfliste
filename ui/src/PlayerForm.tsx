@@ -6,39 +6,40 @@ import {Field, Form, Formik, FormikHelpers} from 'formik';
 import classNames from 'classnames';
 
 const initialValues: PlayerInput = {
-  nickname: '', firstName: '', lastName: ''/*, pictureName: ''*/
+  nickname: '', firstName: '', lastName: ''
 };
 
 const playerInputSchema: yup.SchemaOf<PlayerInput> = yup.object()
   .shape({
     nickname: yup.string().min(2).required(),
     firstName: yup.string().min(3).required(),
-    lastName: yup.string().min(3).required(),
-    pictureName: yup.string().optional()
+    lastName: yup.string().min(3).required()
   })
   .required();
 
 interface IProps {
-  onPlayerCreated: () => void;
+  groupId: number;
+  onCancel: () => void;
+  onCreation: () => void;
 }
 
-export function PlayerForm({onPlayerCreated}: IProps): JSX.Element {
+export function PlayerForm({groupId, onCreation, onCancel}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [createPlayer, {data, loading, error}] = usePlayerCreationMutation();
 
   function onSubmit(playerInput: PlayerInput, {resetForm}: FormikHelpers<PlayerInput>): void {
-    createPlayer({variables: {playerInput}})
+    createPlayer({variables: {groupId, playerInput}})
       .then(() => {
         resetForm();
-        onPlayerCreated();
+        onCreation();
       })
       .catch((error) => console.error(error));
   }
 
   return (
-    <>
-      <h2 className="subtitle is-3 has-text-centered">{t('createNewPlayer')}</h2>
+    <div className="box">
+      <h3 className="subtitle is-4 has-text-centered">{t('createNewPlayer')}</h3>
 
       <Formik initialValues={initialValues} validationSchema={playerInputSchema} onSubmit={onSubmit}>
         {({touched, errors}) =>
@@ -70,18 +71,25 @@ export function PlayerForm({onPlayerCreated}: IProps): JSX.Element {
 
             {error && <div className="notification is-danger has-text-centered">{error.message}</div>}
 
-            {data && <div className="notification is-success has-text-centered">{t('playerSuccessfullyCreated_{{name}}', {name: data.createPlayer})}</div>}
+            {data &&
+            <div className="notification is-success has-text-centered">{t('playerSuccessfullyCreated_{{name}}', {name: data.group.createPlayer})}</div>}
 
-            <div className="my-3">
-              <button type="submit" className={classNames('button', 'is-link', 'is-fullwidth', {'is-loading': loading})} disabled={loading}>
-                {t('createNewPlayer')}
-              </button>
+            <div className="columns">
+              <div className="column">
+                <button type="button" className="button is-warning is-fullwidth" onClick={onCancel}>{t('cancel')}</button>
+              </div>
+              <div className="column">
+                <button type="submit" className={classNames('button', 'is-link', 'is-fullwidth', {'is-loading': loading})} disabled={loading}>
+                  {t('createNewPlayer')}
+                </button>
+              </div>
+
             </div>
 
           </Form>
         }
       </Formik>
 
-    </>
+    </div>
   );
 }

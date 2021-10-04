@@ -2,10 +2,10 @@ table! {
     use diesel::sql_types::*;
     use crate::models::game::game_enums::{Bavarian_suit, Game_type, Kontra_type, Schneider_schwarz};
 
-    games (id, session_id, group_name) {
-        id -> Int4,
+    games (group_id, session_id, id) {
+        group_id -> Int4,
         session_id -> Int4,
-        group_name -> Varchar,
+        id -> Int4,
         acting_player_nickname -> Varchar,
         game_type -> Game_type,
         suit -> Nullable<Bavarian_suit>,
@@ -20,31 +20,31 @@ table! {
 }
 
 table! {
-    groups (name) {
-        name -> Varchar,
-        rule_set_name -> Varchar,
+    group_other_admins (group_id, user_username) {
+        group_id -> Int4,
+        user_username -> Varchar,
     }
 }
 
 table! {
-    player_in_groups (group_name, player_nickname) {
-        group_name -> Varchar,
-        player_nickname -> Varchar,
+    groups (id) {
+        id -> Int4,
+        owner_username -> Varchar,
+        name -> Varchar,
+    }
+}
+
+table! {
+    players (group_id, nickname) {
+        group_id -> Int4,
+        nickname -> Varchar,
+        first_name -> Varchar,
+        last_name -> Varchar,
         balance -> Int4,
         game_count -> Int4,
         put_count -> Int4,
         played_games -> Int4,
         win_count -> Int4,
-        is_active -> Bool,
-    }
-}
-
-table! {
-    players (nickname) {
-        nickname -> Varchar,
-        first_name -> Varchar,
-        last_name -> Varchar,
-        picture_name -> Nullable<Varchar>,
     }
 }
 
@@ -52,7 +52,8 @@ table! {
     use diesel::sql_types::*;
     use crate::models::rule_set::Count_laufende;
 
-    rule_sets (name) {
+    rule_sets (group_id, name) {
+        group_id -> Int4,
         name -> Varchar,
         base_price -> Int4,
         solo_price -> Int4,
@@ -70,29 +71,27 @@ table! {
 }
 
 table! {
-    session_results (player_nickname, session_id, group_name) {
+    session_results (group_id, player_nickname, session_id) {
+        group_id -> Int4,
         player_nickname -> Varchar,
         session_id -> Int4,
-        group_name -> Varchar,
         result -> Int4,
     }
 }
 
 table! {
-    sessions (id, group_name) {
+    sessions (group_id, id) {
+        group_id -> Int4,
         id -> Int4,
-        group_name -> Varchar,
-        date_year -> Int4,
-        date_month -> Int4,
-        date_day_of_month -> Int4,
-        time_hours -> Int4,
-        time_minutes -> Int4,
+        date -> Date,
+        time -> Time,
+        rule_set_name -> Varchar,
         has_ended -> Bool,
         first_player_nickname -> Varchar,
         second_player_nickname -> Varchar,
         third_player_nickname -> Varchar,
         fourth_player_nickname -> Varchar,
-        creator_username -> Varchar,
+        other_creator_username -> Nullable<Varchar>,
     }
 }
 
@@ -100,16 +99,13 @@ table! {
     users (username) {
         username -> Varchar,
         password_hash -> Varchar,
-        is_admin -> Bool,
-        player_nickname -> Nullable<Varchar>,
     }
 }
 
-joinable!(groups -> rule_sets (rule_set_name));
-joinable!(player_in_groups -> groups (group_name));
-joinable!(player_in_groups -> players (player_nickname));
-joinable!(sessions -> groups (group_name));
-joinable!(sessions -> users (creator_username));
-joinable!(users -> players (player_nickname));
+joinable!(group_other_admins -> groups (group_id));
+joinable!(group_other_admins -> users (user_username));
+joinable!(groups -> users (owner_username));
+joinable!(players -> groups (group_id));
+joinable!(rule_sets -> groups (group_id));
 
-allow_tables_to_appear_in_same_query!(games, groups, player_in_groups, players, rule_sets, session_results, sessions, users,);
+allow_tables_to_appear_in_same_query!(games, group_other_admins, groups, players, rule_sets, session_results, sessions, users,);

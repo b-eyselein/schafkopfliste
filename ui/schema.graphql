@@ -62,17 +62,21 @@ enum GameType {
 }
 
 type Group {
+  id: Int!
   name: String!
   playerCount: Int!
-  players: [PlayerInGroup!]!
-  ruleSet: RuleSet
-  ruleSetName: String!
+  players: [Player!]!
+  ruleSet(name: String!): RuleSet
+  ruleSets: [RuleSet!]!
+  session(id: Int!): Session
   sessions: [Session!]!
 }
 
-input GroupInput {
-  name: String!
-  ruleSetName: String!
+type GroupMutations {
+  createPlayer(newPlayer: PlayerInput!): String!
+  createRuleSet(ruleSetInput: RuleSetInput!): String!
+  newSession(sessionInput: SessionInput!): Int!
+  session(sessionId: Int!): SessionMutations!
 }
 
 enum KontraType {
@@ -83,30 +87,23 @@ enum KontraType {
 }
 
 type Mutations {
-  addPlayerToGroup(groupName: String!, newState: Boolean!, playerName: String!): Boolean!
-  createGroup(groupInput: GroupInput!): Group!
-  createPlayer(newPlayer: PlayerInput!): String!
-  createRuleSet(ruleSetInput: RuleSetInput!): String!
-  endSession(groupName: String!, sessionId: Int!): Boolean!
-  login(credentials: Credentials!): UserWithToken
-  newGame(gameInput: GameInput!, groupName: String!, sessionId: Int!): Game!
-  newSession(groupName: String!, sessionInput: SessionInput!): Int!
+  createGroup(name: String!): Int!
+  group(groupId: Int!): GroupMutations!
+  login(credentials: Credentials!): UserWithToken!
   registerUser(registerUserInput: RegisterUserInput!): String!
 }
 
-type Player {
-  firstName: String!
-  isMemberInGroup(groupName: String!): Boolean!
-  lastName: String!
-  nickname: String!
-  pictureName: String
-}
+"""NaiveDate"""
+scalar NaiveDate
 
-type PlayerInGroup {
+"""NaiveTime"""
+scalar NaiveTime
+
+type Player {
   balance: Int!
+  firstName: String!
   gameCount: Int!
-  isActive: Boolean!
-  name: String!
+  lastName: String!
   nickname: String!
   playedGames: Int!
   putCount: Int!
@@ -117,16 +114,13 @@ input PlayerInput {
   firstName: String!
   lastName: String!
   nickname: String!
-  pictureName: String
 }
 
 type QueryRoot {
-  group(name: String!): Group
+  group(groupId: Int!): Group!
   groups: [Group!]!
-  players: [Player!]!
-  ruleSet(name: String!): RuleSet
-  ruleSets: [RuleSet!]!
-  session(groupName: String!, id: Int!): Session
+  maybeGroup(groupId: Int!): Group
+  myGroups: [Group!]!
 }
 
 input RegisterUserInput {
@@ -142,6 +136,7 @@ type RuleSet {
   farbGeierAllowed: Boolean!
   farbWenzAllowed: Boolean!
   geierAllowed: Boolean!
+  groupId: Int!
   hochzeitAllowed: Boolean!
   laufendePrice: Int!
   maxLaufendeIncl: Int!
@@ -185,20 +180,21 @@ type Session {
 }
 
 input SessionInput {
-  dateDayOfMonth: Int!
-  dateMonth: Int!
-  dateYear: Int!
+  date: NaiveDate!
   firstPlayerNickname: String!
   fourthPlayerNickname: String!
+  ruleSetName: String!
   secondPlayerNickname: String!
   thirdPlayerNickname: String!
-  timeHours: Int!
-  timeMinutes: Int!
+  time: NaiveTime!
+}
+
+type SessionMutations {
+  endSession: Boolean!
+  newGame(gameInput: GameInput!): Game!
 }
 
 type UserWithToken {
-  isAdmin: Boolean!
-  playerNickname: String
   token: String!
   username: String!
 }

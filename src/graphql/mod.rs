@@ -8,4 +8,7 @@ mod context;
 mod mutation;
 mod query;
 
+mod group_mutations;
+mod session_mutations;
+
 pub type Schema = RootNode<'static, QueryRoot, Mutations, EmptySubscription<GraphQLContext>>;

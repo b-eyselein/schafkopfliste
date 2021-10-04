@@ -1,10 +1,46 @@
-# /ruleSets/new
+# /register
 
-mutation NewRuleSet($ruleSetInput: RuleSetInput!) {
-  createRuleSet(ruleSetInput: $ruleSetInput)
+mutation Register($registerUserInput: RegisterUserInput!) {
+  registerUser(registerUserInput: $registerUserInput)
 }
 
-# /ruleSets
+# /loginForm
+
+fragment LoggedInUser on UserWithToken {
+  username
+  token
+}
+
+mutation Login($credentials: Credentials!) {
+  login(credentials: $credentials) {
+    ...LoggedInUser
+  }
+}
+
+
+# /
+
+query MyGroups {
+  myGroups {
+    id
+    name
+    playerCount
+  }
+}
+
+mutation GroupCreation($name: String!) {
+  createGroup(name: $name)
+}
+
+# /groups/:groupId/...
+
+query GroupBase($groupId: Int!) {
+  maybeGroup(groupId: $groupId) {
+    name
+  }
+}
+
+# /groups/:groupId/
 
 fragment RuleSet on RuleSet {
   name
@@ -22,37 +58,16 @@ fragment RuleSet on RuleSet {
   farbGeierAllowed
 }
 
-query RuleSetList {
-  ruleSets {
-    ...RuleSet
+mutation NewRuleSet($groupId: Int!, $ruleSetInput: RuleSetInput!) {
+  group(groupId: $groupId) {
+    createRuleSet(ruleSetInput: $ruleSetInput)
   }
 }
 
-# /groups
-
-query GroupList {
-  groups {
-    name
-    playerCount
-  }
-}
-
-
-# /groups/new
-
-mutation GroupCreation($name: String!, $ruleSetName: String!) {
-  createGroup(groupInput: {name: $name, ruleSetName: $ruleSetName}) {
-    name
-    ruleSetName
-  }
-}
-
-
-# /groups/:name
-
-fragment PlayerInGroup on PlayerInGroup {
+fragment Player on Player {
   nickname
-  name
+  firstName
+  lastName
   balance
   gameCount
   playedGames
@@ -60,11 +75,21 @@ fragment PlayerInGroup on PlayerInGroup {
   winCount
 }
 
-query Group($name: String!) {
-  group(name: $name) {
+mutation PlayerCreation($groupId: Int!, $playerInput: PlayerInput!) {
+  group(groupId: $groupId) {
+    createPlayer(newPlayer: $playerInput)
+  }
+}
+
+
+query Group($groupId: Int!) {
+  group(groupId: $groupId) {
     name
+    ruleSets {
+      ...RuleSet
+    }
     players {
-      ...PlayerInGroup
+      ...Player
     }
     sessions {
       id
@@ -73,45 +98,31 @@ query Group($name: String!) {
   }
 }
 
-# /groups/:name/players
 
-query PlayersInGroup($groupName: String!) {
-  players {
-    nickname
-    firstName
-    lastName
-    isMemberInGroup(groupName: $groupName)
-  }
-}
 
-mutation AddPlayerToGroup($playerName: String!, $groupName: String!, $newState: Boolean!) {
-  addPlayerToGroup(playerName: $playerName, groupName: $groupName, newState: $newState)
-}
+
 
 # /groups/:name/newSession
 
-fragment NewSessionPlayerValues on PlayerInGroup {
-  nickname
-  name
-}
-
 fragment NewSessionValuesGroup on Group {
   players {
-    ...NewSessionPlayerValues
+    ...SessionPlayer
   }
-  ruleSet {
+  ruleSets {
     ...RuleSet
   }
 }
 
-query NewSessionValues($groupName: String!) {
-  group(name: $groupName) {
+query NewSessionValues($groupId: Int!) {
+  group(groupId: $groupId) {
     ...NewSessionValuesGroup
   }
 }
 
-mutation NewSession($groupName: String!, $sessionInput: SessionInput!) {
-  newSession(groupName: $groupName, sessionInput: $sessionInput)
+mutation NewSession($groupId: Int!, $sessionInput: SessionInput!) {
+  group(groupId: $groupId) {
+    newSession(sessionInput: $sessionInput)
+  }
 }
 
 # /groups/:name/sessions/:sessionId
@@ -120,7 +131,6 @@ fragment SessionPlayer on Player {
   nickname
   firstName
   lastName
-  pictureName
 }
 
 fragment SessionGame on Game {
@@ -161,55 +171,29 @@ fragment Session on Session {
   hasEnded
 }
 
-query Session($groupName: String!, $sessionId: Int!) {
-  session(groupName: $groupName, id: $sessionId) {
-    ...Session
+query Session($groupId: Int!, $sessionId: Int!) {
+  group(groupId: $groupId) {
+    session(id: $sessionId) {
+      ...Session
+    }
   }
 }
 
-mutation CreateGame($groupName: String!, $sessionId: Int!, $gameInput: GameInput!) {
-  newGame(groupName: $groupName, sessionId: $sessionId, gameInput: $gameInput) {
-    ...SessionGame
+mutation CreateGame($groupId: Int!, $sessionId: Int!, $gameInput: GameInput!) {
+  group(groupId: $groupId) {
+    session(sessionId: $sessionId) {
+      newGame(gameInput: $gameInput) {
+        ...SessionGame
+      }
+    }
   }
 }
 
-mutation EndSession($groupName: String!, $sessionId: Int!) {
-  endSession(groupName: $groupName, sessionId: $sessionId)
-}
-
-# /players
-
-query PlayerList {
-  players {
-    nickname
-    firstName
-    lastName
+mutation EndSession($groupId: Int!, $sessionId: Int!) {
+  group(groupId: $groupId) {
+    session(sessionId: $sessionId) {
+      endSession
+    }
   }
-}
 
-# /players/new
-
-mutation PlayerCreation($playerInput: PlayerInput!) {
-  createPlayer(newPlayer: $playerInput)
-}
-
-# /register
-
-mutation Register($registerUserInput: RegisterUserInput!) {
-  registerUser(registerUserInput: $registerUserInput)
-}
-
-# /loginForm
-
-fragment LoggedInUser on UserWithToken {
-  username
-  token
-  isAdmin
-  playerNickname
-}
-
-mutation Login($credentials: Credentials!) {
-  login(credentials: $credentials) {
-    ...LoggedInUser
-  }
 }
