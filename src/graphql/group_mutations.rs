@@ -180,12 +180,14 @@ impl GroupMutations {
     pub async fn session(&self, session_id: i32, context: &GraphQLContext) -> FieldResult<SessionMutations> {
         let group_id = self.group_id;
 
-        match context.connection.run(move |c| select_session_by_id(c, &group_id, &session_id)).await? {
-            None => Err(FieldError::from("No such session!")),
-            Some(session) => {
-                let Session { group_id, id, .. } = session;
-                Ok(SessionMutations::new(group_id, id))
+        match context.authorization_header.username() {
+            Some(username) if self.has_admin_rights(username) => {
+                match context.connection.run(move |c| select_session_by_id(c, &group_id, &session_id)).await? {
+                    Some(Session { group_id, id, .. }) => Ok(SessionMutations::new(group_id, id)),
+                    None => Err(FieldError::from("No such session!")),
+                }
             }
+            _ => Err(on_no_login()),
         }
     }
 }
