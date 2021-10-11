@@ -22,6 +22,10 @@ impl GroupMutations {
             other_admin_usernames,
         }
     }
+
+    pub fn has_admin_rights(&self, username: &str) -> bool {
+        self.owner_username == username || self.other_admin_usernames.iter().any(|x| x == username)
+    }
 }
 
 #[derive(Debug, GraphQLInputObject)]
@@ -66,7 +70,7 @@ pub struct SessionInput {
 impl GroupMutations {
     pub async fn create_rule_set(&self, rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.username() {
-            Some(username) if username == self.owner_username => {
+            Some(username) if self.has_admin_rights(username) => {
                 let group_id = self.group_id;
 
                 let RuleSetInput {
@@ -114,7 +118,7 @@ impl GroupMutations {
 
     pub async fn create_player(&self, new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
         match context.authorization_header.username() {
-            Some(username) if username == self.owner_username => {
+            Some(username) if self.has_admin_rights(username) => {
                 let group_id = self.group_id;
 
                 let PlayerInput {
@@ -134,7 +138,7 @@ impl GroupMutations {
 
     pub async fn new_session(&self, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
         match context.authorization_header.username() {
-            Some(username) => {
+            Some(username) if self.has_admin_rights(username) => {
                 let group_id = self.group_id;
 
                 let creator_username = if username == self.owner_username { None } else { Some(username.to_string()) };
@@ -169,7 +173,7 @@ impl GroupMutations {
                     })
                     .await?)
             }
-            None => Err(on_no_login()),
+            _ => Err(on_no_login()),
         }
     }
 
