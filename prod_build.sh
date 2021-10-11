@@ -18,7 +18,7 @@ cd .. || exit
 docker run -i -t --rm \
   -w /app \
   -v "$(pwd):/app/" \
-  rust:buster /bin/bash -c "ls -alR migrations && rustup override set nightly && cargo build --release && cp target/release/${BUILD_NAME} artifacts"
+  rust /bin/bash -c "cargo build --release && cp target/release/${BUILD_NAME} artifacts"
 
 # create release archive TODO!
 mkdir ${BUILD_NAME}
