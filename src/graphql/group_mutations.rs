@@ -11,11 +11,16 @@ use crate::models::session::{insert_session, select_session_by_id, Session};
 pub struct GroupMutations {
     group_id: i32,
     owner_username: String,
+    other_admin_usernames: Vec<String>,
 }
 
 impl GroupMutations {
-    pub fn new(group_id: i32, owner_username: String) -> Self {
-        Self { group_id, owner_username }
+    pub fn new(group_id: i32, owner_username: String, other_admin_usernames: Vec<String>) -> Self {
+        Self {
+            group_id,
+            owner_username,
+            other_admin_usernames,
+        }
     }
 }
 

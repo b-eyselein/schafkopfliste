@@ -85,10 +85,10 @@ pub fn select_group_by_id(conn: &PgConnection, the_id: &i32) -> QueryResult<Opti
     groups.filter(id.eq(the_id)).first(conn).optional()
 }
 
-pub fn select_groups_for_username(conn: &PgConnection, username: &str) -> QueryResult<Vec<Group>> {
+pub fn select_groups_for_username(conn: &PgConnection, the_username: &str) -> QueryResult<Vec<Group>> {
     use crate::schema::groups::dsl::*;
 
-    groups.filter(owner_username.eq(username)).load(conn)
+    groups.filter(owner_username.eq(the_username)).load(conn)
 }
 
 pub fn insert_group(conn: &PgConnection, the_owner_username: &str, the_name: &str) -> QueryResult<i32> {
@@ -98,4 +98,10 @@ pub fn insert_group(conn: &PgConnection, the_owner_username: &str, the_name: &st
         .values(&(owner_username.eq(the_owner_username), name.eq(the_name)))
         .returning(id)
         .get_result(conn)
+}
+
+pub fn select_other_admin_usernames_for_group(conn: &PgConnection, the_group_id: &i32) -> QueryResult<Vec<String>> {
+    use crate::schema::group_other_admins::dsl::*;
+
+    group_other_admins.filter(group_id.eq(the_group_id)).select(user_username).load(conn)
 }

@@ -4,8 +4,8 @@ use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::group_mutations::GroupMutations;
 use crate::jwt_helpers::generate_token;
-use crate::models::group::Group;
 use crate::models::group::{insert_group, select_group_by_id};
+use crate::models::group::{select_other_admin_usernames_for_group, Group};
 use crate::models::user::{insert_user, user_by_username, User, UserWithToken};
 
 pub struct Mutations;
@@ -85,7 +85,10 @@ impl Mutations {
             None => Err(FieldError::from("No such group!")),
             Some(group) => {
                 let Group { id, owner_username, .. } = group;
-                Ok(GroupMutations::new(id, owner_username))
+
+                let other_admin_username = context.connection.run(move |c| select_other_admin_usernames_for_group(c, &group_id)).await?;
+
+                Ok(GroupMutations::new(id, owner_username, other_admin_username))
             }
         }
     }
