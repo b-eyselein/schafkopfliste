@@ -3,18 +3,13 @@ use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::context::GraphQLContext;
 use crate::graphql::group_mutations::GroupMutations;
-use crate::graphql::on_graphql_error;
+use crate::graphql::{on_graphql_error, on_insufficient_rights};
 use crate::jwt_helpers::generate_token;
 use crate::models::group::{insert_group, select_group_by_id};
 use crate::models::group::{select_other_admin_usernames_for_group, Group};
 use crate::models::user::{insert_user, select_user_by_username, User, UserWithToken};
 
 pub struct Mutations;
-
-#[deprecated]
-pub fn on_no_login() -> FieldError {
-    FieldError::from("User is not logged in!")
-}
 
 #[derive(Debug, GraphQLInputObject)]
 pub struct Credentials {
@@ -35,6 +30,10 @@ impl RegisterUserInput {
     }
 }
 
+const REGISTRATION_ERROR_MSG: &str = "Could not process registration!";
+
+const LOGIN_ERROR_MSG: &str = "Invalid combination of username and password";
+
 #[graphql_object(Context = GraphQLContext)]
 impl Mutations {
     pub async fn register_user(register_user_input: RegisterUserInput, context: &GraphQLContext) -> FieldResult<String> {
@@ -44,32 +43,31 @@ impl Mutations {
 
         let RegisterUserInput { username, password, .. } = register_user_input;
 
-        let pw_hash = hash(password, DEFAULT_COST)?;
+        let pw_hash = hash(password, DEFAULT_COST).map_err(|error| on_graphql_error(error, REGISTRATION_ERROR_MSG))?;
 
         context
             .connection
             .run(move |c| insert_user(c, &username, &pw_hash))
             .await
-            .map_err(|_error| FieldError::from("Could not create user!"))
+            .map_err(|error| on_graphql_error(error, REGISTRATION_ERROR_MSG))
     }
 
     pub async fn login(credentials: Credentials, context: &GraphQLContext) -> FieldResult<UserWithToken> {
         let Credentials { username, password } = credentials;
 
-        #[deprecated]
-        let on_login_error = || Err(FieldError::from("Invalid combination of username and password"));
+        let on_login_error = || FieldError::from(LOGIN_ERROR_MSG);
 
-        match context.connection.run(move |c| select_user_by_username(c, &username)).await? {
-            None => on_login_error(),
-            Some(user) => {
-                let User { username, password_hash } = user;
+        let User { username, password_hash } = context
+            .connection
+            .run(move |c| select_user_by_username(c, &username))
+            .await
+            .map_err(|error| on_graphql_error(error, LOGIN_ERROR_MSG))?
+            .ok_or_else(on_login_error)?;
 
-                if verify(password, &password_hash)? {
-                    Ok(generate_token(username)?)
-                } else {
-                    on_login_error()
-                }
-            }
+        if verify(password, &password_hash).map_err(|error| on_graphql_error(error, LOGIN_ERROR_MSG))? {
+            generate_token(username).map_err(|error| on_graphql_error(error, LOGIN_ERROR_MSG))
+        } else {
+            Err(on_login_error())
         }
     }
 
@@ -84,17 +82,27 @@ impl Mutations {
     }
 
     pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<GroupMutations> {
-        let group: Option<Group> = context.connection.run(move |c| select_group_by_id(c, &group_id)).await?;
+        let username = context.check_user_login()?.username.clone();
 
-        match group {
-            None => Err(FieldError::from("No such group!")),
-            Some(group) => {
-                let Group { id, owner_username, .. } = group;
+        let Group { id, owner_username, .. } = context
+            .connection
+            .run(move |c| select_group_by_id(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find group!"))?
+            .ok_or_else(|| FieldError::from("No such group!"))?;
 
-                let other_admin_username = context.connection.run(move |c| select_other_admin_usernames_for_group(c, &group_id)).await?;
+        let other_admin_usernames = context
+            .connection
+            .run(move |c| select_other_admin_usernames_for_group(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find other group admins!"))?;
 
-                Ok(GroupMutations::new(id, owner_username, other_admin_username))
-            }
+        if owner_username == username {
+            Ok(GroupMutations::new(id, None))
+        } else if other_admin_usernames.contains(&username) {
+            Ok(GroupMutations::new(id, Some(username)))
+        } else {
+            Err(on_insufficient_rights())
         }
     }
 }

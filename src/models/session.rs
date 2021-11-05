@@ -28,6 +28,27 @@ pub struct Session {
     other_creator_username: Option<String>,
 }
 
+impl Session {
+    async fn select_player(&self, context: &GraphQLContext, index: usize) -> FieldResult<Player> {
+        let group_id = self.group_id;
+
+        let player_name = match index {
+            1 => &self.first_player_nickname,
+            2 => &self.second_player_nickname,
+            3 => &self.third_player_nickname,
+            _ => &self.fourth_player_nickname,
+        }
+        .clone();
+
+        context
+            .connection
+            .run(move |c| select_player_by_nickname(c, &group_id, &player_name))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find player!"))?
+            .ok_or_else(|| FieldError::from("Could not find player!"))
+    }
+}
+
 // GraphQL
 
 #[graphql_object(context = GraphQLContext)]
@@ -69,48 +90,19 @@ impl Session {
     }
 
     pub async fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id;
-        let first_player_nickname = self.first_player_nickname.clone();
-
-        context
-            .connection
-            .run(move |c| select_player_by_nickname(c, &group_id, &first_player_nickname))
-            .await
-            .map_err(|error| on_graphql_error(error, "Could not select first player"))?
-            .ok_or_else(|| FieldError::from("Could not select first player"))
+        self.select_player(context, 1).await
     }
 
     pub async fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id;
-        let second_player_nickname = self.second_player_nickname.clone();
-
-        Ok(context
-            .connection
-            .run(move |c| select_player_by_nickname(c, &group_id, &second_player_nickname))
-            .await?
-            .unwrap())
+        self.select_player(context, 2).await
     }
 
     pub async fn third_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id;
-        let third_player_nickname = self.third_player_nickname.clone();
-
-        Ok(context
-            .connection
-            .run(move |c| select_player_by_nickname(c, &group_id, &third_player_nickname))
-            .await?
-            .unwrap())
+        self.select_player(context, 3).await
     }
 
     pub async fn fourth_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
-        let group_id = self.group_id;
-        let fourth_player_nickname = self.fourth_player_nickname.clone();
-
-        Ok(context
-            .connection
-            .run(move |c| select_player_by_nickname(c, &group_id, &fourth_player_nickname))
-            .await?
-            .unwrap())
+        self.select_player(context, 4).await
     }
 }
 
@@ -138,7 +130,7 @@ pub fn insert_session(
     the_second_player_nickname: &str,
     the_third_player_nickname: &str,
     the_fourth_player_nickname: &str,
-    the_other_creator_username: Option<String>,
+    the_other_creator_username: &Option<String>,
 ) -> QueryResult<i32> {
     use crate::schema::sessions::dsl::*;
 

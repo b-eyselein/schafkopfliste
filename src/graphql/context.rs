@@ -5,7 +5,7 @@ use crate::DbConn;
 
 pub struct GraphQLContext {
     pub connection: DbConn,
-    pub maybe_user: Option<User>,
+    maybe_user: Option<User>,
 }
 
 impl GraphQLContext {
