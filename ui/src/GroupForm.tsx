@@ -1,13 +1,8 @@
 import {Field, Form, Formik, FormikHelpers} from 'formik';
-import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {useGroupCreationMutation} from './graphql';
 import * as yup from 'yup';
 import classNames from 'classnames';
-import {useSelector} from 'react-redux';
-import {currentUserSelector} from './store/store';
-import {Redirect} from 'react-router-dom';
-import {loginUrl} from './urls';
 
 interface GroupInput {
   name: string;
@@ -29,10 +24,6 @@ export function GroupForm({onGroupCreated}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
   const [createGroup, {data, loading, error}] = useGroupCreationMutation();
-
-  if (!useSelector(currentUserSelector)) {
-    return <Redirect to={loginUrl}/>;
-  }
 
   function onSubmit(groupInput: GroupInput, {resetForm}: FormikHelpers<GroupInput>): void {
     createGroup({variables: groupInput})

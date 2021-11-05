@@ -1,4 +1,3 @@
-import React from 'react';
 import {RegisterUserInput, useRegisterMutation} from './graphql';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
 import {useTranslation} from 'react-i18next';

@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {NewSessionValuesGroupFragment, NewSessionValuesQuery, SessionInput, useNewSessionMutation, useNewSessionValuesQuery} from '../graphql';
+import {useState} from 'react';
+import {NewSessionValuesGroupFragment, SessionInput, useNewSessionMutation, useNewSessionValuesQuery} from '../graphql';
 import {useTranslation} from 'react-i18next';
 import {WithQuery} from '../WithQuery';
 import classNames from 'classnames';
@@ -172,15 +172,13 @@ export function NewSessionFormContainer({groupId, onCreation, onCancel}: IProps)
   const {t} = useTranslation('common');
   const newSessionValuesQuery = useNewSessionValuesQuery({variables: {groupId}});
 
-  function render({group}: NewSessionValuesQuery): JSX.Element {
-    return <NewSessionForm groupId={groupId} group={group} onCreation={onCreation} onCancel={onCancel}/>;
-  }
-
   return (
     <div className="box">
       <h1 className="subtitle is-4 has-text-centered">{t('createNewSession')}</h1>
 
-      <WithQuery query={newSessionValuesQuery} render={render}/>
+      <WithQuery query={newSessionValuesQuery}>
+        {({group}) => <NewSessionForm groupId={groupId} group={group} onCreation={onCreation} onCancel={onCancel}/>}
+      </WithQuery>
     </div>
   );
 }

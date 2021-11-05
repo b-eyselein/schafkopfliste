@@ -2,8 +2,5 @@
 address = "0.0.0.0"
 port = 8008
 
-[debug.databases]
-schafkopfliste = { url = "postgres://skl:1234@localhost:5465/skl" }
-
-[release.databases]
+[default.databases]
 schafkopfliste = { url = "postgres://skl:1234@localhost/skl" }

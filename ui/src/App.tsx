@@ -1,8 +1,8 @@
-import React, {Dispatch, useState} from 'react';
+import {Dispatch, useState} from 'react';
 import {Home} from './Home';
-import {Route, Switch} from 'react-router';
+import {Route} from 'react-router';
 import classNames from 'classnames';
-import {Link, useHistory} from 'react-router-dom';
+import {Link, Routes, useNavigate} from 'react-router-dom';
 import {RegisterForm} from './RegisterForm';
 import {LoginForm} from './LoginForm';
 import {useDispatch, useSelector} from 'react-redux';
@@ -11,18 +11,19 @@ import {StoreAction, userLogoutAction} from './store/actions';
 import {groupsUrlFragment, homeUrl, loginUrl, registerUrl} from './urls';
 import {GroupBase} from './GroupBase';
 import {useTranslation} from 'react-i18next';
+import {RequireAuth} from './RequireAuth';
 
 export function App(): JSX.Element {
 
   const [navbarToggled, setNavbarToggled] = useState(false);
   const dispatch = useDispatch<Dispatch<StoreAction>>();
   const currentUser = useSelector(currentUserSelector);
-  const history = useHistory();
+  const navigate = useNavigate();
   const {t} = useTranslation('common');
 
   function logout(): void {
     dispatch(userLogoutAction);
-    history.push('/loginForm');
+    navigate(loginUrl);
   }
 
   return (
@@ -51,12 +52,20 @@ export function App(): JSX.Element {
         </div>
       </nav>
 
-      <Switch>
-        <Route path={homeUrl} exact component={Home}/>
-        <Route path={loginUrl} component={LoginForm}/>
-        <Route path={registerUrl} component={RegisterForm}/>
-        <Route path={`/${groupsUrlFragment}/:groupId`} component={GroupBase}/>
-      </Switch>
+
+      <Routes>
+        <Route path={registerUrl} element={<RegisterForm/>}/>
+
+        <Route path={loginUrl} element={<LoginForm/>}/>
+
+        <Route path={homeUrl} element={
+          <RequireAuth>
+            {() => <Home/>}
+          </RequireAuth>
+        }/>
+
+        <Route path={`/${groupsUrlFragment}/:groupId/*`} element={<GroupBase/>}/>
+      </Routes>
     </>
   );
 }

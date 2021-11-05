@@ -1,6 +1,5 @@
 import {RuleSetFragment} from './graphql';
 import {useTranslation} from 'react-i18next';
-import React from 'react';
 import {BulmaCard} from './BulmaCard';
 
 export function RuleSetCard({ruleSet}: { ruleSet: RuleSetFragment }): JSX.Element {

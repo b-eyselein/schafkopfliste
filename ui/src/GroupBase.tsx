@@ -1,35 +1,34 @@
-import React from 'react';
-import {Redirect, useRouteMatch} from 'react-router-dom';
-import {GroupBaseQuery, useGroupBaseQuery} from './graphql';
+import {Navigate, Routes, useParams} from 'react-router-dom';
+import {useGroupBaseQuery} from './graphql';
 import {homeUrl, sessionsUrlFragment} from './urls';
-import {Route, Switch} from 'react-router';
+import {Route} from 'react-router';
 import {Session} from './sessions/Session';
 import {WithQuery} from './WithQuery';
 import {GroupOverview} from './GroupOverview';
+import {WithNullableNavigate} from './WithNullableNavigate';
 
 export function GroupBase(): JSX.Element {
 
-  const {url, params} = useRouteMatch<{ groupId: string }>();
+  const params = useParams<'groupId'>();
 
-  const groupId = parseInt(params.groupId);
-
-  const groupQuery = useGroupBaseQuery({variables: {groupId}});
-
-  function render({maybeGroup}: GroupBaseQuery): JSX.Element {
-    if (!maybeGroup) {
-      return <Redirect to={homeUrl}/>;
-    }
-
-    const {name} = maybeGroup;
-
-    return (
-      <Switch>
-        <Route path={`${url}/`} exact render={() => <GroupOverview groupId={groupId} groupName={name}/>}/>
-
-        <Route path={`${url}/${sessionsUrlFragment}/:sessionId`} exact render={() => <Session groupId={groupId} groupName={name}/>}/>
-      </Switch>
-    );
+  if (!params.groupId) {
+    return <Navigate to={homeUrl}/>;
   }
 
-  return <WithQuery query={groupQuery} render={render}/>;
+  const groupId = parseInt(params.groupId);
+  const groupQuery = useGroupBaseQuery({variables: {groupId}});
+
+  return (
+    <WithQuery query={groupQuery}>
+      {({maybeGroup}) => <WithNullableNavigate t={maybeGroup}>
+        {({name}) =>
+          <Routes>
+            <Route path={'/'} element={<GroupOverview groupId={groupId} groupName={name}/>}/>
+
+            <Route path={`${sessionsUrlFragment}/:sessionId`} element={<Session groupId={groupId} groupName={name}/>}/>
+          </Routes>
+        }
+      </WithNullableNavigate>}
+    </WithQuery>
+  );
 }

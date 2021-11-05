@@ -1,4 +1,3 @@
-import React from 'react';
 import classNames from 'classnames';
 import {PlayerFragment} from './graphql';
 import {useTranslation} from 'react-i18next';

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 import {BavarianSuit, GameInput, GameType, KontraType, SchneiderSchwarz, SessionFragment, useCreateGameMutation, useEndSessionMutation} from '../graphql';
 import {getAllowedGameTypes} from './gameTypes';

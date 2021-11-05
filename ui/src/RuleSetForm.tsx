@@ -1,5 +1,4 @@
 import {ErrorMessage, Field, Form, Formik} from 'formik';
-import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {CountLaufende, RuleSetInput, useNewRuleSetMutation} from './graphql';
 import classNames from 'classnames';

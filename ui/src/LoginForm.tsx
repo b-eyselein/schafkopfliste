@@ -1,4 +1,4 @@
-import React, {Dispatch} from 'react';
+import {Dispatch} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Credentials, useLoginMutation} from './graphql';
 import * as yup from 'yup';
@@ -6,8 +6,9 @@ import {ErrorMessage, Field, Form, Formik} from 'formik';
 import classNames from 'classnames';
 import {useDispatch, useSelector} from 'react-redux';
 import {currentUserSelector} from './store/store';
-import {Redirect} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import {StoreAction, userLoginAction} from './store/actions';
+import {homeUrl} from './urls';
 
 const initialValues: Credentials = {username: '', password: ''};
 
@@ -26,7 +27,7 @@ export function LoginForm(): JSX.Element {
   const currentUser = useSelector(currentUserSelector);
 
   if (currentUser) {
-    return <Redirect to={'/'}/>;
+    return <Navigate to={homeUrl}/>;
   }
 
   function onSubmit(credentials: Credentials): void {

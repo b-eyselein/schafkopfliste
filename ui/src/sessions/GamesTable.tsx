@@ -1,4 +1,3 @@
-import React from 'react';
 import {GameType, SessionGameFragment, SessionPlayerFragment} from '../graphql';
 
 interface IProps {
