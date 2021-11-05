@@ -1,17 +1,20 @@
-use crate::additional_headers::AuthorizationHeader;
+use juniper::{FieldError, FieldResult};
+
+use crate::models::user::User;
 use crate::DbConn;
 
 pub struct GraphQLContext {
     pub connection: DbConn,
-    pub authorization_header: AuthorizationHeader,
+    pub maybe_user: Option<User>,
 }
 
 impl GraphQLContext {
-    pub fn new(conn: DbConn, authorization_header: AuthorizationHeader) -> Self {
-        Self {
-            connection: conn,
-            authorization_header,
-        }
+    pub fn new(conn: DbConn, maybe_user: Option<User>) -> Self {
+        Self { connection: conn, maybe_user }
+    }
+
+    pub fn check_user_login(&self) -> FieldResult<&User> {
+        self.maybe_user.as_ref().ok_or_else(|| FieldError::from("You are not logged in!"))
     }
 }
 

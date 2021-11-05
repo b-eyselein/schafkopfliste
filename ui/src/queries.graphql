@@ -35,7 +35,7 @@ mutation GroupCreation($name: String!) {
 # /groups/:groupId/...
 
 query GroupBase($groupId: Int!) {
-  maybeGroup(groupId: $groupId) {
+  group(groupId: $groupId) {
     name
   }
 }
@@ -66,8 +66,7 @@ mutation NewRuleSet($groupId: Int!, $ruleSetInput: RuleSetInput!) {
 
 fragment Player on Player {
   nickname
-  firstName
-  lastName
+  name
   balance
   gameCount
   playedGames
@@ -129,8 +128,7 @@ mutation NewSession($groupId: Int!, $sessionInput: SessionInput!) {
 
 fragment SessionPlayer on Player {
   nickname
-  firstName
-  lastName
+  name
 }
 
 fragment SessionGame on Game {

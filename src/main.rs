@@ -16,11 +16,13 @@ use rocket::response::status::NotFound;
 use rocket::{get, post, routes, Build, Rocket, State};
 use rocket_cors::{Cors, CorsOptions};
 use rocket_sync_db_pools::database;
+use tap::TapFallible;
 
 use graphql::{GraphQLContext, Mutations, QueryRoot};
 
 use crate::additional_headers::AuthorizationHeader;
 use crate::graphql::Schema;
+use crate::models::user::select_user_by_username;
 
 mod additional_headers;
 mod graphql;
@@ -52,16 +54,6 @@ fn route_get_graphiql() -> rocket::response::content::Html<String> {
     graphiql_source("/graphql", None)
 }
 
-#[get("/graphql?<request>")]
-async fn route_get_graphql_handler(
-    connection: DbConn,
-    authorization_header: AuthorizationHeader,
-    request: GraphQLRequest,
-    schema: &State<Schema>,
-) -> GraphQLResponse {
-    request.execute(schema, &GraphQLContext::new(connection, authorization_header)).await
-}
-
 #[post("/graphql", data = "<request>")]
 async fn route_post_graphql_handler(
     connection: DbConn,
@@ -69,7 +61,16 @@ async fn route_post_graphql_handler(
     request: GraphQLRequest,
     schema: &State<Schema>,
 ) -> GraphQLResponse {
-    request.execute(schema, &GraphQLContext::new(connection, authorization_header)).await
+    let user = match authorization_header.username().map(|username| username.to_string()) {
+        None => None,
+        Some(username) => connection
+            .run(move |c| select_user_by_username(c, &username))
+            .await
+            .tap_err(|error| eprintln!("{}", error))
+            .unwrap_or(None),
+    };
+
+    request.execute(schema, &GraphQLContext::new(connection, user)).await
 }
 
 #[get("/<file..>", rank = 2)]
@@ -104,14 +105,5 @@ fn rocket() -> _ {
         .attach(AdHoc::try_on_ignite("Database migrations", execute_db_migrations))
         .attach(make_cors())
         .manage(Schema::new(QueryRoot, Mutations, EmptySubscription::new()))
-        .mount(
-            "/",
-            routes![
-                route_index,
-                route_get_file,
-                route_get_graphiql,
-                route_get_graphql_handler,
-                route_post_graphql_handler
-            ],
-        )
+        .mount("/", routes![route_index, route_get_file, route_get_graphiql, route_post_graphql_handler])
 }

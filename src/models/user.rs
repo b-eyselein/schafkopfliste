@@ -21,7 +21,7 @@ impl UserWithToken {
 
 // Queries
 
-pub fn user_by_username(conn: &PgConnection, name: &str) -> QueryResult<Option<User>> {
+pub fn select_user_by_username(conn: &PgConnection, name: &str) -> QueryResult<Option<User>> {
     use crate::schema::users::dsl::*;
 
     users.filter(username.eq(&name)).first(conn).optional()

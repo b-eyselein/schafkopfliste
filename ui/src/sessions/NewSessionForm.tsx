@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next';
 import {WithQuery} from '../WithQuery';
 import classNames from 'classnames';
 import update from 'immutability-helper';
+import {WithNullableNavigate} from '../WithNullableNavigate';
 
 interface IState {
   datetime: Date;
@@ -136,9 +137,9 @@ export function NewSessionForm({groupId, group, onCreation, onCancel}: NewSessio
       </div>
 
       <div className="columns">
-        {notChosenPlayers.map(({nickname, firstName, lastName}) =>
+        {notChosenPlayers.map(({nickname, name}) =>
           <div className="column is-1" key={nickname}>
-            <button type="button" onClick={() => selectPlayer(nickname)} title={`${firstName} ${lastName}`} className="button is-fullwidth">{nickname}</button>
+            <button type="button" onClick={() => selectPlayer(nickname)} title={name || undefined} className="button is-fullwidth">{nickname}</button>
           </div>
         )}
       </div>
@@ -177,7 +178,9 @@ export function NewSessionFormContainer({groupId, onCreation, onCancel}: IProps)
       <h1 className="subtitle is-4 has-text-centered">{t('createNewSession')}</h1>
 
       <WithQuery query={newSessionValuesQuery}>
-        {({group}) => <NewSessionForm groupId={groupId} group={group} onCreation={onCreation} onCancel={onCancel}/>}
+        {({group: maybeGroup}) => <WithNullableNavigate t={maybeGroup}>
+          {(group) => <NewSessionForm groupId={groupId} group={group} onCreation={onCreation} onCancel={onCancel}/>}
+        </WithNullableNavigate>}
       </WithQuery>
     </div>
   );

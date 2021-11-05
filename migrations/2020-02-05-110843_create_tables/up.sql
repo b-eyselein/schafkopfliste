@@ -54,17 +54,16 @@ create table if not exists rule_sets (
 );
 
 create table if not exists players (
-  group_id     integer      not null,
-  nickname     varchar(20)  not null,
+  group_id     integer     not null,
+  nickname     varchar(20) not null,
 
-  first_name   varchar(100) not null,
-  last_name    varchar(100) not null,
+  name         varchar(100),
 
-  balance      integer      not null default 0,
-  game_count   integer      not null default 0,
-  put_count    integer      not null default 0,
-  played_games integer      not null default 0,
-  win_count    integer      not null default 0,
+  balance      integer     not null default 0,
+  game_count   integer     not null default 0,
+  put_count    integer     not null default 0,
+  played_games integer     not null default 0,
+  win_count    integer     not null default 0,
 
   primary key (group_id, nickname),
   foreign key (group_id) references groups (id) on update cascade on delete cascade

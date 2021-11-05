@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import classNames from 'classnames';
 import {BavarianSuit, GameInput, GameType, KontraType, SchneiderSchwarz, SessionFragment, useCreateGameMutation, useEndSessionMutation} from '../graphql';
 import {getAllowedGameTypes} from './gameTypes';
@@ -218,9 +218,9 @@ export function GameForm({groupId, sessionId, session, onNewGame}: IProps): JSX.
         <div className="column has-text-centered">
           <label className="label">Leger:</label>
         </div>
-        {players.map(({nickname, firstName, lastName}) => <div className="column" key={nickname}>
+        {players.map(({nickname, name}) => <div className="column" key={nickname}>
             <button className={classNames('button', 'is-fullwidth', {'is-link': playersHavingPutNicknames.includes(nickname)})}
-                    onClick={() => togglePlayerPut(nickname)} title={`${firstName} ${lastName}`}>
+                    onClick={() => togglePlayerPut(nickname)} title={name || undefined}>
               {nickname}
             </button>
 

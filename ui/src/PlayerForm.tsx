@@ -5,14 +5,13 @@ import {Field, Form, Formik, FormikHelpers} from 'formik';
 import classNames from 'classnames';
 
 const initialValues: PlayerInput = {
-  nickname: '', firstName: '', lastName: ''
+  nickname: '', name: ''
 };
 
 const playerInputSchema: yup.SchemaOf<PlayerInput> = yup.object()
   .shape({
     nickname: yup.string().min(2).required(),
-    firstName: yup.string().min(3).required(),
-    lastName: yup.string().min(3).required()
+    name: yup.string().min(3).notRequired()
   })
   .required();
 
@@ -53,18 +52,10 @@ export function PlayerForm({groupId, onCreation, onCancel}: IProps): JSX.Element
             </div>
 
             <div className="field">
-              <label htmlFor="firstName" className="label">{t('firstName')}:</label>
+              <label htmlFor="name" className="label">{t('name')}:</label>
               <div className="control">
-                <Field type="text" name="firstName" id="firstName" placeholder={t('firstName')}
-                       className={classNames('input', {'is-danger': touched.firstName && errors.firstName})}/>
-              </div>
-            </div>
-
-            <div className="field">
-              <label htmlFor="lastName" className="label">{t('lastName')}:</label>
-              <div className="control">
-                <Field type="text" name="lastName" id="lastName" placeholder={t('lastName')}
-                       className={classNames('input', {'is-danger': touched.lastName && errors.lastName})}/>
+                <Field type="text" name="name" id="name" placeholder={t('name')}
+                       className={classNames('input', {'is-danger': touched.name && errors.name})}/>
               </div>
             </div>
 

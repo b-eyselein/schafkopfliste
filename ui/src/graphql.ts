@@ -165,9 +165,8 @@ export type MutationsRegisterUserArgs = {
 export type Player = {
   __typename?: 'Player';
   balance: Scalars['Int'];
-  firstName: Scalars['String'];
   gameCount: Scalars['Int'];
-  lastName: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   nickname: Scalars['String'];
   playedGames: Scalars['Int'];
   putCount: Scalars['Int'];
@@ -175,26 +174,19 @@ export type Player = {
 };
 
 export type PlayerInput = {
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   nickname: Scalars['String'];
 };
 
 export type QueryRoot = {
   __typename?: 'QueryRoot';
-  group: Group;
+  group?: Maybe<Group>;
   groups: Array<Group>;
-  maybeGroup?: Maybe<Group>;
   myGroups: Array<Group>;
 };
 
 
 export type QueryRootGroupArgs = {
-  groupId: Scalars['Int'];
-};
-
-
-export type QueryRootMaybeGroupArgs = {
   groupId: Scalars['Int'];
 };
 
@@ -316,7 +308,7 @@ export type GroupBaseQueryVariables = Exact<{
 }>;
 
 
-export type GroupBaseQuery = { __typename?: 'QueryRoot', maybeGroup?: { __typename?: 'Group', name: string } | null | undefined };
+export type GroupBaseQuery = { __typename?: 'QueryRoot', group?: { __typename?: 'Group', name: string } | null | undefined };
 
 export type RuleSetFragment = { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean };
 
@@ -328,7 +320,7 @@ export type NewRuleSetMutationVariables = Exact<{
 
 export type NewRuleSetMutation = { __typename?: 'Mutations', group: { __typename?: 'GroupMutations', createRuleSet: string } };
 
-export type PlayerFragment = { __typename?: 'Player', nickname: string, firstName: string, lastName: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number };
+export type PlayerFragment = { __typename?: 'Player', nickname: string, name?: string | null | undefined, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number };
 
 export type PlayerCreationMutationVariables = Exact<{
   groupId: Scalars['Int'];
@@ -343,16 +335,16 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'QueryRoot', group: { __typename?: 'Group', name: string, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }>, players: Array<{ __typename?: 'Player', nickname: string, firstName: string, lastName: string, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number }>, sessions: Array<{ __typename?: 'Session', id: number, hasEnded: boolean }> } };
+export type GroupQuery = { __typename?: 'QueryRoot', group?: { __typename?: 'Group', name: string, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }>, players: Array<{ __typename?: 'Player', nickname: string, name?: string | null | undefined, balance: number, gameCount: number, playedGames: number, putCount: number, winCount: number }>, sessions: Array<{ __typename?: 'Session', id: number, hasEnded: boolean }> } | null | undefined };
 
-export type NewSessionValuesGroupFragment = { __typename?: 'Group', players: Array<{ __typename?: 'Player', nickname: string, firstName: string, lastName: string }>, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> };
+export type NewSessionValuesGroupFragment = { __typename?: 'Group', players: Array<{ __typename?: 'Player', nickname: string, name?: string | null | undefined }>, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> };
 
 export type NewSessionValuesQueryVariables = Exact<{
   groupId: Scalars['Int'];
 }>;
 
 
-export type NewSessionValuesQuery = { __typename?: 'QueryRoot', group: { __typename?: 'Group', players: Array<{ __typename?: 'Player', nickname: string, firstName: string, lastName: string }>, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> } };
+export type NewSessionValuesQuery = { __typename?: 'QueryRoot', group?: { __typename?: 'Group', players: Array<{ __typename?: 'Player', nickname: string, name?: string | null | undefined }>, ruleSets: Array<{ __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }> } | null | undefined };
 
 export type NewSessionMutationVariables = Exact<{
   groupId: Scalars['Int'];
@@ -362,11 +354,11 @@ export type NewSessionMutationVariables = Exact<{
 
 export type NewSessionMutation = { __typename?: 'Mutations', group: { __typename?: 'GroupMutations', newSession: number } };
 
-export type SessionPlayerFragment = { __typename?: 'Player', nickname: string, firstName: string, lastName: string };
+export type SessionPlayerFragment = { __typename?: 'Player', nickname: string, name?: string | null | undefined };
 
 export type SessionGameFragment = { __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: BavarianSuit | null | undefined, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: SchneiderSchwarz | null | undefined, playersHavingPutNicknames: Array<string>, kontra?: KontraType | null | undefined, playersHavingWonNicknames: Array<string>, price: number };
 
-export type SessionFragment = { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: BavarianSuit | null | undefined, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: SchneiderSchwarz | null | undefined, playersHavingPutNicknames: Array<string>, kontra?: KontraType | null | undefined, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, secondPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, thirdPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, fourthPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string } };
+export type SessionFragment = { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: BavarianSuit | null | undefined, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: SchneiderSchwarz | null | undefined, playersHavingPutNicknames: Array<string>, kontra?: KontraType | null | undefined, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, secondPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, thirdPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, fourthPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined } };
 
 export type SessionQueryVariables = Exact<{
   groupId: Scalars['Int'];
@@ -374,7 +366,7 @@ export type SessionQueryVariables = Exact<{
 }>;
 
 
-export type SessionQuery = { __typename?: 'QueryRoot', group: { __typename?: 'Group', session?: { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: BavarianSuit | null | undefined, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: SchneiderSchwarz | null | undefined, playersHavingPutNicknames: Array<string>, kontra?: KontraType | null | undefined, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, secondPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, thirdPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string }, fourthPlayer: { __typename?: 'Player', nickname: string, firstName: string, lastName: string } } | null | undefined } };
+export type SessionQuery = { __typename?: 'QueryRoot', group?: { __typename?: 'Group', session?: { __typename?: 'Session', date: string, hasEnded: boolean, games: Array<{ __typename?: 'Game', id: number, actingPlayerNickname: string, gameType: GameType, suit?: BavarianSuit | null | undefined, tout: boolean, isDoubled: boolean, laufendeCount: number, schneiderSchwarz?: SchneiderSchwarz | null | undefined, playersHavingPutNicknames: Array<string>, kontra?: KontraType | null | undefined, playersHavingWonNicknames: Array<string>, price: number }>, ruleSet: { __typename?: 'RuleSet', name: string, basePrice: number, soloPrice: number, countLaufende: CountLaufende, minLaufendeIncl: number, maxLaufendeIncl: number, laufendePrice: number, geierAllowed: boolean, hochzeitAllowed: boolean, bettelAllowed: boolean, ramschAllowed: boolean, farbWenzAllowed: boolean, farbGeierAllowed: boolean }, firstPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, secondPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, thirdPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined }, fourthPlayer: { __typename?: 'Player', nickname: string, name?: string | null | undefined } } | null | undefined } | null | undefined };
 
 export type CreateGameMutationVariables = Exact<{
   groupId: Scalars['Int'];
@@ -402,8 +394,7 @@ export const LoggedInUserFragmentDoc = gql`
 export const PlayerFragmentDoc = gql`
     fragment Player on Player {
   nickname
-  firstName
-  lastName
+  name
   balance
   gameCount
   playedGames
@@ -414,8 +405,7 @@ export const PlayerFragmentDoc = gql`
 export const SessionPlayerFragmentDoc = gql`
     fragment SessionPlayer on Player {
   nickname
-  firstName
-  lastName
+  name
 }
     `;
 export const RuleSetFragmentDoc = gql`
@@ -621,7 +611,7 @@ export type GroupCreationMutationResult = Apollo.MutationResult<GroupCreationMut
 export type GroupCreationMutationOptions = Apollo.BaseMutationOptions<GroupCreationMutation, GroupCreationMutationVariables>;
 export const GroupBaseDocument = gql`
     query GroupBase($groupId: Int!) {
-  maybeGroup(groupId: $groupId) {
+  group(groupId: $groupId) {
     name
   }
 }

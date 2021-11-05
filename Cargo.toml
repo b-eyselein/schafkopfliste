@@ -28,3 +28,5 @@ bcrypt = "0.10.0"
 
 juniper = { version = "0.15.7", features = ["scalar-naivetime"] }
 juniper_rocket = "0.8.0"
+
+tap = "1.0.1"

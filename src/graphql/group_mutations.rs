@@ -3,10 +3,11 @@ use juniper::{graphql_object, FieldError, FieldResult, GraphQLInputObject};
 
 use crate::graphql::mutation::on_no_login;
 use crate::graphql::session_mutations::SessionMutations;
-use crate::graphql::GraphQLContext;
+use crate::graphql::{on_insufficient_rights, GraphQLContext};
 use crate::models::player::insert_player;
 use crate::models::rule_set::{insert_rule_set, CountLaufende};
 use crate::models::session::{insert_session, select_session_by_id, Session};
+use crate::models::user::User;
 
 pub struct GroupMutations {
     group_id: i32,
@@ -51,8 +52,7 @@ pub struct RuleSetInput {
 #[derive(Debug, GraphQLInputObject)]
 pub struct PlayerInput {
     nickname: String,
-    first_name: String,
-    last_name: String,
+    name: Option<String>,
 }
 
 #[derive(Debug, GraphQLInputObject)]
@@ -69,125 +69,122 @@ pub struct SessionInput {
 #[graphql_object(context = GraphQLContext)]
 impl GroupMutations {
     pub async fn create_rule_set(&self, rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
-        match context.authorization_header.username() {
-            Some(username) if self.has_admin_rights(username) => {
-                let group_id = self.group_id;
+        let User { username, .. } = context.check_user_login()?;
 
-                let RuleSetInput {
-                    name,
-                    base_price,
-                    solo_price,
-                    count_laufende,
-                    min_laufende_incl,
-                    max_laufende_incl,
-                    laufende_price,
-                    geier_allowed,
-                    hochzeit_allowed,
-                    bettel_allowed,
-                    ramsch_allowed,
-                    farb_wenz_allowed,
-                    farb_geier_allowed,
-                } = rule_set_input;
+        if self.has_admin_rights(&username) {
+            let group_id = self.group_id;
 
-                Ok(context
-                    .connection
-                    .run(move |c| {
-                        insert_rule_set(
-                            c,
-                            &group_id,
-                            &name,
-                            &base_price,
-                            &solo_price,
-                            &count_laufende,
-                            &min_laufende_incl,
-                            &max_laufende_incl,
-                            &laufende_price,
-                            &geier_allowed,
-                            &hochzeit_allowed,
-                            &bettel_allowed,
-                            &ramsch_allowed,
-                            &farb_wenz_allowed,
-                            &farb_geier_allowed,
-                        )
-                    })
-                    .await?)
-            }
-            _ => Err(on_no_login()),
+            let RuleSetInput {
+                name,
+                base_price,
+                solo_price,
+                count_laufende,
+                min_laufende_incl,
+                max_laufende_incl,
+                laufende_price,
+                geier_allowed,
+                hochzeit_allowed,
+                bettel_allowed,
+                ramsch_allowed,
+                farb_wenz_allowed,
+                farb_geier_allowed,
+            } = rule_set_input;
+
+            Ok(context
+                .connection
+                .run(move |c| {
+                    insert_rule_set(
+                        c,
+                        &group_id,
+                        &name,
+                        &base_price,
+                        &solo_price,
+                        &count_laufende,
+                        &min_laufende_incl,
+                        &max_laufende_incl,
+                        &laufende_price,
+                        &geier_allowed,
+                        &hochzeit_allowed,
+                        &bettel_allowed,
+                        &ramsch_allowed,
+                        &farb_wenz_allowed,
+                        &farb_geier_allowed,
+                    )
+                })
+                .await?)
+        } else {
+            Err(on_insufficient_rights())
         }
     }
 
     pub async fn create_player(&self, new_player: PlayerInput, context: &GraphQLContext) -> FieldResult<String> {
-        match context.authorization_header.username() {
-            Some(username) if self.has_admin_rights(username) => {
-                let group_id = self.group_id;
+        let User { username, .. } = context.check_user_login()?;
 
-                let PlayerInput {
-                    nickname,
-                    first_name,
-                    last_name,
-                } = new_player;
+        if self.has_admin_rights(username) {
+            let group_id = self.group_id;
 
-                Ok(context
-                    .connection
-                    .run(move |c| insert_player(c, &group_id, &nickname, &first_name, &last_name))
-                    .await?)
-            }
-            _ => Err(on_no_login()),
+            let PlayerInput { nickname, name } = new_player;
+
+            Ok(context.connection.run(move |c| insert_player(c, &group_id, &nickname, &name)).await?)
+        } else {
+            Err(on_insufficient_rights())
         }
     }
 
     pub async fn new_session(&self, session_input: SessionInput, context: &GraphQLContext) -> FieldResult<i32> {
-        match context.authorization_header.username() {
-            Some(username) if self.has_admin_rights(username) => {
-                let group_id = self.group_id;
+        let User { username, .. } = context.check_user_login()?;
 
-                let creator_username = if username == self.owner_username { None } else { Some(username.to_string()) };
+        if self.has_admin_rights(username) {
+            let group_id = self.group_id;
 
-                // FIXME: check if user is owner of group...
+            let creator_username = if username == &self.owner_username { None } else { Some(username.to_string()) };
 
-                let SessionInput {
-                    date,
-                    time,
-                    rule_set_name,
-                    first_player_nickname,
-                    second_player_nickname,
-                    third_player_nickname,
-                    fourth_player_nickname,
-                } = session_input;
+            // FIXME: check if user is owner of group...
 
-                Ok(context
-                    .connection
-                    .run(move |c| {
-                        insert_session(
-                            c,
-                            group_id,
-                            &date,
-                            &time,
-                            &rule_set_name,
-                            &first_player_nickname,
-                            &second_player_nickname,
-                            &third_player_nickname,
-                            &fourth_player_nickname,
-                            creator_username,
-                        )
-                    })
-                    .await?)
-            }
-            _ => Err(on_no_login()),
+            let SessionInput {
+                date,
+                time,
+                rule_set_name,
+                first_player_nickname,
+                second_player_nickname,
+                third_player_nickname,
+                fourth_player_nickname,
+            } = session_input;
+
+            Ok(context
+                .connection
+                .run(move |c| {
+                    insert_session(
+                        c,
+                        group_id,
+                        &date,
+                        &time,
+                        &rule_set_name,
+                        &first_player_nickname,
+                        &second_player_nickname,
+                        &third_player_nickname,
+                        &fourth_player_nickname,
+                        creator_username,
+                    )
+                })
+                .await?)
+        } else {
+            Err(on_no_login())
         }
     }
 
     pub async fn session(&self, session_id: i32, context: &GraphQLContext) -> FieldResult<SessionMutations> {
+        let User { username, .. } = context.check_user_login()?;
+
         let group_id = self.group_id;
 
-        match context.authorization_header.username() {
-            Some(username) if self.has_admin_rights(username) => {
-                match context.connection.run(move |c| select_session_by_id(c, &group_id, &session_id)).await? {
-                    Some(Session { group_id, id, .. }) => Ok(SessionMutations::new(group_id, id)),
-                    None => Err(FieldError::from("No such session!")),
-                }
+        if self.has_admin_rights(username) {
+            match context.connection.run(move |c| select_session_by_id(c, &group_id, &session_id)).await? {
+                Some(Session { group_id, id, .. }) => Ok(SessionMutations::new(group_id, id)),
+                None => Err(FieldError::from("No such session!")),
             }
-            _ => Err(on_no_login()),
+        } else {
+            Err(on_no_login())
         }
     }
 }

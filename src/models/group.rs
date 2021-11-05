@@ -4,7 +4,7 @@ use diesel::{prelude::*, PgConnection, QueryResult};
 use juniper::{graphql_object, FieldResult};
 use serde::Serialize;
 
-use crate::graphql::{graphql_on_db_error, GraphQLContext};
+use crate::graphql::{on_graphql_error, GraphQLContext};
 use crate::models::player::{select_player_count_for_group, select_players_in_group, Player};
 use crate::models::rule_set::{select_rule_set_by_id, select_rule_sets, RuleSet};
 use crate::models::session::{select_session_by_id, select_sessions_for_group, Session};
@@ -32,13 +32,21 @@ impl Group {
     pub async fn rule_sets(&self, context: &GraphQLContext) -> FieldResult<Vec<RuleSet>> {
         let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_rule_sets(c, &group_id)).await?)
+        context
+            .connection
+            .run(move |c| select_rule_sets(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find rule sets for group!"))
     }
 
     pub async fn rule_set(&self, name: String, context: &GraphQLContext) -> FieldResult<Option<RuleSet>> {
         let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_rule_set_by_id(c, &group_id, &name)).await?)
+        context
+            .connection
+            .run(move |c| select_rule_set_by_id(c, &group_id, &name))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find rule set!"))
     }
 
     pub async fn player_count(&self, context: &GraphQLContext) -> FieldResult<i32> {
@@ -46,28 +54,41 @@ impl Group {
 
         let count = context
             .connection
-            .run(move |c| select_player_count_for_group(c, &group_id).map_err(graphql_on_db_error))
-            .await?;
+            .run(move |c| select_player_count_for_group(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find player count for group!"))?;
 
-        Ok(i32::try_from(count)?)
+        i32::try_from(count).map_err(|error| on_graphql_error(error, "Could not find player count for group!"))
     }
 
     pub async fn players(&self, context: &GraphQLContext) -> FieldResult<Vec<Player>> {
         let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_players_in_group(c, &group_id)).await?)
+        context
+            .connection
+            .run(move |c| select_players_in_group(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find players for group!"))
     }
 
     pub async fn sessions(&self, context: &GraphQLContext) -> FieldResult<Vec<Session>> {
         let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_sessions_for_group(c, &group_id)).await?)
+        context
+            .connection
+            .run(move |c| select_sessions_for_group(c, &group_id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find sessions for group!"))
     }
 
     pub async fn session(&self, id: i32, context: &GraphQLContext) -> FieldResult<Option<Session>> {
         let group_id = self.id;
 
-        Ok(context.connection.run(move |c| select_session_by_id(c, &group_id, &id)).await?)
+        context
+            .connection
+            .run(move |c| select_session_by_id(c, &group_id, &id))
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not find session!"))
     }
 }
 

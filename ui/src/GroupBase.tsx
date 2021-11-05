@@ -20,7 +20,7 @@ export function GroupBase(): JSX.Element {
 
   return (
     <WithQuery query={groupQuery}>
-      {({maybeGroup}) => <WithNullableNavigate t={maybeGroup}>
+      {({group: maybeGroup}) => <WithNullableNavigate t={maybeGroup}>
         {({name}) =>
           <Routes>
             <Route path={'/'} element={<GroupOverview groupId={groupId} groupName={name}/>}/>

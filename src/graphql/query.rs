@@ -6,6 +6,7 @@ use crate::models::group::{select_group_by_id, select_groups, select_groups_for_
 
 pub struct QueryRoot;
 
+#[deprecated]
 pub fn graphql_on_db_error(db_error: DbError) -> FieldError {
     eprintln!("Error while querying db: {}", db_error);
     FieldError::from("Error while querying db")
@@ -17,24 +18,13 @@ impl QueryRoot {
         Ok(context.connection.run(move |c| select_groups(c)).await?)
     }
 
-    pub async fn maybe_group(group_id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {
+    pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<Option<Group>> {
         Ok(context.connection.run(move |c| select_group_by_id(c, &group_id)).await?)
     }
 
-    pub async fn group(group_id: i32, context: &GraphQLContext) -> FieldResult<Group> {
-        match context.connection.run(move |c| select_group_by_id(c, &group_id)).await? {
-            None => Err(FieldError::from("No such group!")),
-            Some(group) => Ok(group),
-        }
-    }
-
     pub async fn my_groups(context: &GraphQLContext) -> FieldResult<Vec<Group>> {
-        match context.authorization_header.username() {
-            None => Err(FieldError::from("No login provided!")),
-            Some(username) => {
-                let username = username.to_string();
-                Ok(context.connection.run(move |c| select_groups_for_username(c, &username)).await?)
-            }
-        }
+        let username = context.check_user_login()?.username.clone();
+
+        Ok(context.connection.run(move |c| select_groups_for_username(c, &username)).await?)
     }
 }

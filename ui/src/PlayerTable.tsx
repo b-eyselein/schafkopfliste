@@ -29,9 +29,9 @@ export function PlayerTable({players}: IProps): JSX.Element {
           </tr>
         </thead>
         <tbody>
-          {orderedPlayers.map(({nickname, firstName, lastName, balance, gameCount, putCount, playedGames, winCount}) => <tr key={nickname}>
+          {orderedPlayers.map(({nickname, name, balance, gameCount, putCount, playedGames, winCount}) => <tr key={nickname}>
             <td className="has-text-centered">{nickname}</td>
-            <td className="has-text-centered">{firstName} {lastName}</td>
+            <td className="has-text-centered">{name}</td>
             <td className={classNames('has-text-centered', balance < 0 ? 'has-text-danger' : 'has-text-success')}>
               {balance}
             </td>

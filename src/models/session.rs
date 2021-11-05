@@ -2,7 +2,7 @@ use chrono::{Datelike, NaiveDate, NaiveTime};
 use diesel::{prelude::*, PgConnection, QueryResult};
 use juniper::{graphql_object, FieldError, FieldResult};
 
-use crate::graphql::{graphql_on_db_error, GraphQLContext};
+use crate::graphql::{on_graphql_error, GraphQLContext};
 use crate::models::game::{select_games_for_session, Game};
 use crate::models::player::{select_player_by_nickname, Player};
 use crate::models::rule_set::{select_rule_set_by_id, RuleSet};
@@ -50,29 +50,34 @@ impl Session {
 
         context
             .connection
-            .run(move |c| select_games_for_session(c, &group_id, &session_id).map_err(graphql_on_db_error))
+            .run(move |c| select_games_for_session(c, &group_id, &session_id))
             .await
+            .map_err(|error| on_graphql_error(error, "Could not find games for session!"))
     }
 
     pub async fn rule_set(&self, context: &GraphQLContext) -> FieldResult<RuleSet> {
+        // TODO: return option?
         let group_id = self.group_id;
         let rule_set_name = self.rule_set_name.clone();
 
         context
             .connection
-            .run(move |c| select_rule_set_by_id(c, &group_id, &rule_set_name)?.ok_or_else(|| FieldError::from("No rule set found!")))
+            .run(move |c| select_rule_set_by_id(c, &group_id, &rule_set_name))
             .await
+            .map_err(|error| on_graphql_error(error, "Could not find rule set!"))?
+            .ok_or_else(|| FieldError::from("No rule set found!"))
     }
 
     pub async fn first_player(&self, context: &GraphQLContext) -> FieldResult<Player> {
         let group_id = self.group_id;
         let first_player_nickname = self.first_player_nickname.clone();
 
-        Ok(context
+        context
             .connection
             .run(move |c| select_player_by_nickname(c, &group_id, &first_player_nickname))
-            .await?
-            .unwrap())
+            .await
+            .map_err(|error| on_graphql_error(error, "Could not select first player"))?
+            .ok_or_else(|| FieldError::from("Could not select first player"))
     }
 
     pub async fn second_player(&self, context: &GraphQLContext) -> FieldResult<Player> {

@@ -101,9 +101,8 @@ scalar NaiveTime
 
 type Player {
   balance: Int!
-  firstName: String!
   gameCount: Int!
-  lastName: String!
+  name: String
   nickname: String!
   playedGames: Int!
   putCount: Int!
@@ -111,15 +110,13 @@ type Player {
 }
 
 input PlayerInput {
-  firstName: String!
-  lastName: String!
+  name: String
   nickname: String!
 }
 
 type QueryRoot {
-  group(groupId: Int!): Group!
+  group(groupId: Int!): Group
   groups: [Group!]!
-  maybeGroup(groupId: Int!): Group
   myGroups: [Group!]!
 }
 

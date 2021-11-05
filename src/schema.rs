@@ -38,8 +38,7 @@ table! {
     players (group_id, nickname) {
         group_id -> Int4,
         nickname -> Varchar,
-        first_name -> Varchar,
-        last_name -> Varchar,
+        name -> Nullable<Varchar>,
         balance -> Int4,
         game_count -> Int4,
         put_count -> Int4,
