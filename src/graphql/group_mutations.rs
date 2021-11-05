@@ -71,7 +71,7 @@ impl GroupMutations {
     pub async fn create_rule_set(&self, rule_set_input: RuleSetInput, context: &GraphQLContext) -> FieldResult<String> {
         let User { username, .. } = context.check_user_login()?;
 
-        if self.has_admin_rights(&username) {
+        if self.has_admin_rights(username) {
             let group_id = self.group_id;
 
             let RuleSetInput {
