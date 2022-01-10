@@ -10,7 +10,8 @@ export function PlayerTable({players}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
 
-  const orderedPlayers = players.sort((p1, p2) => p1.balance - p2.balance);
+  // important: copy array since original is read-only!
+  const orderedPlayers = [...players].sort((p1, p2) => p1.balance - p2.balance);
 
   return (
     <div className="table-container">
